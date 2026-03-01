@@ -166,7 +166,8 @@ class TelegramPoller:
                     ch = self._registry.get("telegram")
                     ch.send(chat_id, output[:4000])
             else:
-                logger.debug("No trigger matched for: %s", text[:100])
+                # No trigger — route to Claude for AI response
+                self._reply_with_claude(text, chat_id)
 
 
     def _handle_voice(self, voice: dict, chat_id: str) -> None:
@@ -191,10 +192,40 @@ class TelegramPoller:
             ch = self._registry.get("telegram")
             ch.send(chat_id, f"🎙 *Transcription:*\n\n{text}")
             logger.info("Transcribed voice from %s: %s", chat_id, text[:100])
+            # Also respond to the transcribed content
+            if text and not text.startswith("["):
+                self._reply_with_claude(text, chat_id)
         finally:
             # Clean up temp file
             audio_path.unlink(missing_ok=True)
             audio_path.parent.rmdir()
+
+
+    def _reply_with_claude(self, text: str, chat_id: str) -> None:
+        """Send text to Claude CLI and reply with the response."""
+        logger.info("Routing to Claude: %s", text[:100])
+        try:
+            result = subprocess.run(
+                ["claude", "-p", text, "--output-format", "text"],
+                capture_output=True, text=True, timeout=120,
+            )
+            reply = (result.stdout or result.stderr or "[no response]").strip()
+            if reply:
+                ch = self._registry.get("telegram")
+                # Telegram has a 4096 char limit
+                for i in range(0, len(reply), 4000):
+                    ch.send(chat_id, reply[i:i + 4000])
+                logger.info("Claude replied to %s (%d chars)", chat_id, len(reply))
+        except subprocess.TimeoutExpired:
+            ch = self._registry.get("telegram")
+            ch.send(chat_id, "[Response timed out — try a shorter question]")
+            logger.warning("Claude timed out for %s", chat_id)
+        except FileNotFoundError:
+            ch = self._registry.get("telegram")
+            ch.send(chat_id, "[Claude CLI not found on this system]")
+            logger.error("claude CLI not found")
+        except Exception as exc:
+            logger.error("Claude reply error: %s", exc)
 
 
 class InboundListener:
