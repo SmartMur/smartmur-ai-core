@@ -322,6 +322,9 @@ def client(tmp_path):
     fake_profiles = FakeProfileManager()
     fake_vault = FakeVault(tmp_path)
 
+    # Bypass auth for existing tests
+    app.dependency_overrides[deps.require_auth] = lambda: "test-user"
+
     # Override all singleton instances in deps module
     deps._cron_engine = fake_cron
     deps._memory_store = fake_memory
@@ -356,6 +359,7 @@ def client(tmp_path):
     deps._channel_registry = None
     deps._profile_manager = None
     deps._vault = None
+    app.dependency_overrides.pop(deps.require_auth, None)
 
 
 # =============================================================================

@@ -1,13 +1,39 @@
 /* Claw Dashboard — Alpine.js app + page components */
 
+// --- Auth helpers ---
+function getAuthHeader() {
+  const user = sessionStorage.getItem('claw_user');
+  const pass = sessionStorage.getItem('claw_pass');
+  if (!user || !pass) return null;
+  return 'Basic ' + btoa(user + ':' + pass);
+}
+
+function clearAuth() {
+  sessionStorage.removeItem('claw_user');
+  sessionStorage.removeItem('claw_pass');
+}
+
+function isLoggedIn() {
+  return sessionStorage.getItem('claw_user') && sessionStorage.getItem('claw_pass');
+}
+
 // --- API helpers ---
 async function api(path, opts = {}) {
   const url = '/api' + path;
-  const config = { headers: { 'Content-Type': 'application/json' }, ...opts };
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  const auth = getAuthHeader();
+  if (auth) headers['Authorization'] = auth;
+  const config = { ...opts, headers };
   if (config.body && typeof config.body === 'object') {
     config.body = JSON.stringify(config.body);
   }
   const resp = await fetch(url, config);
+  if (resp.status === 401) {
+    clearAuth();
+    // Trigger login modal via custom event
+    window.dispatchEvent(new CustomEvent('claw-auth-required'));
+    throw new Error('Authentication required');
+  }
   if (resp.status === 204) return null;
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({ detail: resp.statusText }));
@@ -27,6 +53,10 @@ function app() {
     loading: false,
     status: [],
     toasts: [],
+    showLogin: !isLoggedIn(),
+    loginUser: '',
+    loginPass: '',
+    loginError: '',
     navMap: {
       channels: 'msg',
       ssh: 'ssh',
@@ -41,14 +71,53 @@ function app() {
     },
 
     init() {
+      // Listen for auth-required events from API calls
+      window.addEventListener('claw-auth-required', () => {
+        this.showLogin = true;
+      });
+
       // Hash routing
       const hash = location.hash.replace('#/', '') || 'home';
       this.page = hash;
-      this.loadStatus();
+      if (!this.showLogin) this.loadStatus();
 
       window.addEventListener('hashchange', () => {
         this.page = location.hash.replace('#/', '') || 'home';
       });
+    },
+
+    doLogin() {
+      this.loginError = '';
+      const user = this.loginUser.trim();
+      const pass = this.loginPass;
+      if (!user || !pass) {
+        this.loginError = 'Username and password required';
+        return;
+      }
+      // Test credentials against /api/status
+      const auth = 'Basic ' + btoa(user + ':' + pass);
+      fetch('/api/status', { headers: { 'Authorization': auth } })
+        .then(resp => {
+          if (resp.ok) {
+            sessionStorage.setItem('claw_user', user);
+            sessionStorage.setItem('claw_pass', pass);
+            this.showLogin = false;
+            this.loginUser = '';
+            this.loginPass = '';
+            this.loadStatus();
+          } else {
+            this.loginError = 'Invalid username or password';
+          }
+        })
+        .catch(() => {
+          this.loginError = 'Connection error';
+        });
+    },
+
+    doLogout() {
+      clearAuth();
+      this.showLogin = true;
+      this.status = [];
     },
 
     go(p) {

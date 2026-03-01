@@ -11,6 +11,29 @@
 </head>
 <body x-data="app()" x-init="init()">
 
+  <!-- Login modal -->
+  <template x-if="showLogin">
+    <div class="modal-overlay">
+      <div class="modal" style="max-width:360px">
+        <div class="modal-title">Claw Dashboard Login</div>
+        <div x-show="loginError" class="text-red mb-4" x-text="loginError" style="font-size:14px"></div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" x-model="loginUser" placeholder="admin"
+                 @keyup.enter="$refs.loginPassInput.focus()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" x-model="loginPass" x-ref="loginPassInput"
+                 @keyup.enter="doLogin()">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" style="width:100%" @click="doLogin()">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
   <!-- Toast notifications -->
   <div class="toast-container">
     <template x-for="(t, i) in toasts" :key="i">
@@ -23,7 +46,9 @@
   <div class="app-layout">
     <!-- Sidebar -->
     <nav class="sidebar">
-      <div class="sidebar-brand"><span>CLAW</span></div>
+      <div class="sidebar-brand"><span>CLAW</span>
+        <button class="btn btn-sm" style="margin-left:auto;font-size:11px;padding:2px 8px" @click="doLogout()">Logout</button>
+      </div>
       <div class="sidebar-nav">
         <a class="nav-item" :class="{ active: page === 'home' }" @click="go('home')">
           <span class="nav-icon">&#9632;</span> <span class="nav-label">Dashboard</span>

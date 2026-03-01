@@ -44,6 +44,10 @@ class Settings:
     # Vault
     vault_identity_file: str = ""
 
+    # Dashboard
+    dashboard_user: str = "admin"
+    dashboard_pass: str = "superpowers"
+
     # Home Automation
     home_assistant_url: str = ""
     home_assistant_token: str = ""
@@ -73,6 +77,8 @@ class Settings:
             smtp_from=_env("SMTP_FROM"),
             redis_url=_env("REDIS_URL", "redis://localhost:6379/0"),
             vault_identity_file=vault_identity,
+            dashboard_user=_env("DASHBOARD_USER", "admin"),
+            dashboard_pass=_env("DASHBOARD_PASS", "superpowers"),
             home_assistant_url=_env("HOME_ASSISTANT_URL"),
             home_assistant_token=_env("HOME_ASSISTANT_TOKEN"),
             data_dir=data_dir,

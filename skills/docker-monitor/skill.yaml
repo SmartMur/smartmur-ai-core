@@ -1,0 +1,10 @@
+name: docker-monitor
+version: "0.1.0"
+description: "Monitor Docker container health and resources"
+author: DreDay
+slash_command: true
+script: run.sh
+triggers: []
+dependencies: [docker]
+permissions: []
+tags: [docker, monitoring]

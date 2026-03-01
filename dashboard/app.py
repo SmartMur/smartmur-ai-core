@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from dashboard.deps import require_auth
 from dashboard.routers import (
     audit,
     browser,
@@ -23,18 +24,27 @@ from dashboard.routers import (
 
 app = FastAPI(title="Claw Dashboard", version="0.1.0")
 
-# --- API routers ---
-app.include_router(status.router, prefix="/api")
-app.include_router(cron.router, prefix="/api/cron", tags=["cron"])
-app.include_router(messaging.router, prefix="/api/msg", tags=["messaging"])
-app.include_router(ssh.router, prefix="/api/ssh", tags=["ssh"])
-app.include_router(workflows.router, prefix="/api/workflows", tags=["workflows"])
-app.include_router(memory.router, prefix="/api/memory", tags=["memory"])
-app.include_router(skills.router, prefix="/api/skills", tags=["skills"])
-app.include_router(audit.router, prefix="/api/audit", tags=["audit"])
-app.include_router(vault.router, prefix="/api/vault", tags=["vault"])
-app.include_router(watchers.router, prefix="/api/watchers", tags=["watchers"])
-app.include_router(browser.router, prefix="/api/browser", tags=["browser"])
+
+# --- Public endpoints ---
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+# --- Protected API routers (all under /api/*) ---
+api_router = APIRouter(prefix="/api", dependencies=[Depends(require_auth)])
+api_router.include_router(status.router)
+api_router.include_router(cron.router, prefix="/cron", tags=["cron"])
+api_router.include_router(messaging.router, prefix="/msg", tags=["messaging"])
+api_router.include_router(ssh.router, prefix="/ssh", tags=["ssh"])
+api_router.include_router(workflows.router, prefix="/workflows", tags=["workflows"])
+api_router.include_router(memory.router, prefix="/memory", tags=["memory"])
+api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
+api_router.include_router(vault.router, prefix="/vault", tags=["vault"])
+api_router.include_router(watchers.router, prefix="/watchers", tags=["watchers"])
+api_router.include_router(browser.router, prefix="/browser", tags=["browser"])
+app.include_router(api_router)
 
 # --- Static files (SPA) ---
 _static_dir = Path(__file__).parent / "static"

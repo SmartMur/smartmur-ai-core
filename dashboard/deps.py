@@ -2,9 +2,34 @@
 
 from __future__ import annotations
 
+import secrets
 from pathlib import Path
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from superpowers.config import Settings
+
+security = HTTPBasic()
+
+
+def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> str:
+    settings = get_settings()
+    user_ok = secrets.compare_digest(
+        credentials.username.encode("utf-8"),
+        settings.dashboard_user.encode("utf-8"),
+    )
+    pass_ok = secrets.compare_digest(
+        credentials.password.encode("utf-8"),
+        settings.dashboard_pass.encode("utf-8"),
+    )
+    if not (user_ok and pass_ok):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 _settings: Settings | None = None
 _cron_engine = None
