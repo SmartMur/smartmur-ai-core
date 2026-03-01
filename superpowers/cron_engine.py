@@ -301,9 +301,33 @@ class CronEngine:
         job.last_output_file = str(log_file)
 
         if job.output_channel != "file":
-            # TODO: Phase 3 messaging integration — route output to
-            # slack/telegram/discord/email via msg_gateway based on
-            # job.output_channel value.
+            self._send_to_channel(job, output, exit_code)
+
+    def _send_to_channel(self, job: Job, output: str, exit_code: int) -> None:
+        """Dispatch job output to a messaging channel or profile."""
+        from superpowers.channels.base import ChannelError
+        from superpowers.channels.registry import ChannelRegistry
+        from superpowers.config import Settings
+        from superpowers.profiles import ProfileManager
+
+        status = "OK" if exit_code == 0 else f"FAILED({exit_code})"
+        message = f"[cron] {job.name} — {status}\n{output[:2000]}"
+
+        try:
+            settings = Settings.load()
+            registry = ChannelRegistry(settings)
+            spec = job.output_channel
+
+            # Format: "channel:#target" (direct) or "profile_name" (profile)
+            if ":" in spec:
+                channel_name, target = spec.split(":", 1)
+                ch = registry.get(channel_name)
+                ch.send(target, message)
+            else:
+                pm = ProfileManager(registry)
+                pm.send(spec, message)
+        except (ChannelError, KeyError):
+            # Messaging failure should not break the cron job
             pass
 
     # --- Persistence ---
