@@ -87,3 +87,8 @@ class Settings:
         (self.data_dir / "logs").mkdir(exist_ok=True)
         (self.data_dir / "msg").mkdir(exist_ok=True)
         (self.data_dir / "ssh").mkdir(exist_ok=True)
+        (self.data_dir / "watcher").mkdir(exist_ok=True)
+        (self.data_dir / "browser").mkdir(exist_ok=True)
+        (self.data_dir / "browser" / "profiles").mkdir(exist_ok=True)
+        (self.data_dir / "memory").mkdir(exist_ok=True)
+        (self.data_dir / "workflows").mkdir(exist_ok=True)
