@@ -141,10 +141,19 @@ class TelegramPoller:
         for update in data.get("result", []):
             self._offset = update["update_id"] + 1
             msg = update.get("message", {})
-            text = msg.get("text", "")
             chat_id = str(msg.get("chat", {}).get("id", ""))
 
-            if not text or not chat_id:
+            if not chat_id:
+                continue
+
+            # Handle voice messages — transcribe and reply
+            voice = msg.get("voice") or msg.get("audio")
+            if voice:
+                self._handle_voice(voice, chat_id)
+                continue
+
+            text = msg.get("text", "")
+            if not text:
                 continue
 
             rule = self._triggers.match(text)
@@ -153,6 +162,34 @@ class TelegramPoller:
                 if rule.reply:
                     ch = self._registry.get("telegram")
                     ch.send(chat_id, output[:4000])
+
+
+    def _handle_voice(self, voice: dict, chat_id: str) -> None:
+        """Download, transcribe, and reply with voice message text."""
+        from superpowers.voice_transcriber import download_telegram_voice, transcribe
+
+        file_id = voice.get("file_id")
+        if not file_id:
+            return
+
+        duration = voice.get("duration", "?")
+        logger.info("Voice message from %s (%ss) — transcribing", chat_id, duration)
+
+        audio_path = download_telegram_voice(self._token, file_id)
+        if not audio_path:
+            ch = self._registry.get("telegram")
+            ch.send(chat_id, "[Could not download voice message]")
+            return
+
+        try:
+            text = transcribe(audio_path)
+            ch = self._registry.get("telegram")
+            ch.send(chat_id, f"🎙 *Transcription:*\n\n{text}")
+            logger.info("Transcribed voice from %s: %s", chat_id, text[:100])
+        finally:
+            # Clean up temp file
+            audio_path.unlink(missing_ok=True)
+            audio_path.parent.rmdir()
 
 
 class InboundListener:
