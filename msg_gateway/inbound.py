@@ -205,7 +205,8 @@ class TelegramPoller:
         """Send text to Claude CLI and reply with the response."""
         logger.info("Routing to Claude: %s", text[:100])
         try:
-            env = {k: v for k, v in __import__("os").environ.items() if k != "CLAUDECODE"}
+            env = {k: v for k, v in __import__("os").environ.items()
+                   if k not in ("CLAUDECODE", "ANTHROPIC_API_KEY") or (k == "ANTHROPIC_API_KEY" and v)}
             result = subprocess.run(
                 ["claude", "-p", text, "--output-format", "text"],
                 capture_output=True, text=True, timeout=120, env=env,
