@@ -5,6 +5,7 @@ from superpowers.cli_skill import skill_info, skill_list, skill_run, skill_sync,
 from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
 from superpowers.cli_launchd import daemon
+from superpowers.cli_msg import msg_group
 from superpowers.cli_vault import vault_group
 
 
@@ -16,6 +17,7 @@ def main():
 
 main.add_command(cron_group)
 main.add_command(daemon)
+main.add_command(msg_group)
 main.add_command(vault_group)
 
 
@@ -33,13 +35,6 @@ skill.add_command(skill_info)
 skill.add_command(skill_run)
 skill.add_command(skill_sync)
 skill.add_command(skill_validate)
-
-
-@main.command()
-@click.argument("target", required=False)
-def msg(target):
-    """Send messages via Slack, Telegram, Discord, email."""
-    click.echo(f"msg: {target or 'inbox'}")
 
 
 @main.command()
