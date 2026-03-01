@@ -19,5 +19,17 @@ services:
       - redis
     restart: unless-stopped
 
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - "8200:8200"
+    env_file:
+      - .env
+    volumes:
+      - ${HOME}/.claude-superpowers:/root/.claude-superpowers:ro
+    restart: unless-stopped
+
 volumes:
   redis-data:

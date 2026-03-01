@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claw Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/app.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body x-data="app()" x-init="init()">
+
+  <!-- Toast notifications -->
+  <div class="toast-container">
+    <template x-for="(t, i) in toasts" :key="i">
+      <div class="toast" :class="'toast-' + t.type" x-text="t.msg"
+           x-show="true" x-transition
+           x-init="setTimeout(() => toasts.splice(i, 1), 3000)"></div>
+    </template>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-brand"><span>CLAW</span></div>
+      <div class="sidebar-nav">
+        <a class="nav-item" :class="{ active: page === 'home' }" @click="go('home')">
+          <span class="nav-icon">&#9632;</span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'cron' }" @click="go('cron')">
+          <span class="nav-icon">&#9200;</span> <span class="nav-label">Cron</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'msg' }" @click="go('msg')">
+          <span class="nav-icon">&#9993;</span> <span class="nav-label">Messaging</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'ssh' }" @click="go('ssh')">
+          <span class="nav-icon">&#62;</span> <span class="nav-label">SSH</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'workflows' }" @click="go('workflows')">
+          <span class="nav-icon">&#9881;</span> <span class="nav-label">Workflows</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'memory' }" @click="go('memory')">
+          <span class="nav-icon">&#128200;</span> <span class="nav-label">Memory</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'skills' }" @click="go('skills')">
+          <span class="nav-icon">&#9889;</span> <span class="nav-label">Skills</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'audit' }" @click="go('audit')">
+          <span class="nav-icon">&#128220;</span> <span class="nav-label">Audit</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'vault' }" @click="go('vault')">
+          <span class="nav-icon">&#128274;</span> <span class="nav-label">Vault</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'watchers' }" @click="go('watchers')">
+          <span class="nav-icon">&#128065;</span> <span class="nav-label">Watchers</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'browser' }" @click="go('browser')">
+          <span class="nav-icon">&#127760;</span> <span class="nav-label">Browser</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main-content">
+
+      <!-- HOME -->
+      <template x-if="page === 'home'">
+        <div>
+          <div class="page-header">
+            <h1>Dashboard</h1>
+            <p>Aggregate status of all subsystems</p>
+          </div>
+          <div x-show="loading" class="loading"><div class="spinner"></div></div>
+          <div x-show="!loading" class="status-grid">
+            <template x-for="s in status" :key="s.name">
+              <div class="status-card" @click="go(navMap[s.name] || s.name)">
+                <div class="card-header">
+                  <span class="card-title" x-text="s.name"></span>
+                  <span class="card-badge" :class="s.ok ? 'badge-ok' : 'badge-error'"
+                        x-text="s.ok ? 'OK' : 'DOWN'"></span>
+                </div>
+                <div class="card-value" x-text="s.count ?? '-'"></div>
+                <div class="card-detail" x-text="s.detail"></div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- CRON -->
+      <template x-if="page === 'cron'">
+        <div x-data="cronPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Cron Jobs</h1>
+            <p>Manage scheduled tasks</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-primary" @click="showAdd = true">+ Add Job</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th><th>Name</th><th>Schedule</th><th>Type</th>
+                <th>Last Run</th><th>Last Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="j in jobs" :key="j.id">
+                <tr>
+                  <td><span class="dot" :class="j.enabled ? 'dot-green' : 'dot-gray'"></span></td>
+                  <td x-text="j.name"></td>
+                  <td class="font-mono" x-text="j.schedule"></td>
+                  <td><span class="tag" x-text="j.job_type"></span></td>
+                  <td class="text-muted" x-text="j.last_run ? j.last_run.substring(0,19) : '-'"></td>
+                  <td>
+                    <span :class="j.last_status === 'ok' ? 'text-green' : (j.last_status ? 'text-red' : 'text-muted')"
+                          x-text="j.last_status || '-'"></span>
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm" @click="runJob(j.id)">Run</button>
+                      <button class="btn btn-sm" @click="toggleJob(j)" x-text="j.enabled ? 'Disable' : 'Enable'"></button>
+                      <button class="btn btn-sm" @click="viewLogs(j.id)">Logs</button>
+                      <button class="btn btn-sm btn-danger" @click="deleteJob(j.id)">Del</button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <!-- Add Job Modal -->
+          <template x-if="showAdd">
+            <div class="modal-overlay" @click.self="showAdd = false">
+              <div class="modal">
+                <div class="modal-title">Add Cron Job</div>
+                <div class="form-group">
+                  <label class="form-label">Name</label>
+                  <input class="form-input" x-model="newJob.name" placeholder="my-task">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Schedule</label>
+                  <input class="form-input" x-model="newJob.schedule" placeholder="every 30m, daily at 09:00, or cron">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Type</label>
+                  <select class="form-select" x-model="newJob.job_type">
+                    <option value="shell">shell</option>
+                    <option value="claude">claude</option>
+                    <option value="webhook">webhook</option>
+                    <option value="skill">skill</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Command</label>
+                  <input class="form-input" x-model="newJob.command" placeholder="echo hello">
+                </div>
+                <div class="modal-actions">
+                  <button class="btn" @click="showAdd = false">Cancel</button>
+                  <button class="btn btn-primary" @click="addJob()">Create</button>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Logs Modal -->
+          <template x-if="showLogs">
+            <div class="modal-overlay" @click.self="showLogs = false">
+              <div class="modal" style="min-width:600px">
+                <div class="modal-title">Job Logs</div>
+                <template x-for="log in logs" :key="log.filename">
+                  <div class="mb-4">
+                    <div class="text-muted mb-4" x-text="log.filename" style="font-size:12px"></div>
+                    <pre class="code-block" x-text="log.content"></pre>
+                  </div>
+                </template>
+                <div x-show="logs.length === 0" class="text-muted">No logs available</div>
+                <div class="modal-actions">
+                  <button class="btn" @click="showLogs = false">Close</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- MESSAGING -->
+      <template x-if="page === 'msg'">
+        <div x-data="msgPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Messaging</h1>
+            <p>Channels and notification profiles</p>
+          </div>
+
+          <h3 class="mb-4" style="color:var(--text-secondary)">Channels</h3>
+          <table class="data-table mb-4">
+            <thead><tr><th>Channel</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <template x-for="ch in channels" :key="ch.name">
+                <tr>
+                  <td x-text="ch.name"></td>
+                  <td>
+                    <span class="dot" :class="ch.configured ? 'dot-green' : 'dot-gray'"></span>
+                    <span x-text="ch.configured ? 'Configured' : 'Not configured'"></span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm" :disabled="!ch.configured" @click="testChannel(ch.name)">Test</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <h3 class="mb-4 mt-4" style="color:var(--text-secondary)">Send Message</h3>
+          <div style="max-width:500px">
+            <div class="form-group">
+              <label class="form-label">Channel</label>
+              <select class="form-select" x-model="sendForm.channel">
+                <template x-for="ch in channels.filter(c => c.configured)" :key="ch.name">
+                  <option :value="ch.name" x-text="ch.name"></option>
+                </template>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target</label>
+              <input class="form-input" x-model="sendForm.target" placeholder="#channel or @user">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-textarea" x-model="sendForm.message"></textarea>
+            </div>
+            <button class="btn btn-primary" @click="send()">Send</button>
+          </div>
+
+          <h3 class="mb-4 mt-4" style="color:var(--text-secondary)">Profiles</h3>
+          <table class="data-table">
+            <thead><tr><th>Profile</th><th>Targets</th><th>Actions</th></tr></thead>
+            <tbody>
+              <template x-for="p in profiles" :key="p.name">
+                <tr>
+                  <td x-text="p.name"></td>
+                  <td>
+                    <template x-for="t in p.targets" :key="t.channel + t.target">
+                      <span class="tag" x-text="t.channel + ':' + t.target"></span>
+                    </template>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm" @click="sendProfile(p.name)">Send Test</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </template>
+
+      <!-- SSH -->
+      <template x-if="page === 'ssh'">
+        <div x-data="sshPage()" x-init="load()">
+          <div class="page-header">
+            <h1>SSH Fabric</h1>
+            <p>Remote hosts and command execution</p>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn" @click="runHealth()">Health Check</button>
+          </div>
+
+          <h3 class="mb-4" style="color:var(--text-secondary)">Hosts</h3>
+          <table class="data-table mb-4">
+            <thead><tr><th>Alias</th><th>Hostname</th><th>Port</th><th>User</th><th>Groups</th></tr></thead>
+            <tbody>
+              <template x-for="h in hosts" :key="h.alias">
+                <tr>
+                  <td class="text-accent" x-text="h.alias"></td>
+                  <td class="font-mono" x-text="h.hostname"></td>
+                  <td x-text="h.port"></td>
+                  <td x-text="h.username"></td>
+                  <td>
+                    <template x-for="g in h.groups" :key="g">
+                      <span class="tag" x-text="g"></span>
+                    </template>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <h3 class="mb-4" style="color:var(--text-secondary)">Run Command</h3>
+          <div style="max-width:600px">
+            <div class="form-group">
+              <label class="form-label">Target (alias or group)</label>
+              <input class="form-input" x-model="runForm.target" placeholder="all">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Command</label>
+              <input class="form-input" x-model="runForm.command" placeholder="uptime">
+            </div>
+            <button class="btn btn-primary" @click="run()">Execute</button>
+          </div>
+
+          <template x-if="results.length > 0">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Results</h3>
+              <template x-for="r in results" :key="r.host">
+                <div class="mb-4">
+                  <div style="font-weight:600">
+                    <span class="dot" :class="r.ok ? 'dot-green' : 'dot-red'"></span>
+                    <span x-text="r.host"></span>
+                    <span class="text-muted" x-text="'exit ' + r.exit_code" style="font-size:12px"></span>
+                  </div>
+                  <pre class="code-block mt-2" x-text="r.stdout || r.stderr || r.error || '(no output)'"></pre>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <template x-if="healthResults.length > 0">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Health Report</h3>
+              <table class="data-table">
+                <thead><tr><th>Host</th><th>Ping</th><th>SSH</th><th>Latency</th><th>Load</th><th>Error</th></tr></thead>
+                <tbody>
+                  <template x-for="h in healthResults" :key="h.alias">
+                    <tr>
+                      <td x-text="h.alias"></td>
+                      <td><span class="dot" :class="h.ping_ok ? 'dot-green' : 'dot-red'"></span></td>
+                      <td><span class="dot" :class="h.ssh_ok ? 'dot-green' : 'dot-red'"></span></td>
+                      <td x-text="h.latency_ms + ' ms'"></td>
+                      <td class="font-mono" x-text="h.load_avg || '-'"></td>
+                      <td class="text-red" x-text="h.error || ''"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- WORKFLOWS -->
+      <template x-if="page === 'workflows'">
+        <div x-data="workflowPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Workflows</h1>
+            <p>Multi-step automation pipelines</p>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Description</th><th>Steps</th><th>Actions</th></tr></thead>
+            <tbody>
+              <template x-for="w in workflows" :key="w.name">
+                <tr>
+                  <td class="text-accent" x-text="w.name"></td>
+                  <td x-text="w.description"></td>
+                  <td x-text="w.step_count"></td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm" @click="inspect(w.name)">Inspect</button>
+                      <button class="btn btn-sm" @click="validate(w.name)">Validate</button>
+                      <button class="btn btn-sm btn-primary" @click="runDry(w.name)">Dry Run</button>
+                      <button class="btn btn-sm btn-danger" @click="runLive(w.name)">Run</button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <template x-if="detail">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)" x-text="'Workflow: ' + detail.name"></h3>
+              <p class="text-muted mb-4" x-text="detail.description"></p>
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Step</th><th>Type</th><th>Command</th><th>On Failure</th></tr></thead>
+                <tbody>
+                  <template x-for="(s, i) in detail.steps" :key="s.name">
+                    <tr>
+                      <td x-text="i + 1"></td>
+                      <td x-text="s.name"></td>
+                      <td><span class="tag" x-text="s.type"></span></td>
+                      <td class="font-mono truncate" x-text="s.command"></td>
+                      <td x-text="s.on_failure"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </template>
+
+          <template x-if="runResults.length > 0">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Execution Results</h3>
+              <template x-for="r in runResults" :key="r.step_name">
+                <div class="mb-4">
+                  <div>
+                    <span class="dot" :class="r.status === 'passed' ? 'dot-green' : (r.status === 'failed' ? 'dot-red' : 'dot-yellow')"></span>
+                    <strong x-text="r.step_name"></strong>
+                    <span class="tag" x-text="r.status"></span>
+                  </div>
+                  <pre x-show="r.output" class="code-block mt-2" x-text="r.output"></pre>
+                  <div x-show="r.error" class="text-red mt-2" x-text="r.error"></div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- MEMORY -->
+      <template x-if="page === 'memory'">
+        <div x-data="memoryPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Memory Store</h1>
+            <p>Persistent facts, preferences, and context</p>
+          </div>
+          <div class="toolbar">
+            <div class="flex gap-2">
+              <input class="search-input" x-model="searchQ" placeholder="Search memories..."
+                     @keyup.enter="search()">
+              <button class="btn" @click="search()">Search</button>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary" @click="showAdd = true">+ Add</button>
+              <button class="btn" @click="loadStats()">Stats</button>
+            </div>
+          </div>
+
+          <template x-if="stats">
+            <div class="status-grid mb-4">
+              <div class="status-card">
+                <div class="card-title">Total</div>
+                <div class="card-value" x-text="stats.total"></div>
+              </div>
+              <template x-for="(cnt, cat) in stats.by_category" :key="cat">
+                <div class="status-card">
+                  <div class="card-title" x-text="cat"></div>
+                  <div class="card-value" x-text="cnt"></div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <table class="data-table">
+            <thead><tr><th>Category</th><th>Key</th><th>Value</th><th>Tags</th><th>Accessed</th><th>Actions</th></tr></thead>
+            <tbody>
+              <template x-for="m in memories" :key="m.id">
+                <tr>
+                  <td><span class="tag" x-text="m.category"></span></td>
+                  <td class="text-accent" x-text="m.key"></td>
+                  <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" x-text="m.value"></td>
+                  <td>
+                    <template x-for="t in m.tags" :key="t">
+                      <span class="tag" x-text="t"></span>
+                    </template>
+                  </td>
+                  <td class="text-muted" x-text="m.accessed_at ? m.accessed_at.substring(0,10) : '-'"></td>
+                  <td>
+                    <button class="btn btn-sm btn-danger" @click="forget(m.key, m.category)">Delete</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <!-- Add Memory Modal -->
+          <template x-if="showAdd">
+            <div class="modal-overlay" @click.self="showAdd = false">
+              <div class="modal">
+                <div class="modal-title">Add Memory</div>
+                <div class="form-group">
+                  <label class="form-label">Key</label>
+                  <input class="form-input" x-model="newMem.key">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Value</label>
+                  <textarea class="form-textarea" x-model="newMem.value"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" x-model="newMem.category">
+                    <option value="fact">fact</option>
+                    <option value="preference">preference</option>
+                    <option value="project_context">project_context</option>
+                    <option value="conversation_summary">conversation_summary</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tags (comma-separated)</label>
+                  <input class="form-input" x-model="newMem.tagsStr">
+                </div>
+                <div class="modal-actions">
+                  <button class="btn" @click="showAdd = false">Cancel</button>
+                  <button class="btn btn-primary" @click="add()">Save</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- SKILLS -->
+      <template x-if="page === 'skills'">
+        <div x-data="skillsPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Skills</h1>
+            <p>Installed skill registry</p>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Description</th><th>Version</th><th>Author</th><th>Actions</th></tr></thead>
+            <tbody>
+              <template x-for="s in skills" :key="s.name">
+                <tr>
+                  <td class="text-accent" x-text="s.name"></td>
+                  <td x-text="s.description"></td>
+                  <td class="font-mono" x-text="s.version"></td>
+                  <td x-text="s.author"></td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm" @click="info(s.name)">Info</button>
+                      <button class="btn btn-sm btn-primary" @click="runSkill(s.name)">Run</button>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <template x-if="detail">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)" x-text="'Skill: ' + detail.name"></h3>
+              <div class="mb-4">
+                <span class="form-label">Triggers:</span>
+                <template x-for="t in detail.triggers"><span class="tag" x-text="t"></span></template>
+                <span x-show="detail.triggers.length === 0" class="text-muted">none</span>
+              </div>
+              <div class="mb-4">
+                <span class="form-label">Dependencies:</span>
+                <template x-for="d in detail.dependencies"><span class="tag" x-text="d"></span></template>
+                <span x-show="detail.dependencies.length === 0" class="text-muted">none</span>
+              </div>
+              <div>
+                <span class="form-label">Permissions:</span>
+                <template x-for="p in detail.permissions"><span class="tag" x-text="p"></span></template>
+                <span x-show="detail.permissions.length === 0" class="text-muted">none</span>
+              </div>
+            </div>
+          </template>
+
+          <template x-if="runResult">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Execution Result</h3>
+              <div>
+                <span class="dot" :class="runResult.exit_code === 0 ? 'dot-green' : 'dot-red'"></span>
+                Exit code: <span x-text="runResult.exit_code"></span>
+              </div>
+              <pre class="code-block mt-2" x-text="runResult.stdout || runResult.stderr || '(no output)'"></pre>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- AUDIT -->
+      <template x-if="page === 'audit'">
+        <div x-data="auditPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Audit Log</h1>
+            <p>Append-only activity record</p>
+          </div>
+          <div class="toolbar">
+            <div class="flex gap-2">
+              <input class="search-input" x-model="searchQ" placeholder="Search audit log..."
+                     @keyup.enter="search()">
+              <button class="btn" @click="search()">Search</button>
+            </div>
+            <button class="btn" @click="load()">Refresh</button>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Timestamp</th><th>Action</th><th>Detail</th><th>Source</th></tr></thead>
+            <tbody>
+              <template x-for="(e, i) in entries" :key="i">
+                <tr>
+                  <td class="font-mono text-muted" x-text="e.ts ? e.ts.substring(0,19) : ''"></td>
+                  <td><span class="tag" x-text="e.action"></span></td>
+                  <td x-text="e.detail"></td>
+                  <td class="text-muted" x-text="e.source"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </template>
+
+      <!-- VAULT -->
+      <template x-if="page === 'vault'">
+        <div x-data="vaultPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Vault</h1>
+            <p>Encrypted credential store (key names only — no secrets shown)</p>
+          </div>
+          <div class="status-grid mb-4">
+            <div class="status-card">
+              <div class="card-title">Status</div>
+              <div class="card-value" :class="vaultStatus.initialized ? 'text-green' : 'text-red'"
+                   x-text="vaultStatus.initialized ? 'Initialized' : 'Not Init'"></div>
+            </div>
+            <div class="status-card">
+              <div class="card-title">Keys Stored</div>
+              <div class="card-value" x-text="vaultStatus.key_count"></div>
+            </div>
+          </div>
+          <h3 class="mb-4" style="color:var(--text-secondary)">Key Names</h3>
+          <template x-if="keys.length > 0">
+            <div>
+              <template x-for="k in keys" :key="k">
+                <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+                  <span class="font-mono text-accent" x-text="k"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <div x-show="keys.length === 0" class="text-muted">No keys stored</div>
+        </div>
+      </template>
+
+      <!-- WATCHERS -->
+      <template x-if="page === 'watchers'">
+        <div x-data="watcherPage()" x-init="load()">
+          <div class="page-header">
+            <h1>File Watchers</h1>
+            <p>Directory monitoring rules</p>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Status</th><th>Name</th><th>Path</th><th>Events</th><th>Action</th><th>Command</th></tr></thead>
+            <tbody>
+              <template x-for="r in rules" :key="r.name">
+                <tr>
+                  <td><span class="dot" :class="r.enabled ? 'dot-green' : 'dot-gray'"></span></td>
+                  <td class="text-accent" x-text="r.name"></td>
+                  <td class="font-mono" x-text="r.path"></td>
+                  <td>
+                    <template x-for="e in r.events"><span class="tag" x-text="e"></span></template>
+                  </td>
+                  <td><span class="tag" x-text="r.action"></span></td>
+                  <td class="font-mono truncate" x-text="r.command"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <div x-show="rules.length === 0" class="text-muted mt-4">No watcher rules configured</div>
+        </div>
+      </template>
+
+      <!-- BROWSER -->
+      <template x-if="page === 'browser'">
+        <div x-data="browserPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Browser Profiles</h1>
+            <p>Persistent browser sessions</p>
+          </div>
+          <template x-if="profiles.length > 0">
+            <div class="status-grid">
+              <template x-for="p in profiles" :key="p.name">
+                <div class="status-card">
+                  <div class="card-title">Profile</div>
+                  <div class="card-value text-accent" x-text="p.name"></div>
+                </div>
+              </template>
+            </div>
+          </template>
+          <div x-show="profiles.length === 0" class="text-muted">No browser profiles saved</div>
+        </div>
+      </template>
+
+    </main>
+  </div>
+</body>
+</html>
