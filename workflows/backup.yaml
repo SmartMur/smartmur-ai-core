@@ -1,0 +1,13 @@
+name: backup
+description: "Snapshot VMs, verify snapshots"
+steps:
+  - name: snapshot-vms
+    type: shell
+    command: "ssh proxmox 'qm list | tail -n+2 | awk \"{print $1}\" | xargs -I{} qm snapshot {} auto-backup'"
+    timeout: 600
+    on_failure: abort
+
+  - name: verify-snapshots
+    type: shell
+    command: "ssh proxmox 'qm list | tail -n+2 | awk \"{print $1}\" | xargs -I{} qm listsnapshot {}'"
+    on_failure: continue

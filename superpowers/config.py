@@ -35,6 +35,8 @@ class Settings:
     smtp_host: str = ""
     smtp_user: str = ""
     smtp_pass: str = ""
+    smtp_port: int = 587
+    smtp_from: str = ""
 
     # Infrastructure
     redis_url: str = "redis://localhost:6379/0"
@@ -67,6 +69,8 @@ class Settings:
             smtp_host=_env("SMTP_HOST"),
             smtp_user=_env("SMTP_USER"),
             smtp_pass=_env("SMTP_PASS"),
+            smtp_port=int(_env("SMTP_PORT", "587")),
+            smtp_from=_env("SMTP_FROM"),
             redis_url=_env("REDIS_URL", "redis://localhost:6379/0"),
             vault_identity_file=vault_identity,
             home_assistant_url=_env("HOME_ASSISTANT_URL"),
@@ -81,3 +85,10 @@ class Settings:
         (self.data_dir / "cron").mkdir(exist_ok=True)
         (self.data_dir / "vault").mkdir(exist_ok=True)
         (self.data_dir / "logs").mkdir(exist_ok=True)
+        (self.data_dir / "msg").mkdir(exist_ok=True)
+        (self.data_dir / "ssh").mkdir(exist_ok=True)
+        (self.data_dir / "watcher").mkdir(exist_ok=True)
+        (self.data_dir / "browser").mkdir(exist_ok=True)
+        (self.data_dir / "browser" / "profiles").mkdir(exist_ok=True)
+        (self.data_dir / "memory").mkdir(exist_ok=True)
+        (self.data_dir / "workflows").mkdir(exist_ok=True)
