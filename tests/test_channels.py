@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import pytest
 
@@ -23,7 +23,7 @@ class TestChannelType:
         assert ChannelType.email == "email"
 
     def test_all_types(self):
-        assert len(ChannelType) == 4
+        assert len(ChannelType) == 5
 
 
 class TestSendResult:
@@ -311,7 +311,9 @@ class TestChannelRegistry:
         defaults.update(overrides)
         return Settings(**defaults)
 
-    def test_available_none(self):
+    @patch("superpowers.channels.registry.sys")
+    def test_available_none(self, mock_sys):
+        mock_sys.platform = "linux"
         reg = ChannelRegistry(self._settings())
         assert reg.available() == []
 
@@ -331,12 +333,14 @@ class TestChannelRegistry:
         reg = ChannelRegistry(self._settings(smtp_host="smtp.test.com", smtp_user="u"))
         assert "email" in reg.available()
 
-    def test_available_all(self):
+    @patch("superpowers.channels.registry.sys")
+    def test_available_all(self, mock_sys):
+        mock_sys.platform = "darwin"
         reg = ChannelRegistry(self._settings(
             slack_bot_token="x", telegram_bot_token="x",
             discord_bot_token="x", smtp_host="x", smtp_user="x",
         ))
-        assert len(reg.available()) == 4
+        assert len(reg.available()) == 5
 
     def test_get_unknown_channel(self):
         reg = ChannelRegistry(self._settings())

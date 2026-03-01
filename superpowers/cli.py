@@ -3,9 +3,10 @@ import click
 from superpowers import __version__
 from superpowers.cli_audit import audit_group
 from superpowers.cli_browse import browse_group
-from superpowers.cli_skill import skill_info, skill_list, skill_run, skill_sync, skill_validate
+from superpowers.cli_skill import skill_auto_install, skill_info, skill_link, skill_list, skill_run, skill_sync, skill_validate
 from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
+from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
@@ -25,6 +26,7 @@ def main():
 main.add_command(audit_group)
 main.add_command(browse_group)
 main.add_command(cron_group)
+main.add_command(dashboard_cmd)
 main.add_command(daemon)
 main.add_command(memory_group)
 main.add_command(msg_group)
@@ -43,9 +45,11 @@ def skill(ctx):
         ctx.invoke(skill_list)
 
 
+skill.add_command(skill_auto_install)
 skill.add_command(skill_create)
 skill.add_command(skill_list)
 skill.add_command(skill_info)
+skill.add_command(skill_link)
 skill.add_command(skill_run)
 skill.add_command(skill_sync)
 skill.add_command(skill_validate)

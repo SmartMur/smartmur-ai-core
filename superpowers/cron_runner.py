@@ -6,6 +6,7 @@ import logging
 import os
 import signal
 import sys
+import threading
 from pathlib import Path
 
 LOG_DIR = Path.home() / ".claude-superpowers" / "logs"
@@ -46,20 +47,21 @@ def main() -> None:
     logger.info("Jobs loaded: %d", job_count)
     logger.info("=" * 50)
 
-    shutdown = False
+    stop_event = threading.Event()
 
     def handle_signal(signum: int, _frame) -> None:
-        nonlocal shutdown
         sig_name = signal.Signals(signum).name
         logger.info("Received %s — shutting down gracefully", sig_name)
-        shutdown = True
         engine.stop()
+        stop_event.set()
 
     signal.signal(signal.SIGTERM, handle_signal)
     signal.signal(signal.SIGINT, handle_signal)
 
     try:
-        engine.start()  # blocks until engine.stop() is called
+        engine.start()
+        logger.info("Scheduler running — waiting for signals")
+        stop_event.wait()  # block until shutdown signal
     except Exception:
         logger.exception("Cron engine crashed")
         sys.exit(1)
