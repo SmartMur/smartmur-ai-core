@@ -12,8 +12,7 @@
 <body x-data="app()" x-init="init()">
 
   <!-- Login modal -->
-  <template x-if="showLogin">
-    <div class="modal-overlay">
+  <div x-show="showLogin" x-cloak class="modal-overlay">
       <div class="modal" style="max-width:360px">
         <div class="modal-title">Claw Dashboard Login</div>
         <div x-show="loginError" class="text-red mb-4" x-text="loginError" style="font-size:14px"></div>
@@ -32,7 +31,7 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
 
   <!-- Toast notifications -->
   <div class="toast-container">
