@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 from superpowers.channels.base import Channel, ChannelError, ChannelType
 from superpowers.config import Settings
 
@@ -32,6 +34,8 @@ class ChannelRegistry:
             names.append("discord")
         if s.smtp_host and s.smtp_user:
             names.append("email")
+        if sys.platform == "darwin":
+            names.append("imessage")
         return names
 
     def _create(self, name: str) -> Channel:
@@ -54,5 +58,8 @@ class ChannelRegistry:
                 from_addr=s.smtp_from,
                 port=s.smtp_port,
             )
+        elif name == ChannelType.imessage.value:
+            from superpowers.channels.imessage import IMessageChannel
+            return IMessageChannel()
         else:
             raise ChannelError(f"Unknown channel: {name}")
