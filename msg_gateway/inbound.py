@@ -149,6 +149,7 @@ class TelegramPoller:
             # Handle voice messages — transcribe and reply
             voice = msg.get("voice") or msg.get("audio")
             if voice:
+                logger.info("Voice message from %s — transcribing", chat_id)
                 self._handle_voice(voice, chat_id)
                 continue
 
@@ -156,12 +157,16 @@ class TelegramPoller:
             if not text:
                 continue
 
+            logger.info("Text from %s: %s", chat_id, text[:100])
+
             rule = self._triggers.match(text)
             if rule:
                 output = self._triggers.execute(rule, text)
                 if rule.reply:
                     ch = self._registry.get("telegram")
                     ch.send(chat_id, output[:4000])
+            else:
+                logger.debug("No trigger matched for: %s", text[:100])
 
 
     def _handle_voice(self, voice: dict, chat_id: str) -> None:
