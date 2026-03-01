@@ -1,0 +1,11 @@
+- name: torrent-mover
+  path: ~/Downloads/*.torrent
+  events: [created]
+  action: move
+  command: /mnt/data/torrents/watch/
+
+- name: screenshot-processor
+  path: ~/Desktop/Screenshot*.png
+  events: [created]
+  action: shell
+  command: "optipng $WATCHER_FILE"

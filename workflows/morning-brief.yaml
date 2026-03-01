@@ -1,0 +1,12 @@
+name: morning-brief
+description: "Check services, summarize alerts, send digest"
+steps:
+  - name: health-check
+    type: skill
+    command: heartbeat
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Read the latest health check output and summarize the status of all services in 3 bullet points."
+    on_failure: continue
