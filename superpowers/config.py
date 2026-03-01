@@ -86,3 +86,4 @@ class Settings:
         (self.data_dir / "vault").mkdir(exist_ok=True)
         (self.data_dir / "logs").mkdir(exist_ok=True)
         (self.data_dir / "msg").mkdir(exist_ok=True)
+        (self.data_dir / "ssh").mkdir(exist_ok=True)
