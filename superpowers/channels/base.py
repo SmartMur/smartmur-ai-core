@@ -11,6 +11,7 @@ class ChannelType(str, Enum):
     telegram = "telegram"
     discord = "discord"
     email = "email"
+    imessage = "imessage"
 
 
 class ChannelError(Exception):

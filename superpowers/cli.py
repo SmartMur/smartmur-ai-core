@@ -3,7 +3,7 @@ import click
 from superpowers import __version__
 from superpowers.cli_audit import audit_group
 from superpowers.cli_browse import browse_group
-from superpowers.cli_skill import skill_info, skill_list, skill_run, skill_sync, skill_validate
+from superpowers.cli_skill import skill_auto_install, skill_info, skill_link, skill_list, skill_run, skill_sync, skill_validate
 from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
 from superpowers.cli_dashboard import dashboard_cmd
@@ -45,9 +45,11 @@ def skill(ctx):
         ctx.invoke(skill_list)
 
 
+skill.add_command(skill_auto_install)
 skill.add_command(skill_create)
 skill.add_command(skill_list)
 skill.add_command(skill_info)
+skill.add_command(skill_link)
 skill.add_command(skill_run)
 skill.add_command(skill_sync)
 skill.add_command(skill_validate)
