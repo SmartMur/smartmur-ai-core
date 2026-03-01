@@ -6,6 +6,7 @@ from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_msg import msg_group
+from superpowers.cli_ssh import ssh_group
 from superpowers.cli_vault import vault_group
 
 
@@ -18,6 +19,7 @@ def main():
 main.add_command(cron_group)
 main.add_command(daemon)
 main.add_command(msg_group)
+main.add_command(ssh_group)
 main.add_command(vault_group)
 
 
@@ -42,13 +44,6 @@ skill.add_command(skill_validate)
 def workflow(name):
     """Run multi-step workflows."""
     click.echo(f"workflow: {name or 'list all'}")
-
-
-@main.command()
-@click.argument("target", required=False)
-def ssh(target):
-    """Execute commands on remote hosts."""
-    click.echo(f"ssh: {target or 'list hosts'}")
 
 
 @main.command()
