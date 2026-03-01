@@ -1,0 +1,29 @@
+name: deploy
+description: "Pull latest code, test, deploy via Docker Compose, health check"
+notify_profile: ""
+steps:
+  - name: git-pull
+    type: shell
+    command: "git pull origin main"
+    on_failure: abort
+
+  - name: run-tests
+    type: shell
+    command: "PYTHONPATH=. pytest tests/ -q"
+    on_failure: abort
+
+  - name: docker-deploy
+    type: shell
+    command: "docker compose up -d --build"
+    on_failure: rollback
+
+  - name: health-check
+    type: shell
+    command: "sleep 5 && curl -sf http://localhost:8100/health"
+    timeout: 30
+    on_failure: rollback
+
+rollback:
+  - name: rollback-deploy
+    type: shell
+    command: "docker compose down && git checkout HEAD~1 && docker compose up -d"
