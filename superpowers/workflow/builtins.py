@@ -55,6 +55,7 @@ steps:
 MORNING_BRIEF_WORKFLOW = """\
 name: morning-brief
 description: "Check services, summarize alerts, send digest"
+notify_profile: info
 steps:
   - name: health-check
     type: skill
@@ -64,6 +65,11 @@ steps:
   - name: summarize
     type: claude_prompt
     command: "Read the latest health check output and summarize the status of all services in 3 bullet points."
+    on_failure: continue
+
+  - name: send-digest
+    type: shell
+    command: "echo Morning brief complete"
     on_failure: continue
 """
 
