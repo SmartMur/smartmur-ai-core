@@ -1,0 +1,9 @@
+name: template-skill
+version: "0.1.0"
+description: "A template skill - copy this to create new skills"
+author: DreDay
+slash_command: true
+triggers: []
+dependencies: []
+permissions: []
+script: run.sh

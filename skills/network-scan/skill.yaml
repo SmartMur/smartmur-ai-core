@@ -1,0 +1,11 @@
+name: network-scan
+version: "0.1.0"
+description: "Scan all home network subnets and update diagram"
+author: DreDay
+slash_command: true
+triggers: []
+dependencies: []
+permissions:
+  - ssh
+  - nmap
+script: run.sh

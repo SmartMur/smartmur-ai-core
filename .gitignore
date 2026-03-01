@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+
+# Environment
+.env
+
+# Superpowers runtime data
+.claude-superpowers/
+
+# Encrypted secrets (but NOT vault templates)
+*.enc
+!vault/**/*.enc.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store

@@ -1,0 +1,166 @@
+# Getting Started
+
+## Prerequisites
+
+- **Python 3.12+** (3.14 recommended)
+- **Homebrew** (macOS)
+- **age** encryption tool
+
+Install age:
+
+```bash
+brew install age
+```
+
+Verify:
+
+```bash
+age --version
+age-keygen --version
+```
+
+## Installation
+
+Clone the repo and install in editable mode:
+
+```bash
+cd ~/Projects/claude-superpowers
+pip install -e ".[dev]"
+```
+
+Verify the CLI:
+
+```bash
+claw --version
+# claude-superpowers 0.1.0
+```
+
+## Initialize the Vault
+
+Set up encrypted credential storage:
+
+```bash
+claw vault init
+```
+
+Store some credentials:
+
+```bash
+claw vault set ANTHROPIC_API_KEY sk-ant-your-key-here
+claw vault set GITHUB_TOKEN ghp_xxxxxxxxxxxx
+```
+
+Verify they are stored:
+
+```bash
+claw vault list
+claw vault get ANTHROPIC_API_KEY
+```
+
+## Create Your First Skill
+
+Use the interactive scaffolder:
+
+```bash
+claw skill create
+```
+
+Follow the prompts:
+
+```
+Skill name (kebab-case): hello-world
+Description: Print a greeting
+Script type (bash, python) [bash]: bash
+```
+
+This creates `skills/hello-world/` with a ready-to-edit script. Open the generated file and add your logic:
+
+```bash
+$EDITOR skills/hello-world/run.sh
+```
+
+Run it:
+
+```bash
+claw skill run hello-world
+```
+
+Or use it as a Claude Code slash command -- type `/hello-world` in your Claude Code session.
+
+## One-Shot Skill Creation
+
+Skip the prompts with flags:
+
+```bash
+claw skill create \
+  --name check-ports \
+  --description "Check if common ports are open on a target" \
+  --type bash
+```
+
+## Explore Existing Skills
+
+```bash
+# List all skills
+claw skill list
+
+# Get details on a skill
+claw skill info network-scan
+
+# Validate a skill directory
+claw skill validate skills/network-scan
+
+# Re-sync all slash commands
+claw skill sync
+```
+
+## Available Slash Commands
+
+After running `claw skill sync`, any skill with `slash_command: true` in its manifest is available as a Claude Code slash command. Type `/` followed by the skill name:
+
+- `/network-scan` -- Scan all home network subnets
+- `/hello-world` -- (your custom skill)
+- Any other skill you create with `slash_command: true`
+
+## Project Structure at a Glance
+
+```
+claw vault init/set/get/list/delete   # Encrypted credential management
+claw skill list/info/run/sync/create  # Skill lifecycle
+claw skill validate <path>            # Manifest validation
+claw status                           # System health check
+```
+
+## What's Coming Next
+
+| Phase | What It Adds |
+|-------|-------------|
+| **2** | **Vault-to-skill injection** -- Automatically pass vault secrets to skills that request them via permissions |
+| **3** | **Cron daemon** -- Schedule skills to run on intervals or cron expressions using APScheduler |
+| **4** | **Messaging gateway** -- Send notifications via Slack, Telegram, Discord, and email from skills |
+| **5** | **Browser engine** -- Playwright-based web scraping and automation as a skill primitive |
+| **6** | **SSH fabric** -- Execute commands on remote hosts via Paramiko, managed through `claw ssh` |
+| **7** | **Workflow orchestrator** -- Chain multiple skills into multi-step pipelines with conditionals and error handling |
+| **8** | **Dashboard + status API** -- FastAPI-based web dashboard showing system status, cron jobs, and skill execution history |
+
+## Troubleshooting
+
+### `age: command not found`
+
+Install age: `brew install age`
+
+### `Identity file not found ... Run claw vault init`
+
+Run `claw vault init` to generate the age keypair.
+
+### `Skill not found: <name>`
+
+Make sure the skill directory exists under `skills/` and contains a valid `skill.yaml`. Run `claw skill validate skills/<name>` to check.
+
+### Slash command not appearing in Claude Code
+
+Run `claw skill sync` to regenerate symlinks. Verify the symlink exists:
+
+```bash
+ls -la ~/.claude/commands/
+```

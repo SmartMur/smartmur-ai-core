@@ -1,0 +1,9 @@
+name: heartbeat
+version: "0.1.0"
+description: "Ping key network services and report status"
+author: DreDay
+slash_command: true
+script: run.sh
+triggers: []
+dependencies: [ping, curl]
+permissions: [ssh]
