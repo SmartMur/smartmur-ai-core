@@ -205,9 +205,10 @@ class TelegramPoller:
         """Send text to Claude CLI and reply with the response."""
         logger.info("Routing to Claude: %s", text[:100])
         try:
+            env = {k: v for k, v in __import__("os").environ.items() if k != "CLAUDECODE"}
             result = subprocess.run(
                 ["claude", "-p", text, "--output-format", "text"],
-                capture_output=True, text=True, timeout=120,
+                capture_output=True, text=True, timeout=120, env=env,
             )
             reply = (result.stdout or result.stderr or "[no response]").strip()
             if reply:
