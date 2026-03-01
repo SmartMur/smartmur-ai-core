@@ -28,7 +28,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ${HOME}/.claude-superpowers:/root/.claude-superpowers:ro
+      - ${HOME}/.claude-superpowers:/root/.claude-superpowers
     restart: unless-stopped
 
 volumes:
