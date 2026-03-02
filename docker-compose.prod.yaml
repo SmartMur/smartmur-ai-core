@@ -1,0 +1,50 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  msg-gateway:
+    build:
+      context: .
+      dockerfile: msg_gateway/Dockerfile
+    ports:
+      - "8100:8100"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - "8200:8200"
+    env_file:
+      - .env
+    volumes:
+      - superpowers-data:/root/.claude-superpowers
+    restart: unless-stopped
+
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: telegram-bot/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - superpowers-data:/root/.claude-superpowers
+      - claude-config:/root/.claude
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  superpowers-data:
+  claude-config:
