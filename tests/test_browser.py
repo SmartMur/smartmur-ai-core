@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from superpowers.browser.base import BrowserConfig, BrowserError, ElementData, PageResult
 from superpowers.browser.engine import BrowserEngine
 from superpowers.browser.profiles import ProfileManager
-
 
 # ---------------------------------------------------------------------------
 # TestBrowserConfig
@@ -359,7 +358,7 @@ class TestBrowserEngine:
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
             with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
-                    text = engine.extract_text()
+                    engine.extract_text()
 
         mock_page.locator.assert_called_with("body")
 

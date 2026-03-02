@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
 class WorkflowError(Exception):
     """Raised on workflow loading or execution failures."""
 
 
-class StepType(str, Enum):
+class StepType(StrEnum):
     shell = "shell"
     claude_prompt = "claude_prompt"
     skill = "skill"
@@ -18,7 +18,7 @@ class StepType(str, Enum):
     approval_gate = "approval_gate"
 
 
-class StepStatus(str, Enum):
+class StepStatus(StrEnum):
     pending = "pending"
     running = "running"
     passed = "passed"
@@ -26,7 +26,7 @@ class StepStatus(str, Enum):
     skipped = "skipped"
 
 
-class WorkflowStatus(str, Enum):
+class WorkflowStatus(StrEnum):
     pending = "pending"
     running = "running"
     completed = "completed"

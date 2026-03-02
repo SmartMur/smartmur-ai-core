@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from superpowers.workflow.base import StepConfig, StepResult, StepStatus, StepType, WorkflowConfig
+from superpowers.workflow.base import StepResult, StepStatus, StepType
 from superpowers.workflow.engine import WorkflowEngine
 from superpowers.workflow.loader import WorkflowLoader
-
 
 REPO_WORKFLOWS = Path(__file__).resolve().parent.parent / "workflows"
 

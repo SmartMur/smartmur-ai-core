@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from superpowers.channels.base import Channel, ChannelError, ChannelType, SendResult
 from superpowers.channels.registry import ChannelRegistry
 from superpowers.config import Settings
-
 
 # --- Base classes ---
 

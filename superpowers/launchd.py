@@ -15,7 +15,7 @@ from pathlib import Path
 LAUNCH_AGENTS_DIR = Path.home() / "Library" / "LaunchAgents"
 SYSTEMD_USER_DIR = Path.home() / ".config" / "systemd" / "user"
 PLIST_PREFIX = "com.claude-superpowers"
-from superpowers.config import get_data_dir
+from superpowers.config import get_data_dir  # noqa: E402
 
 LOG_DIR = get_data_dir() / "logs"
 PROJECT_DIR = Path(__file__).resolve().parent.parent

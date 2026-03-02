@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,7 +9,6 @@ import pytest
 from superpowers.channels.base import ChannelError, SendResult
 from superpowers.channels.registry import ChannelRegistry
 from superpowers.profiles import NotificationProfile, ProfileManager, ProfileTarget
-
 
 # --- Profile loading ---
 

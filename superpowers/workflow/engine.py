@@ -16,7 +16,6 @@ from superpowers.workflow.base import (
     StepStatus,
     StepType,
     WorkflowConfig,
-    WorkflowError,
 )
 
 

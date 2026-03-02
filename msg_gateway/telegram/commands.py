@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import logging
 import subprocess
-from typing import Any, Callable
+from collections.abc import Callable
 
 from msg_gateway.telegram.api import TelegramApi
-from msg_gateway.telegram.formatting import escape_markdown_v2
 from msg_gateway.telegram.keyboards import mode_keyboard, skill_list_keyboard
 from msg_gateway.telegram.session import SessionManager
 from msg_gateway.telegram.types import Message
@@ -39,7 +38,7 @@ class CommandRouter:
     ):
         self._api = api
         self._session = session
-        self._chat_modes = chat_modes or {}
+        self._chat_modes = chat_modes if chat_modes is not None else {}
         self._handlers: dict[str, Callable] = {
             "start": self._cmd_start,
             "help": self._cmd_help,

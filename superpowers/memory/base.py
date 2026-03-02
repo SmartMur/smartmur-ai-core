@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
 class MemoryStoreError(Exception):
     """Raised on memory store failures."""
 
 
-class MemoryCategory(str, Enum):
+class MemoryCategory(StrEnum):
     fact = "fact"
     preference = "preference"
     project_context = "project_context"

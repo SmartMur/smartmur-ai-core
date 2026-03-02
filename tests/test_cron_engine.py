@@ -9,7 +9,6 @@ from apscheduler.triggers.interval import IntervalTrigger
 
 from superpowers.cron_engine import CronEngine, Job, JobType, parse_schedule
 
-
 # --- parse_schedule tests ---
 
 

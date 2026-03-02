@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class ChannelType(str, Enum):
+class ChannelType(StrEnum):
     slack = "slack"
     telegram = "telegram"
     discord = "discord"

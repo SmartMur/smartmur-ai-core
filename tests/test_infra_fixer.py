@@ -3,21 +3,17 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from unittest.mock import MagicMock, patch, call
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from superpowers.infra_fixer import (
+    CRASH_LOOP_THRESHOLD,
+    KNOWN_PROJECTS,
+    PLACEHOLDER_PATTERNS,
     ContainerInfo,
     InfraFixer,
     InfraIssue,
     InfraReport,
-    CRASH_LOOP_THRESHOLD,
-    KNOWN_PROJECTS,
-    PLACEHOLDER_PATTERNS,
 )
-
 
 # ---------------------------------------------------------------------------
 # TestContainerInfo

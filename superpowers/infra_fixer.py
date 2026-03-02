@@ -5,13 +5,12 @@ from __future__ import annotations
 import json
 import re
 import subprocess
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
 from superpowers.config import get_data_dir
-
 
 HealthStatus = Literal["healthy", "degraded", "down", "crash_loop", "unknown"]
 Severity = Literal["critical", "warning", "info"]
@@ -50,7 +49,7 @@ class InfraIssue:
 @dataclass
 class InfraReport:
     """Full infrastructure health report."""
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     containers_total: int = 0
     containers_running: int = 0
     containers_stopped: int = 0
@@ -455,7 +454,7 @@ class InfraFixer:
         latest.write_text(json.dumps(data, indent=2))
 
         # Timestamped
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        ts = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
         history = fixer_dir / f"report-{ts}.json"
         history.write_text(json.dumps(data, indent=2))
 

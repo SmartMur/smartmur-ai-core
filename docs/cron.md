@@ -75,7 +75,7 @@ Example:
 
 Each log file contains stdout, stderr, exit code, and execution duration. Logs are retained indefinitely by default. Use `claw cron logs --prune 30d` to clean up old output.
 
-Future Phase 3 (Messaging Gateway) will add output routing to Slack, Telegram, Discord, and email channels.
+Job output can also be routed to messaging channels. See the [Messaging docs](messaging.md) for details on `--output` routing.
 
 ## CLI Reference
 

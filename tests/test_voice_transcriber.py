@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import patch
 
 from superpowers.voice_transcriber import transcribe
@@ -71,8 +70,9 @@ def test_ffmpeg_failure(tmp_path):
 
 
 def test_download_telegram_voice_success(tmp_path):
-    from superpowers.voice_transcriber import download_telegram_voice
     import json
+
+    from superpowers.voice_transcriber import download_telegram_voice
 
     get_file_resp = json.dumps({"ok": True, "result": {"file_path": "voice/file_0.oga"}}).encode()
 

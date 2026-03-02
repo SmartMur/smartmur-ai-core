@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from superpowers.memory.base import MemoryCategory, MemoryEntry, MemoryStoreError
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _row_to_entry(row: sqlite3.Row) -> MemoryEntry:
@@ -197,7 +197,7 @@ class MemoryStore:
             return [_row_to_entry(r) for r in rows]
 
     def decay(self, days: int = 90) -> int:
-        cutoff = datetime.now(timezone.utc)
+        cutoff = datetime.now(UTC)
         from datetime import timedelta
 
         cutoff = (cutoff - timedelta(days=days)).isoformat()

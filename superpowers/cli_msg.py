@@ -105,7 +105,7 @@ def msg_profiles():
 
     if not profiles:
         console.print("[dim]No profiles configured.[/dim]")
-        console.print(f"  Add profiles to: ~/.claude-superpowers/profiles.yaml")
+        console.print("  Add profiles to: ~/.claude-superpowers/profiles.yaml")
         return
 
     table = Table(title="Notification Profiles")

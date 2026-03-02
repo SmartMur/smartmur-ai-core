@@ -3,18 +3,14 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from unittest.mock import MagicMock, patch, call
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from superpowers.cloudflared_monitor import (
+    ERROR_PATTERNS,
     CloudflaredMonitor,
     ContainerState,
     DiagnosticResult,
-    ERROR_PATTERNS,
 )
-
 
 # ---------------------------------------------------------------------------
 # ContainerState

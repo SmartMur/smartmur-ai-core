@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
@@ -54,6 +53,31 @@ class TestDiscover:
         assert "template-skill" not in names
         # But real skills should still be found
         assert len(skills) >= 1
+
+    def test_discovers_template_in_real_dir(self, tmp_path):
+        """A skill named 'template-skill' is found when its directory is not underscore-prefixed."""
+        skill_dir = tmp_path / "template-skill"
+        skill_dir.mkdir()
+        (skill_dir / "skill.yaml").write_text(
+            yaml.dump({
+                "name": "template-skill",
+                "version": "0.1.0",
+                "description": "A template skill - copy this to create new skills",
+                "author": "DreDay",
+                "script": "run.sh",
+                "slash_command": True,
+                "triggers": [],
+                "dependencies": [],
+                "permissions": [],
+            })
+        )
+        script = skill_dir / "run.sh"
+        script.write_text("#!/usr/bin/env bash\necho hello\n")
+        script.chmod(0o755)
+        reg = SkillRegistry(skills_dir=tmp_path)
+        skills = reg.discover()
+        names = [s.name for s in skills]
+        assert "template-skill" in names
 
     def test_ignores_nested_dirs(self, tmp_skills):
         nested = tmp_skills / "test-skill" / "sub" / "nested"

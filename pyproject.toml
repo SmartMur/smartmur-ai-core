@@ -14,6 +14,7 @@ dependencies = [
     "watchdog>=4.0",
     "aiohttp>=3.9",
     "fastapi>=0.110",
+    "PyJWT>=2.8",
     "uvicorn>=0.27",
     "redis>=5.0",
     "slack_sdk>=3.27",

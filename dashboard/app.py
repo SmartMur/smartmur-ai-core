@@ -10,10 +10,15 @@ from fastapi.staticfiles import StaticFiles
 from dashboard.deps import require_auth
 from dashboard.routers import (
     audit,
+    auth,
     browser,
+    chat,
     cron,
+    jobs,
     memory,
     messaging,
+    notifications,
+    settings,
     skills,
     ssh,
     status,
@@ -22,13 +27,17 @@ from dashboard.routers import (
     workflows,
 )
 
-app = FastAPI(title="Claw Dashboard", version="0.1.0")
+app = FastAPI(title="Claw Dashboard", version="0.2.0")
 
 
 # --- Public endpoints ---
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# --- Public auth routes (no auth required) ---
+app.include_router(auth.router, tags=["auth"])
 
 
 # --- Protected API routers (all under /api/*) ---
@@ -44,6 +53,10 @@ api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
 api_router.include_router(vault.router, prefix="/vault", tags=["vault"])
 api_router.include_router(watchers.router, prefix="/watchers", tags=["watchers"])
 api_router.include_router(browser.router, prefix="/browser", tags=["browser"])
+api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
+api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
+api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
 app.include_router(api_router)
 
 # --- Static files (SPA) ---

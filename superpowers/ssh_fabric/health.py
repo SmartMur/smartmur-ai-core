@@ -10,12 +10,10 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from superpowers.config import get_data_dir
 from superpowers.ssh_fabric.base import CommandResult
 from superpowers.ssh_fabric.executor import SSHExecutor
 from superpowers.ssh_fabric.hosts import HostRegistry
-
-
-from superpowers.config import get_data_dir
 
 DEFAULT_OUTPUT = get_data_dir() / "ssh" / "health.json"
 

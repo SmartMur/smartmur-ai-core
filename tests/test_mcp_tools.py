@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from mcp.server.fastmcp import FastMCP
-
 
 # --- Registration tests: every module registers tools without error ---
 
@@ -76,8 +73,8 @@ class TestVaultTools:
         mcp = self._make_mcp()
         register(mcp)
 
-        with patch("superpowers.vault.Vault") as MockVault:
-            instance = MockVault.return_value
+        with patch("superpowers.vault.Vault") as mock_vault:
+            instance = mock_vault.return_value
             instance.identity_file = tmp_path / "identity.txt"
             instance.vault_path = tmp_path / "vault.enc"
             # Call the tool function directly
@@ -95,7 +92,6 @@ class TestMemoryTools:
         mcp = FastMCP("test")
         register(mcp)
 
-        db_path = tmp_path / "memory.db"
         mock_entry = MagicMock()
         mock_entry.id = 1
         mock_entry.key = "test-key"
@@ -126,8 +122,8 @@ class TestAuditTools:
         mcp = FastMCP("test")
         register(mcp)
 
-        with patch("superpowers.audit.AuditLog") as MockAudit:
-            MockAudit.return_value.tail.return_value = []
+        with patch("superpowers.audit.AuditLog") as mock_audit:
+            mock_audit.return_value.tail.return_value = []
             tools = {name: fn for name, fn in _extract_tools(mcp)}
             result = tools["audit_tail"]()
             assert "no" in result.lower() or "empty" in result.lower() or result.strip() != ""
@@ -139,8 +135,8 @@ class TestWorkflowTools:
         mcp = FastMCP("test")
         register(mcp)
 
-        with patch("superpowers.workflow.loader.WorkflowLoader") as MockLoader:
-            MockLoader.return_value.list_workflows.return_value = []
+        with patch("superpowers.workflow.loader.WorkflowLoader") as mock_loader:
+            mock_loader.return_value.list_workflows.return_value = []
             tools = {name: fn for name, fn in _extract_tools(mcp)}
             result = tools["list_workflows"]()
             assert "no" in result.lower() or result.strip() != ""

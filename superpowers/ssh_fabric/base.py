@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class AuthMethod(str, Enum):
+class AuthMethod(StrEnum):
     key = "key"
     password = "password"
     agent = "agent"

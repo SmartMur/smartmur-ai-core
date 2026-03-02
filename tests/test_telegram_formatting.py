@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
-
 from msg_gateway.telegram.formatting import (
     CHUNK_SIZE,
-    MAX_MESSAGE_LENGTH,
     escape_markdown_v2,
     smart_chunk,
 )
-
 
 # ---------------------------------------------------------------------------
 # escape_markdown_v2 — special character escaping
@@ -241,13 +237,12 @@ class TestSmartChunkLongLine:
 
     def test_splits_with_sentence_boundary(self):
         # Build text with sentences but no newlines
-        sentences = ["This is sentence number %d. " % i for i in range(200)]
+        sentences = [f"This is sentence number {i}. " for i in range(200)]
         text = "".join(sentences)
 
         chunks = smart_chunk(text, max_length=500)
         assert len(chunks) > 1
         # Content should be fully preserved
-        combined = "".join(c + " " for c in chunks).replace("  ", " ")
         # All original text characters should still be present
         for sentence in sentences[:5]:
             assert sentence.strip() in text

@@ -4,18 +4,16 @@ from __future__ import annotations
 
 import json
 import subprocess
-import time
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from superpowers.ssh_fabric.base import AuthMethod, CommandResult, HostConfig, SSHError
-from superpowers.ssh_fabric.hosts import HostRegistry
-from superpowers.ssh_fabric.pool import ConnectionPool
 from superpowers.ssh_fabric.executor import SSHExecutor
 from superpowers.ssh_fabric.health import HealthChecker, HealthReport, HostStatus
 from superpowers.ssh_fabric.homeassistant import HomeAssistantClient
-
+from superpowers.ssh_fabric.hosts import HostRegistry
+from superpowers.ssh_fabric.pool import ConnectionPool
 
 # ---------------------------------------------------------------------------
 # Fixtures

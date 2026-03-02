@@ -7,7 +7,6 @@ from rich.console import Console
 from rich.table import Table
 
 from superpowers.auto_install import (
-    BUILTIN_TEMPLATES,
     check_and_install,
     install_from_template,
     suggest_skill,

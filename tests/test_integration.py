@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from superpowers.channels.base import Channel, ChannelType, SendResult
 from superpowers.channels.registry import ChannelRegistry
-from superpowers.config import Settings
 from superpowers.credential_rotation import (
     AlertStatus,
     CredentialRotationChecker,
@@ -20,10 +17,9 @@ from superpowers.cron_engine import CronEngine, JobType
 from superpowers.memory.store import MemoryStore
 from superpowers.profiles import ProfileManager
 from superpowers.skill_registry import SkillRegistry
-from superpowers.workflow.base import StepConfig, StepStatus, StepType, WorkflowConfig
+from superpowers.workflow.base import StepStatus
 from superpowers.workflow.engine import WorkflowEngine
 from superpowers.workflow.loader import WorkflowLoader
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -371,7 +367,7 @@ class TestCredentialRotationNotification:
     def test_expired_key_triggers_alert_and_notification(self, tmp_path: Path):
         policies_path = tmp_path / "policies.yaml"
         checker = CredentialRotationChecker(policies_path=policies_path)
-        now = datetime(2026, 3, 1, tzinfo=timezone.utc)
+        now = datetime(2026, 3, 1, tzinfo=UTC)
 
         # Set a short rotation policy and mark it as rotated long ago
         checker.set_policy("prod-api-key", 30)
@@ -414,7 +410,7 @@ class TestCredentialRotationNotification:
     def test_fresh_key_no_notification(self, tmp_path: Path):
         policies_path = tmp_path / "policies.yaml"
         checker = CredentialRotationChecker(policies_path=policies_path)
-        now = datetime(2026, 3, 1, tzinfo=timezone.utc)
+        now = datetime(2026, 3, 1, tzinfo=UTC)
 
         checker.set_policy("fresh-key", 90)
         checker.mark_rotated("fresh-key", now - timedelta(days=5))
@@ -441,7 +437,7 @@ class TestCredentialRotationNotification:
     def test_multiple_keys_mixed_status(self, tmp_path: Path):
         policies_path = tmp_path / "policies.yaml"
         checker = CredentialRotationChecker(policies_path=policies_path)
-        now = datetime(2026, 3, 1, tzinfo=timezone.utc)
+        now = datetime(2026, 3, 1, tzinfo=UTC)
 
         checker.set_policy("old-key", 30)
         checker.mark_rotated("old-key", now - timedelta(days=60))

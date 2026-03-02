@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from superpowers.ssh_fabric.base import AuthMethod, HostConfig, SSHError
-
-
 from superpowers.config import get_data_dir
+from superpowers.ssh_fabric.base import AuthMethod, HostConfig, SSHError
 
 DEFAULT_HOSTS_PATH = get_data_dir() / "hosts.yaml"
 

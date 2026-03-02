@@ -4,11 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import subprocess
-import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 # Import deploy skill module by absolute path to avoid name collisions
 _deploy_run = Path(__file__).resolve().parent.parent / "skills" / "deploy" / "run.py"

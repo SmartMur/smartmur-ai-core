@@ -7,7 +7,6 @@ import os
 import signal
 import sys
 import threading
-from pathlib import Path
 
 from superpowers.config import get_data_dir
 

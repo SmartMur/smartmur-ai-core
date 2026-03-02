@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import subprocess
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
-
-from superpowers.channels.base import ChannelError, ChannelType, SendResult
+from superpowers.channels.base import ChannelType
 from superpowers.channels.imessage import IMessageChannel
 from superpowers.channels.registry import ChannelRegistry
 from superpowers.config import Settings

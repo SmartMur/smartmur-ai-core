@@ -6,19 +6,16 @@ import io
 import json
 import urllib.error
 import urllib.request
-from http.client import HTTPResponse
 from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-from superpowers.channels.base import ChannelError, SendResult
+from superpowers.channels.base import SendResult
 from superpowers.channels.telegram import (
-    TelegramChannel,
     _BACKOFF_BASE,
     _MAX_RETRIES,
-    _RETRY_HTTP_CODES,
+    TelegramChannel,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

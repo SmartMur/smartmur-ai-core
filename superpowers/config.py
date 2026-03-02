@@ -66,6 +66,7 @@ class Settings:
     # Dashboard (MUST be set via DASHBOARD_USER / DASHBOARD_PASS env vars)
     dashboard_user: str = ""
     dashboard_pass: str = ""
+    dashboard_secret: str = ""  # JWT signing secret; auto-generated if empty
 
     # Home Automation
     home_assistant_url: str = ""
@@ -78,6 +79,10 @@ class Settings:
     telegram_max_per_chat: int = 2  # Max concurrent jobs per chat
     telegram_max_global: int = 5  # Max concurrent jobs globally
     telegram_queue_overflow: int = 10  # Max queued jobs before rejecting
+    telegram_mode: str = "polling"  # "webhook" or "polling"
+    telegram_webhook_secret: str = ""  # Secret for webhook validation
+    telegram_webhook_url: str = ""  # Public URL for webhook endpoint
+    telegram_admin_chat_id: str = ""  # Admin chat ID for access request notifications
 
     # XDG-style paths
     data_dir: Path = field(default_factory=get_data_dir)
@@ -107,6 +112,7 @@ class Settings:
             vault_identity_file=vault_identity,
             dashboard_user=_env("DASHBOARD_USER"),
             dashboard_pass=_env("DASHBOARD_PASS"),
+            dashboard_secret=_env("DASHBOARD_SECRET"),
             home_assistant_url=_env("HOME_ASSISTANT_URL"),
             home_assistant_token=_env("HOME_ASSISTANT_TOKEN"),
             allowed_chat_ids=_env("ALLOWED_CHAT_IDS"),
@@ -115,6 +121,10 @@ class Settings:
             telegram_max_per_chat=int(_env("TELEGRAM_MAX_PER_CHAT", "2")),
             telegram_max_global=int(_env("TELEGRAM_MAX_GLOBAL", "5")),
             telegram_queue_overflow=int(_env("TELEGRAM_QUEUE_OVERFLOW", "10")),
+            telegram_mode=_env("TELEGRAM_MODE", "polling"),
+            telegram_webhook_secret=_env("TELEGRAM_WEBHOOK_SECRET"),
+            telegram_webhook_url=_env("TELEGRAM_WEBHOOK_URL"),
+            telegram_admin_chat_id=_env("TELEGRAM_ADMIN_CHAT_ID"),
             data_dir=data_dir,
         )
 

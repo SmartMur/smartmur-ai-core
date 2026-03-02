@@ -6,8 +6,6 @@ import json
 import types
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from superpowers import intake
 from superpowers.intake import (
     IntakeTask,
@@ -17,7 +15,6 @@ from superpowers.intake import (
     extract_requirements,
     run_intake,
 )
-
 
 # --- extract_requirements ---
 
@@ -217,6 +214,7 @@ def test_run_intake_multi_requirements(tmp_path, monkeypatch):
 
 def test_cli_intake_clear(tmp_path, monkeypatch):
     from click.testing import CliRunner
+
     from superpowers.cli_intake import intake_group
 
     monkeypatch.setattr(intake, "RUNTIME_DIR", tmp_path)
@@ -228,6 +226,7 @@ def test_cli_intake_clear(tmp_path, monkeypatch):
 
 def test_cli_intake_show_no_session(tmp_path, monkeypatch):
     from click.testing import CliRunner
+
     from superpowers.cli_intake import intake_group
 
     monkeypatch.setattr(intake, "SESSION_FILE", tmp_path / "missing.json")
@@ -239,6 +238,7 @@ def test_cli_intake_show_no_session(tmp_path, monkeypatch):
 
 def test_cli_intake_show_with_session(tmp_path, monkeypatch):
     from click.testing import CliRunner
+
     from superpowers.cli_intake import intake_group
 
     session = tmp_path / "current_request.json"

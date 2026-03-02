@@ -12,7 +12,6 @@ from msg_gateway.telegram.keyboards import (
     skill_list_keyboard,
 )
 
-
 # --- inline_button ---
 
 

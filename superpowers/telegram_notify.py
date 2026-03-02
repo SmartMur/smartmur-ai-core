@@ -15,7 +15,7 @@ import json
 import os
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 _API_BASE = "https://api.telegram.org/bot"
 
@@ -59,7 +59,7 @@ def notify(message: str, *, chat_id: str = "", parse_mode: str = "Markdown") -> 
 
 
 def _ts() -> str:
-    return datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+    return datetime.now(UTC).strftime("%H:%M:%S UTC")
 
 
 def notify_start(task: str, **kwargs) -> bool:

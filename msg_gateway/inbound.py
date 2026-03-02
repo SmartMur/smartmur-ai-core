@@ -289,11 +289,36 @@ class InboundListener:
                 max_per_chat=getattr(self._settings, "telegram_max_per_chat", 2),
                 max_global=getattr(self._settings, "telegram_max_global", 5),
                 queue_overflow=getattr(self._settings, "telegram_queue_overflow", 10),
+                webhook_secret=getattr(self._settings, "telegram_webhook_secret", ""),
+                admin_chat_id=getattr(self._settings, "telegram_admin_chat_id", ""),
             )
-            t = threading.Thread(target=poller.start, daemon=True, name="telegram-poller")
-            t.start()
-            self._threads.append(t)
-            logger.info("Telegram inbound listener started (new pipeline)")
+
+            mode = getattr(self._settings, "telegram_mode", "polling")
+            if mode == "webhook":
+                # In webhook mode, register poller with the FastAPI app
+                # instead of running the polling loop
+                from msg_gateway.app import set_telegram_poller
+                set_telegram_poller(poller)
+                # Still register command menu
+                poller._commands.register_menu()
+                # Set up webhook with Telegram
+                webhook_url = getattr(self._settings, "telegram_webhook_url", "")
+                webhook_secret = getattr(self._settings, "telegram_webhook_secret", "")
+                if webhook_url:
+                    resp = poller.api.set_webhook(
+                        url=webhook_url,
+                        secret_token=webhook_secret,
+                    )
+                    if resp.ok:
+                        logger.info("Telegram webhook set to %s", webhook_url)
+                    else:
+                        logger.error("Failed to set webhook: %s", resp.description)
+                logger.info("Telegram inbound listener started (webhook mode)")
+            else:
+                t = threading.Thread(target=poller.start, daemon=True, name="telegram-poller")
+                t.start()
+                self._threads.append(t)
+                logger.info("Telegram inbound listener started (polling mode)")
 
         if not self._threads:
             logger.warning("No inbound listeners configured")

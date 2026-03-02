@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from pathlib import Path
 
@@ -235,7 +234,7 @@ def cron_run(job_id: str):
         if result and hasattr(result, "last_status"):
             status = result.last_status
             if status == "ok":
-                console.print(f"[green]Job completed successfully.[/green]")
+                console.print("[green]Job completed successfully.[/green]")
             else:
                 console.print(f"[red]Job finished with status: {status}[/red]")
             if result.last_output_file:

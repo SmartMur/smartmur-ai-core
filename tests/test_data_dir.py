@@ -6,8 +6,6 @@ import os
 from pathlib import Path
 from unittest import mock
 
-import pytest
-
 
 def test_get_data_dir_default():
     """Without any env vars, get_data_dir returns ~/.claude-superpowers."""
@@ -91,7 +89,6 @@ def test_get_data_dir_returns_path():
 
 def test_audit_log_uses_data_dir(tmp_path):
     """AuditLog default path should come from get_data_dir."""
-    from superpowers.config import get_data_dir
 
     custom = str(tmp_path / "audit-test")
     with mock.patch.dict(os.environ, {"SUPERPOWERS_DATA_DIR": custom}, clear=False):

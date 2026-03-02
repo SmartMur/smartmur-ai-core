@@ -31,7 +31,7 @@ All user requests are logged here. Updated as work completes.
   - `agent-os` → `ab75fa0` (main): pull_request_target fix
   - `claude-code-tresor` → `ee6032e` (main): script injection fixes (5 workflows), SHA pinning (9 workflows)
   - `claude-code-skill-factory` → `d5440d9` (dev): script injection fixes (7 workflows), SHA pinning (17 workflows)
-- [x] **Set dashboard password** — generated strong password `***REDACTED***`, container recreated, verified auth works, documented in `docs/dashboard.md`
+- [x] **Set dashboard password** — generated strong password (stored in .env DASHBOARD_PASS), container recreated, verified auth works, documented in `docs/dashboard.md`
 - [x] **Cloudflared tunnel setup skill** — `/tunnel-setup` skill built (status/set-token/start/stop/logs), crash loop stopped (1127 restarts halted), 31 tests, documented in `docs/cloudflared-setup.md`
 - [x] **GitHub CI/CD** — enhanced `ci.yml` (matrix 3.12+3.13, lint, security scan, caching), enhanced `release.yml` (Docker build to ghcr.io), new `deploy.yml` (SSH deploy, manual trigger), `/deploy` skill built (15 tests), documented in `docs/ci-cd.md`
 - [x] **P3: QA Guardian skill** — 12 checks across security/quality/test-health/efficiency, Telegram reports, audit logging, 38 tests

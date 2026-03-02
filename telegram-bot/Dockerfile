@@ -19,6 +19,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 RUN git clone --depth 1 https://github.com/ggerganov/whisper.cpp /opt/whisper.cpp \
     && cd /opt/whisper.cpp && cmake -B build && cmake --build build --config Release -j$(nproc) \
     && cp build/bin/whisper-cli /usr/local/bin/ \
+    && find build -name '*.so*' -exec cp {} /usr/local/lib/ \; \
+    && ldconfig \
     && rm -rf /opt/whisper.cpp
 
 # Download whisper model

@@ -8,8 +8,8 @@ import subprocess
 import tempfile
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +19,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 
-class JobType(str, Enum):
+class JobType(StrEnum):
     shell = "shell"
     claude = "claude"
     webhook = "webhook"
@@ -45,7 +45,7 @@ class Job:
         if not self.id:
             self.id = str(uuid.uuid4())
         if not self.created_at:
-            self.created_at = datetime.now(timezone.utc).isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         if isinstance(self.job_type, str):
             self.job_type = JobType(self.job_type)
 
@@ -231,7 +231,7 @@ class CronEngine:
             output = f"Exception: {exc}"
             exit_code = 1
 
-        job.last_run = datetime.now(timezone.utc).isoformat()
+        job.last_run = datetime.now(UTC).isoformat()
         job.last_status = "ok" if exit_code == 0 else f"error({exit_code})"
 
         self._route_output(job, output, exit_code)
@@ -292,7 +292,7 @@ class CronEngine:
         job_output_dir = self._output_dir / job.id
         job_output_dir.mkdir(parents=True, exist_ok=True)
 
-        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         log_file = job_output_dir / f"{ts}.log"
         log_file.write_text(
             f"exit_code: {exit_code}\n"

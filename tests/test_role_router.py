@@ -2,11 +2,7 @@
 
 from __future__ import annotations
 
-import json
 import types
-from unittest.mock import MagicMock, patch
-
-import pytest
 
 from superpowers.role_router import (
     PLANNER_KEYWORDS,
@@ -16,7 +12,6 @@ from superpowers.role_router import (
     RoleAssignment,
     RoleRouter,
 )
-
 
 # --- Role enum ---
 
@@ -308,6 +303,7 @@ class TestIntakeTaskAssignedRole:
 
     def test_assigned_role_serialized(self):
         from dataclasses import asdict
+
         from superpowers.intake import IntakeTask
 
         task = IntakeTask(id=1, requirement="test something", skill=None, assigned_role="verifier")
@@ -455,8 +451,9 @@ class TestRunIntakeWithRole:
 
 class TestSkillType:
     def test_skill_default_skill_type(self):
-        from superpowers.skill_registry import Skill
         from pathlib import Path
+
+        from superpowers.skill_registry import Skill
 
         skill = Skill(
             name="test",
@@ -468,8 +465,9 @@ class TestSkillType:
         assert skill.skill_type == ""
 
     def test_skill_custom_skill_type(self):
-        from superpowers.skill_registry import Skill
         from pathlib import Path
+
+        from superpowers.skill_registry import Skill
 
         skill = Skill(
             name="test",
@@ -482,8 +480,9 @@ class TestSkillType:
         assert skill.skill_type == "planning"
 
     def test_skill_type_parsed_from_yaml(self, tmp_path):
-        from superpowers.skill_registry import _parse_skill_yaml
         import yaml
+
+        from superpowers.skill_registry import _parse_skill_yaml
 
         skill_dir = tmp_path / "my-skill"
         skill_dir.mkdir()
@@ -504,8 +503,9 @@ class TestSkillType:
         assert skill.skill_type == "validation"
 
     def test_skill_type_defaults_when_missing_in_yaml(self, tmp_path):
-        from superpowers.skill_registry import _parse_skill_yaml
         import yaml
+
+        from superpowers.skill_registry import _parse_skill_yaml
 
         skill_dir = tmp_path / "my-skill"
         skill_dir.mkdir()
@@ -526,4 +526,4 @@ class TestSkillType:
 
 
 # Need this import at module level for the run_intake tests
-from superpowers.intake import run_intake
+from superpowers.intake import run_intake  # noqa: E402

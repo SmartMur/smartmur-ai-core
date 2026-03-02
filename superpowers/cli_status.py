@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import click
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 
 from superpowers.config import get_data_dir
 

@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from superpowers.memory.base import MemoryCategory, MemoryEntry, MemoryStoreError
 from superpowers.memory.context import ContextBuilder
 from superpowers.memory.store import MemoryStore
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -287,7 +286,7 @@ class TestDecay:
     def test_decay_removes_old_entries(self, store):
         store.remember("old", "stale")
         # Manually backdate the accessed_at
-        old_date = (datetime.now(timezone.utc) - timedelta(days=100)).isoformat()
+        old_date = (datetime.now(UTC) - timedelta(days=100)).isoformat()
         with store._conn() as conn:
             conn.execute(
                 "UPDATE memories SET accessed_at = ? WHERE key = ?",
@@ -305,7 +304,7 @@ class TestDecay:
 
     def test_decay_custom_days(self, store):
         store.remember("k", "v")
-        old_date = (datetime.now(timezone.utc) - timedelta(days=10)).isoformat()
+        old_date = (datetime.now(UTC) - timedelta(days=10)).isoformat()
         with store._conn() as conn:
             conn.execute(
                 "UPDATE memories SET accessed_at = ? WHERE key = ?",
@@ -356,7 +355,7 @@ class TestContextBuilder:
         builder = ContextBuilder(store)
         ctx = builder.build_context(limit=5)
         # Should have header + empty line + 5 entries + trailing empty line
-        lines = [l for l in ctx.strip().split("\n") if l.startswith("- **")]
+        lines = [line for line in ctx.strip().split("\n") if line.startswith("- **")]
         assert len(lines) == 5
 
 

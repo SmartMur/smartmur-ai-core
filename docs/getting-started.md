@@ -138,17 +138,21 @@ claw skill validate <path>            # Manifest validation
 claw status                           # System health check
 ```
 
-## What's Coming Next
+## Next Steps
 
-| Phase | What It Adds |
-|-------|-------------|
-| **2** | **Vault-to-skill injection** -- Automatically pass vault secrets to skills that request them via permissions |
-| **3** | **Cron daemon** -- Schedule skills to run on intervals or cron expressions using APScheduler |
-| **4** | **Messaging gateway** -- Send notifications via Slack, Telegram, Discord, and email from skills |
-| **5** | **Browser engine** -- Playwright-based web scraping and automation as a skill primitive |
-| **6** | **SSH fabric** -- Execute commands on remote hosts via Paramiko, managed through `claw ssh` |
-| **7** | **Workflow orchestrator** -- Chain multiple skills into multi-step pipelines with conditionals and error handling |
-| **8** | **Dashboard + status API** -- FastAPI-based web dashboard showing system status, cron jobs, and skill execution history |
+All 8 core phases are complete. Explore additional subsystems:
+
+| Subsystem | Command | Documentation |
+|-----------|---------|---------------|
+| Cron scheduling | `claw cron list` | [docs/cron.md](cron.md) |
+| Multi-channel messaging | `claw msg channels` | [docs/messaging.md](messaging.md) |
+| SSH remote execution | `claw ssh hosts` | [docs/ssh.md](ssh.md) |
+| Browser automation | `claw browse open <url>` | [docs/browser.md](browser.md) |
+| Workflow orchestration | `claw workflow list` | [docs/workflows.md](workflows.md) |
+| Persistent memory | `claw memory list` | [docs/memory.md](memory.md) |
+| File watchers | `claw watcher list` | [docs/watchers.md](watchers.md) |
+| Web dashboard | `claw dashboard` | [docs/dashboard.md](dashboard.md) |
+| MCP server | Configure in Claude Code settings | [docs/mcp-server.md](mcp-server.md) |
 
 ## Troubleshooting
 

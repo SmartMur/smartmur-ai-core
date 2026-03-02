@@ -10,7 +10,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-from superpowers.config import get_data_dir
+from superpowers.config import get_data_dir  # noqa: E402
 
 DEFAULT_MODEL = get_data_dir() / "models" / "ggml-base.en.bin"
 

@@ -6,13 +6,13 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from superpowers.auto_install import check_and_install
 from superpowers.config import get_data_dir
-from superpowers.role_router import Role, RoleRouter
+from superpowers.role_router import RoleRouter
 from superpowers.skill_loader import SkillLoader
 from superpowers.skill_registry import SkillRegistry
 
@@ -35,7 +35,7 @@ class IntakeTask:
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def clear_context(runtime_dir: Path | None = None) -> Path:

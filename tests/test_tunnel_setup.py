@@ -2,18 +2,14 @@
 
 from __future__ import annotations
 
-import subprocess
-from pathlib import Path
-from unittest.mock import MagicMock, patch, call
-
-import pytest
-
 # Import from the skill module directly
 import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tunnel-setup"))
 
 import run as tunnel_setup
-
 
 # ---------------------------------------------------------------------------
 # Token Validation
@@ -251,7 +247,7 @@ class TestCommandParsing:
     @patch.object(tunnel_setup, "cmd_help", return_value=0)
     def test_help_subcommand(self, mock_help):
         """'help' subcommand dispatches correctly."""
-        rc = tunnel_setup.main(["help"])
+        tunnel_setup.main(["help"])
         mock_help.assert_called_once()
 
 

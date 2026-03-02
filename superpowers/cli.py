@@ -3,14 +3,22 @@ import click
 from superpowers import __version__
 from superpowers.cli_audit import audit_group
 from superpowers.cli_browse import browse_group
-from superpowers.cli_skill import skill_auto_install, skill_info, skill_link, skill_list, skill_run, skill_sync, skill_validate
-from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
 from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_intake import intake_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
+from superpowers.cli_skill import (
+    skill_auto_install,
+    skill_info,
+    skill_link,
+    skill_list,
+    skill_run,
+    skill_sync,
+    skill_validate,
+)
+from superpowers.cli_skill_create import skill_create
 from superpowers.cli_ssh import ssh_group
 from superpowers.cli_status import status_dashboard
 from superpowers.cli_vault import vault_group

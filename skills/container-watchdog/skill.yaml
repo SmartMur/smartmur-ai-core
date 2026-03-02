@@ -1,0 +1,10 @@
+name: container-watchdog
+version: "0.1.0"
+description: "Real-time container monitoring with Telegram alerts"
+author: DreDay
+slash_command: true
+script: run.sh
+triggers: []
+dependencies: [docker, python3]
+permissions: []
+tags: [docker, monitoring, telegram, watchdog]

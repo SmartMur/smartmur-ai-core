@@ -10,15 +10,15 @@ mcp = FastMCP(
 )
 
 # Register all tool modules
-from superpowers.mcp.channels_tools import register as reg_channels
-from superpowers.mcp.ssh_tools import register as reg_ssh
-from superpowers.mcp.memory_tools import register as reg_memory
-from superpowers.mcp.browser_tools import register as reg_browser
-from superpowers.mcp.workflow_tools import register as reg_workflow
-from superpowers.mcp.cron_tools import register as reg_cron
-from superpowers.mcp.skill_tools import register as reg_skills
-from superpowers.mcp.audit_tools import register as reg_audit
-from superpowers.mcp.vault_tools import register as reg_vault
+from superpowers.mcp.audit_tools import register as reg_audit  # noqa: E402
+from superpowers.mcp.browser_tools import register as reg_browser  # noqa: E402
+from superpowers.mcp.channels_tools import register as reg_channels  # noqa: E402
+from superpowers.mcp.cron_tools import register as reg_cron  # noqa: E402
+from superpowers.mcp.memory_tools import register as reg_memory  # noqa: E402
+from superpowers.mcp.skill_tools import register as reg_skills  # noqa: E402
+from superpowers.mcp.ssh_tools import register as reg_ssh  # noqa: E402
+from superpowers.mcp.vault_tools import register as reg_vault  # noqa: E402
+from superpowers.mcp.workflow_tools import register as reg_workflow  # noqa: E402
 
 reg_channels(mcp)
 reg_ssh(mcp)

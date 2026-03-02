@@ -3,18 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
 
 import yaml
-
 
 DEFAULT_MAX_AGE_DAYS = 90
 WARNING_THRESHOLD = 0.8  # warn at 80% of max age
 
 
-class AlertStatus(str, Enum):
+class AlertStatus(StrEnum):
     ok = "ok"
     warning = "warning"
     expired = "expired"
@@ -86,7 +85,7 @@ class CredentialRotationChecker:
     def mark_rotated(self, key: str, when: datetime | None = None) -> None:
         """Record that a credential was rotated (call after vault set)."""
         if when is None:
-            when = datetime.now(timezone.utc)
+            when = datetime.now(UTC)
         existing = self._policies.get(key, RotationPolicy())
         existing.last_rotated = when.isoformat()
         self._policies[key] = existing
@@ -94,7 +93,7 @@ class CredentialRotationChecker:
 
     def check_key(self, key: str, now: datetime | None = None) -> CredentialAlert:
         if now is None:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
         policy = self.get_policy(key)
         last = policy.last_rotated_dt
         if last is None:
@@ -122,7 +121,7 @@ class CredentialRotationChecker:
     def check_all(self, vault_keys: list[str], now: datetime | None = None) -> list[CredentialAlert]:
         """Check all vault keys against rotation policies."""
         if now is None:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
         return [self.check_key(key, now) for key in sorted(vault_keys)]
 
     def list_policies(self) -> dict[str, RotationPolicy]:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 from msg_gateway.telegram.api import TelegramApi
 from msg_gateway.telegram.types import CallbackQuery
@@ -16,7 +16,7 @@ class CallbackHandler:
 
     def __init__(self, api: TelegramApi, chat_modes: dict[str, str] | None = None):
         self._api = api
-        self._chat_modes = chat_modes or {}
+        self._chat_modes = chat_modes if chat_modes is not None else {}
         self._handlers: dict[str, Callable] = {
             "skill": self._handle_skill,
             "mode": self._handle_mode,

@@ -2,17 +2,13 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
-from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 
-from dashboard.app import app
 from dashboard import deps
-
+from dashboard.app import app
 
 # =============================================================================
 # Fake engines / stores for dependency injection

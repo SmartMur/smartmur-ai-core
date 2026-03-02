@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 from msg_gateway.telegram.api import ApiResponse, TelegramApi
 from msg_gateway.telegram.commands import COMMAND_MENU, CommandRouter
 from msg_gateway.telegram.session import SessionManager
 from msg_gateway.telegram.types import Message
-
 
 # --- Helpers ---
 

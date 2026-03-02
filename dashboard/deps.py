@@ -3,38 +3,97 @@
 from __future__ import annotations
 
 import secrets
-from pathlib import Path
+import time
 
-from fastapi import Depends, HTTPException, status
+import jwt
+from fastapi import Cookie, Depends, HTTPException, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from superpowers.config import Settings
 
-security = HTTPBasic()
+security = HTTPBasic(auto_error=False)
+
+# JWT configuration
+SESSION_TTL = 86400  # 24 hours in seconds
+JWT_ALGORITHM = "HS256"
+COOKIE_NAME = "claw_session"
+
+# Auto-generated fallback secret (per-process, not persisted)
+_runtime_secret: str | None = None
 
 
-def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> str:
+def _get_jwt_secret() -> str:
+    """Return the JWT signing secret, generating one if needed."""
+    global _runtime_secret
+    settings = get_settings()
+    if settings.dashboard_secret:
+        return settings.dashboard_secret
+    if _runtime_secret is None:
+        _runtime_secret = secrets.token_hex(32)
+    return _runtime_secret
+
+
+def create_session_token(username: str) -> str:
+    """Create a signed JWT session token."""
+    now = int(time.time())
+    payload = {
+        "sub": username,
+        "iat": now,
+        "exp": now + SESSION_TTL,
+    }
+    return jwt.encode(payload, _get_jwt_secret(), algorithm=JWT_ALGORITHM)
+
+
+def verify_session_token(token: str) -> str | None:
+    """Verify a JWT token and return the username, or None if invalid."""
+    try:
+        payload = jwt.decode(token, _get_jwt_secret(), algorithms=[JWT_ALGORITHM])
+        return payload.get("sub")
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return None
+
+
+def require_auth(
+    request: Request,
+    credentials: HTTPBasicCredentials | None = Depends(security),
+    claw_session: str | None = Cookie(default=None),
+) -> str:
+    """Authenticate via session cookie (preferred) or HTTP Basic (fallback).
+
+    Returns the authenticated username.
+    """
     settings = get_settings()
     if not settings.dashboard_user or not settings.dashboard_pass:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Dashboard credentials not configured. Set DASHBOARD_USER and DASHBOARD_PASS env vars.",
         )
-    user_ok = secrets.compare_digest(
-        credentials.username.encode("utf-8"),
-        settings.dashboard_user.encode("utf-8"),
-    )
-    pass_ok = secrets.compare_digest(
-        credentials.password.encode("utf-8"),
-        settings.dashboard_pass.encode("utf-8"),
-    )
-    if not (user_ok and pass_ok):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Basic"},
+
+    # Try session cookie first
+    if claw_session:
+        username = verify_session_token(claw_session)
+        if username:
+            return username
+
+    # Fall back to HTTP Basic
+    if credentials:
+        user_ok = secrets.compare_digest(
+            credentials.username.encode("utf-8"),
+            settings.dashboard_user.encode("utf-8"),
         )
-    return credentials.username
+        pass_ok = secrets.compare_digest(
+            credentials.password.encode("utf-8"),
+            settings.dashboard_pass.encode("utf-8"),
+        )
+        if user_ok and pass_ok:
+            return credentials.username
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid credentials",
+        headers={"WWW-Authenticate": "Basic"},
+    )
+
 
 _settings: Settings | None = None
 _cron_engine = None
@@ -52,6 +111,9 @@ _audit_log = None
 _watcher_engine = None
 _browser_profiles = None
 _vault = None
+_conversations_db = None
+_notifications_db = None
+_jobs_db = None
 
 
 def get_settings() -> Settings:
@@ -175,3 +237,27 @@ def get_vault():
         from superpowers.vault import Vault
         _vault = Vault()
     return _vault
+
+
+def get_conversations_db():
+    global _conversations_db
+    if _conversations_db is None:
+        from dashboard.db import ConversationsDB
+        _conversations_db = ConversationsDB()
+    return _conversations_db
+
+
+def get_notifications_db():
+    global _notifications_db
+    if _notifications_db is None:
+        from dashboard.db import NotificationsDB
+        _notifications_db = NotificationsDB()
+    return _notifications_db
+
+
+def get_jobs_db():
+    global _jobs_db
+    if _jobs_db is None:
+        from dashboard.db import JobsDB
+        _jobs_db = JobsDB()
+    return _jobs_db

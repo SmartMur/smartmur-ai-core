@@ -8,11 +8,11 @@ from rich.table import Table
 
 from superpowers.config import Settings
 from superpowers.ssh_fabric.base import SSHError
-from superpowers.ssh_fabric.hosts import HostRegistry
-from superpowers.ssh_fabric.pool import ConnectionPool
 from superpowers.ssh_fabric.executor import SSHExecutor
 from superpowers.ssh_fabric.health import HealthChecker
 from superpowers.ssh_fabric.homeassistant import HomeAssistantClient
+from superpowers.ssh_fabric.hosts import HostRegistry
+from superpowers.ssh_fabric.pool import ConnectionPool
 
 console = Console()
 
@@ -57,7 +57,7 @@ def ssh_hosts():
 
     if not host_list:
         console.print("[dim]No hosts configured.[/dim]")
-        console.print(f"  Add hosts to: ~/.claude-superpowers/hosts.yaml")
+        console.print("  Add hosts to: ~/.claude-superpowers/hosts.yaml")
         return
 
     table = Table(title="SSH Hosts")
@@ -260,7 +260,7 @@ def ha_call(domain: str, service: str, entity_id: str):
     """
     try:
         client = _ha_client()
-        result = client.call_service(domain, service, entity_id)
+        client.call_service(domain, service, entity_id)
     except SSHError as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)

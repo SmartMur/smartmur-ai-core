@@ -8,7 +8,6 @@ from msg_gateway.telegram.api import ApiResponse, TelegramApi
 from msg_gateway.telegram.callbacks import CallbackHandler
 from msg_gateway.telegram.types import CallbackQuery
 
-
 # --- Helpers ---
 
 

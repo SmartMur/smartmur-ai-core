@@ -1,0 +1,9 @@
+name: ops-report
+version: "1.0"
+description: "Hourly operations status report sent to Telegram"
+author: claude-superpowers
+slash_command: true
+script: run.sh
+triggers: []
+dependencies: [curl, docker, df, free, uptime]
+permissions: []

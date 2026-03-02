@@ -4,15 +4,13 @@ from __future__ import annotations
 
 import json
 import re
-import shlex
 import subprocess
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
 from superpowers.config import get_data_dir
-
 
 Status = Literal["healthy", "degraded", "down", "crash_loop", "unknown"]
 
@@ -261,7 +259,7 @@ class CloudflaredMonitor:
         monitor_dir.mkdir(parents=True, exist_ok=True)
 
         status_data = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "container": state.to_dict(),
             "diagnosis": diagnosis.to_dict(),
         }

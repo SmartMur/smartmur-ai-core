@@ -6,13 +6,12 @@ import ast
 import json
 import re
 import subprocess
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
 from superpowers.config import get_data_dir
-
 
 Severity = Literal["critical", "warning", "info"]
 Category = Literal["security", "quality", "test_health", "efficiency"]
@@ -35,7 +34,7 @@ class Finding:
 @dataclass
 class QAReport:
     """Results from a full QA run."""
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     findings: list[Finding] = field(default_factory=list)
     checks_run: int = 0
     duration_seconds: float = 0.0
@@ -77,7 +76,7 @@ class QAReport:
                 f"Checks: {self.checks_run} | Findings: 0\n"
                 f"_Duration: {self.duration_seconds:.1f}s_"
             )
-        lines = [f"*QA Guardian Report*"]
+        lines = ["*QA Guardian Report*"]
         lines.append(f"Critical: {self.critical_count} | Warning: {self.warning_count} | Info: {self.info_count}")
         # Show up to 5 critical/warning findings
         important = [f for f in self.findings if f.severity in ("critical", "warning")]
@@ -378,10 +377,10 @@ class QAGuardian:
                           "file is empty", file=rel)
                 continue
             # Check if file has only comments/docstrings (no real code)
-            lines = [l.strip() for l in content.splitlines()
-                     if l.strip() and not l.strip().startswith("#")]
+            lines = [line.strip() for line in content.splitlines()
+                     if line.strip() and not line.strip().startswith("#")]
             # If all non-comment lines are just docstring markers
-            code_lines = [l for l in lines if not (l.startswith('"""') or l.startswith("'''") or l.startswith('"') or l.startswith("'"))]
+            code_lines = [line for line in lines if not (line.startswith('"""') or line.startswith("'''") or line.startswith('"') or line.startswith("'"))]
             if len(code_lines) == 0 and path.name != "__init__.py":
                 rel = str(path.relative_to(self.project_dir))
                 self._add("efficiency", "info", "stub_file",
@@ -472,7 +471,7 @@ class QAGuardian:
         latest.write_text(json.dumps(data, indent=2))
 
         # Save timestamped
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        ts = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
         history = qa_dir / f"report-{ts}.json"
         history.write_text(json.dumps(data, indent=2))
 

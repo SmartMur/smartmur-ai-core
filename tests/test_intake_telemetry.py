@@ -3,13 +3,10 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from superpowers.audit import AuditLog
 from superpowers.intake_telemetry import IntakeTelemetry
-
 
 # --- AuditLog metadata support ---
 
@@ -220,7 +217,7 @@ class TestIntakeTelemetryIntegration:
         audit = AuditLog(log_path=log_file)
         telemetry = IntakeTelemetry(audit=audit)
 
-        payload = run_intake(
+        run_intake(
             "- task alpha\n- task beta",
             runtime_dir=tmp_path,
             execute=False,
@@ -258,7 +255,7 @@ class TestIntakeTelemetryIntegration:
         audit = AuditLog(log_path=log_file)
         telemetry = IntakeTelemetry(audit=audit)
 
-        payload = run_intake(
+        run_intake(
             "run heartbeat",
             runtime_dir=tmp_path,
             execute=False,
@@ -308,7 +305,7 @@ class TestIntakeTelemetryIntegration:
 
             mock_exec.side_effect = side_effect
 
-            payload = run_intake(
+            run_intake(
                 "run it",
                 runtime_dir=tmp_path,
                 execute=True,

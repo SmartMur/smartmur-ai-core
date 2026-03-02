@@ -1,7 +1,8 @@
-/* Claw Dashboard — Alpine.js app + page components */
+/* Claw Dashboard v2 — Alpine.js app + page components */
 
 // --- Auth helpers ---
 function getAuthHeader() {
+  // Session cookies handle auth now; keep Basic fallback for backward compat
   const user = sessionStorage.getItem('claw_user');
   const pass = sessionStorage.getItem('claw_pass');
   if (!user || !pass) return null;
@@ -14,7 +15,8 @@ function clearAuth() {
 }
 
 function isLoggedIn() {
-  return sessionStorage.getItem('claw_user') && sessionStorage.getItem('claw_pass');
+  // With cookie auth, we optimistically assume logged in unless kicked out
+  return true;
 }
 
 // --- API helpers ---
@@ -30,8 +32,7 @@ async function api(path, opts = {}) {
   const resp = await fetch(url, config);
   if (resp.status === 401) {
     clearAuth();
-    // Trigger login modal via custom event
-    window.dispatchEvent(new CustomEvent('claw-auth-required'));
+    window.location.href = '/login.html';
     throw new Error('Authentication required');
   }
   if (resp.status === 204) return null;
@@ -46,6 +47,40 @@ const GET = (path) => api(path);
 const POST = (path, body) => api(path, { method: 'POST', body });
 const DEL = (path) => api(path, { method: 'DELETE' });
 
+// --- Theme ---
+function getTheme() {
+  return localStorage.getItem('claw_theme') || 'dark';
+}
+
+function setTheme(theme) {
+  localStorage.setItem('claw_theme', theme);
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = getTheme();
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+
+// --- Time formatting ---
+function timeAgo(ts) {
+  if (!ts) return '';
+  const now = Date.now() / 1000;
+  const diff = now - ts;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+function formatTime(ts) {
+  if (!ts) return '-';
+  return new Date(ts * 1000).toLocaleString();
+}
+
 // --- Main app ---
 function app() {
   return {
@@ -53,10 +88,8 @@ function app() {
     loading: false,
     status: [],
     toasts: [],
-    showLogin: !isLoggedIn(),
-    loginUser: '',
-    loginPass: '',
-    loginError: '',
+    unreadCount: 0,
+    theme: getTheme(),
     navMap: {
       channels: 'msg',
       ssh: 'ssh',
@@ -71,53 +104,27 @@ function app() {
     },
 
     init() {
-      // Listen for auth-required events from API calls
-      window.addEventListener('claw-auth-required', () => {
-        this.showLogin = true;
-      });
-
       // Hash routing
       const hash = location.hash.replace('#/', '') || 'home';
       this.page = hash;
-      if (!this.showLogin) this.loadStatus();
+      this.loadStatus();
+      this.pollUnread();
 
       window.addEventListener('hashchange', () => {
         this.page = location.hash.replace('#/', '') || 'home';
       });
     },
 
-    doLogin() {
-      this.loginError = '';
-      const user = this.loginUser.trim();
-      const pass = this.loginPass;
-      if (!user || !pass) {
-        this.loginError = 'Username and password required';
-        return;
-      }
-      // Test credentials against /api/status
-      const auth = 'Basic ' + btoa(user + ':' + pass);
-      fetch('/api/status', { headers: { 'Authorization': auth } })
-        .then(resp => {
-          if (resp.ok) {
-            sessionStorage.setItem('claw_user', user);
-            sessionStorage.setItem('claw_pass', pass);
-            this.showLogin = false;
-            this.loginUser = '';
-            this.loginPass = '';
-            this.loadStatus();
-          } else {
-            this.loginError = 'Invalid username or password';
-          }
-        })
-        .catch(() => {
-          this.loginError = 'Connection error';
-        });
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      setTheme(this.theme);
     },
 
     doLogout() {
-      clearAuth();
-      this.showLogin = true;
-      this.status = [];
+      fetch('/logout', { method: 'POST' }).then(() => {
+        clearAuth();
+        window.location.href = '/login.html';
+      });
     },
 
     go(p) {
@@ -131,9 +138,21 @@ function app() {
         const data = await GET('/status');
         this.status = data.subsystems;
       } catch (e) {
-        this.toast('Failed to load status: ' + e.message, 'error');
+        // If auth fails, redirect handled by api()
+        if (!e.message.includes('Authentication')) {
+          this.toast('Failed to load status: ' + e.message, 'error');
+        }
       }
       this.loading = false;
+    },
+
+    async pollUnread() {
+      try {
+        const data = await GET('/notifications/unread');
+        this.unreadCount = data.count;
+      } catch (e) { /* ignore */ }
+      // Poll every 30 seconds
+      setTimeout(() => this.pollUnread(), 30000);
     },
 
     toast(msg, type = 'info') {
@@ -156,7 +175,7 @@ function cronPage() {
       try {
         this.jobs = await GET('/cron/jobs');
       } catch (e) {
-        this.$root.__x.$data.toasts.push({ msg: 'Failed to load jobs', type: 'error' });
+        _toast(this, 'Failed to load jobs', 'error');
       }
     },
 
@@ -512,9 +531,312 @@ function browserPage() {
   };
 }
 
+// ============================================
+// NEW: Chat page component
+// ============================================
+
+function chatPage() {
+  return {
+    conversations: [],
+    currentConv: null,
+    messages: [],
+    inputMsg: '',
+    streaming: false,
+    streamingText: '',
+
+    async load() {
+      try {
+        this.conversations = await GET('/chat/conversations');
+      } catch (e) {
+        _toast(this, 'Failed to load conversations', 'error');
+      }
+    },
+
+    async newConversation() {
+      try {
+        const conv = await POST('/chat/conversations');
+        this.conversations.unshift(conv);
+        this.selectConversation(conv.id);
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async selectConversation(cid) {
+      try {
+        const conv = await GET('/chat/conversations/' + cid);
+        this.currentConv = conv;
+        this.messages = conv.messages || [];
+        this.$nextTick(() => this.scrollToBottom());
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async deleteConversation(cid) {
+      if (!confirm('Delete this conversation?')) return;
+      try {
+        await DEL('/chat/conversations/' + cid);
+        this.conversations = this.conversations.filter(c => c.id !== cid);
+        if (this.currentConv && this.currentConv.id === cid) {
+          this.currentConv = null;
+          this.messages = [];
+        }
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async sendMessage() {
+      if (!this.inputMsg.trim() || this.streaming) return;
+
+      const msg = this.inputMsg.trim();
+      this.inputMsg = '';
+
+      // Add user message to UI
+      this.messages.push({ role: 'user', content: msg, ts: Date.now() / 1000 });
+      this.$nextTick(() => this.scrollToBottom());
+
+      // Start streaming
+      this.streaming = true;
+      this.streamingText = '';
+
+      const cid = this.currentConv ? this.currentConv.id : '';
+      const params = new URLSearchParams({ message: msg });
+      if (cid) params.set('conversation_id', cid);
+
+      try {
+        const auth = getAuthHeader();
+        const headers = {};
+        if (auth) headers['Authorization'] = auth;
+
+        const resp = await fetch('/api/chat/stream?' + params.toString(), { headers });
+
+        if (resp.status === 401) {
+          clearAuth();
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.type === 'meta') {
+                if (!this.currentConv) {
+                  this.currentConv = { id: data.conversation_id };
+                  await this.load(); // Refresh sidebar
+                }
+              } else if (data.type === 'chunk') {
+                this.streamingText += data.content;
+                this.$nextTick(() => this.scrollToBottom());
+              } else if (data.type === 'done') {
+                // Add complete assistant message
+                this.messages.push({
+                  role: 'assistant',
+                  content: this.streamingText,
+                  ts: Date.now() / 1000,
+                });
+                this.streamingText = '';
+                this.streaming = false;
+                this.$nextTick(() => this.scrollToBottom());
+                await this.load(); // Refresh sidebar for title update
+              }
+            } catch (e) { /* skip parse errors */ }
+          }
+        }
+      } catch (e) {
+        _toast(this, 'Stream error: ' + e.message, 'error');
+        this.streaming = false;
+        this.streamingText = '';
+      }
+    },
+
+    scrollToBottom() {
+      const el = document.getElementById('chatMessages');
+      if (el) el.scrollTop = el.scrollHeight;
+    },
+
+    formatTime(ts) {
+      return timeAgo(ts);
+    },
+  };
+}
+
+// ============================================
+// NEW: Notifications page component
+// ============================================
+
+function notificationsPage() {
+  return {
+    notifications: [],
+    unreadOnly: false,
+
+    async load() {
+      try {
+        const qs = this.unreadOnly ? '?unread_only=true' : '';
+        this.notifications = await GET('/notifications' + qs);
+      } catch (e) {
+        _toast(this, 'Failed to load notifications', 'error');
+      }
+    },
+
+    async markRead(nid) {
+      try {
+        await POST('/notifications/' + nid + '/read');
+        const n = this.notifications.find(x => x.id === nid);
+        if (n) n.read = true;
+        // Update badge
+        _updateUnreadBadge(this);
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async markAllRead() {
+      try {
+        await POST('/notifications/read-all');
+        this.notifications.forEach(n => n.read = true);
+        _updateUnreadBadge(this);
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async deleteNotification(nid) {
+      try {
+        await DEL('/notifications/' + nid);
+        this.notifications = this.notifications.filter(n => n.id !== nid);
+        _updateUnreadBadge(this);
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    formatTime(ts) {
+      return timeAgo(ts);
+    },
+
+    levelIcon(level) {
+      const map = { info: 'i', warning: '!', error: 'x', success: '+' };
+      return map[level] || 'i';
+    },
+  };
+}
+
+function _updateUnreadBadge(ctx) {
+  // Trigger a re-poll on the main app
+  GET('/notifications/unread').then(data => {
+    let el = document.body;
+    if (el && el._x_dataStack) {
+      for (const d of el._x_dataStack) {
+        if ('unreadCount' in d) {
+          d.unreadCount = data.count;
+          return;
+        }
+      }
+    }
+  }).catch(() => {});
+}
+
+// ============================================
+// NEW: Jobs page component
+// ============================================
+
+function jobsPage() {
+  return {
+    jobs: [],
+    filter: '',
+    sseSource: null,
+
+    async load() {
+      try {
+        const qs = this.filter ? '?status=' + this.filter : '';
+        this.jobs = await GET('/jobs' + qs);
+      } catch (e) {
+        _toast(this, 'Failed to load jobs', 'error');
+      }
+    },
+
+    async createJob() {
+      const name = prompt('Job name:');
+      if (!name) return;
+      try {
+        await POST('/jobs', { name, job_type: 'shell' });
+        await this.load();
+        _toast(this, 'Job created', 'success');
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async deleteJob(jid) {
+      if (!confirm('Delete this job?')) return;
+      try {
+        await DEL('/jobs/' + jid);
+        await this.load();
+        _toast(this, 'Job deleted', 'success');
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    statusTag(s) {
+      const map = { queued: '', running: 'tag-yellow', completed: 'tag-green', failed: 'tag-red' };
+      return map[s] || '';
+    },
+
+    formatTime(ts) {
+      return ts ? timeAgo(ts) : '-';
+    },
+
+    formatDuration(d) {
+      if (!d) return '-';
+      if (d < 1) return (d * 1000).toFixed(0) + 'ms';
+      if (d < 60) return d.toFixed(1) + 's';
+      return (d / 60).toFixed(1) + 'm';
+    },
+
+    jobCounts() {
+      const counts = { queued: 0, running: 0, completed: 0, failed: 0 };
+      this.jobs.forEach(j => { counts[j.status] = (counts[j.status] || 0) + 1; });
+      return counts;
+    },
+  };
+}
+
+// ============================================
+// NEW: Settings page component
+// ============================================
+
+function settingsPage() {
+  return {
+    overview: null,
+
+    async load() {
+      try {
+        this.overview = await GET('/settings/overview');
+      } catch (e) {
+        _toast(this, 'Failed to load settings', 'error');
+      }
+    },
+  };
+}
+
 // --- Toast helper (works from nested Alpine components) ---
 function _toast(ctx, msg, type) {
-  // Walk up to find the root app data
   let el = ctx.$el;
   while (el && !el._x_dataStack) {
     el = el.parentElement;
@@ -527,7 +849,6 @@ function _toast(ctx, msg, type) {
       }
     }
   }
-  // Fallback: find body's Alpine data
   const body = document.body;
   if (body._x_dataStack) {
     for (const data of body._x_dataStack) {

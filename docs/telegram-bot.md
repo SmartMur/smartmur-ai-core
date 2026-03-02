@@ -77,7 +77,7 @@ The bot uses a **secure-by-default** authorization model:
 | `/mode [chat\|skill]` | Switch between chat and skill mode |
 | `/history` | Show recent conversation history |
 | `/reset` | Clear conversation history |
-| `/cancel` | Cancel running job (placeholder) |
+| `/cancel` | Cancel the currently running job |
 
 Commands are registered with Telegram via `setMyCommands` on startup, providing autocomplete in the Telegram client.
 

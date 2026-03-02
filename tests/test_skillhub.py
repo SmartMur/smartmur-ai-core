@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 import yaml
 
-from superpowers.skillhub import SkillHub, SyncResult
-
+from superpowers.skillhub import SkillHub
 
 SKILL_MANIFEST = {
     "name": "test-skill",

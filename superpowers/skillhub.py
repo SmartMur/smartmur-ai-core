@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-import shutil
 
 import yaml
-
 
 from superpowers.config import get_data_dir
 

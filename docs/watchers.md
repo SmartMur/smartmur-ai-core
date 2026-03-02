@@ -57,7 +57,7 @@ Runs a registered skill with the triggering file path passed as the `file` argum
 
 ### workflow
 
-Triggers a named workflow (not yet implemented).
+Triggers a named workflow by name.
 
 ### move
 

@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock
 
 import pytest
 
 from superpowers.credential_rotation import (
     AlertStatus,
-    CredentialAlert,
     CredentialRotationChecker,
     RotationPolicy,
     run_rotation_check,
@@ -30,7 +29,7 @@ class TestRotationPolicy:
 
     def test_last_rotated_dt_parses(self):
         p = RotationPolicy(last_rotated="2025-01-15T00:00:00+00:00")
-        assert p.last_rotated_dt == datetime(2025, 1, 15, tzinfo=timezone.utc)
+        assert p.last_rotated_dt == datetime(2025, 1, 15, tzinfo=UTC)
 
 
 class TestCredentialRotationChecker:
@@ -45,14 +44,14 @@ class TestCredentialRotationChecker:
         assert policy.max_age_days == 30
 
     def test_set_policy_preserves_last_rotated(self, checker):
-        checker.mark_rotated("my-key", datetime(2025, 6, 1, tzinfo=timezone.utc))
+        checker.mark_rotated("my-key", datetime(2025, 6, 1, tzinfo=UTC))
         checker.set_policy("my-key", 60)
         policy = checker.get_policy("my-key")
         assert policy.max_age_days == 60
         assert "2025-06-01" in policy.last_rotated
 
     def test_mark_rotated(self, checker):
-        when = datetime(2025, 3, 1, tzinfo=timezone.utc)
+        when = datetime(2025, 3, 1, tzinfo=UTC)
         checker.mark_rotated("db-pass", when)
         policy = checker.get_policy("db-pass")
         assert policy.last_rotated_dt == when
@@ -61,7 +60,7 @@ class TestCredentialRotationChecker:
         path = tmp_path / "policies.yaml"
         c1 = CredentialRotationChecker(policies_path=path)
         c1.set_policy("key1", 45)
-        c1.mark_rotated("key1", datetime(2025, 1, 1, tzinfo=timezone.utc))
+        c1.mark_rotated("key1", datetime(2025, 1, 1, tzinfo=UTC))
 
         c2 = CredentialRotationChecker(policies_path=path)
         policy = c2.get_policy("key1")
@@ -69,15 +68,15 @@ class TestCredentialRotationChecker:
         assert "2025-01-01" in policy.last_rotated
 
     def test_check_key_ok(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
-        checker.mark_rotated("key1", datetime(2025, 5, 25, tzinfo=timezone.utc))
+        now = datetime(2025, 6, 1, tzinfo=UTC)
+        checker.mark_rotated("key1", datetime(2025, 5, 25, tzinfo=UTC))
         alert = checker.check_key("key1", now)
         assert alert.status == AlertStatus.ok
         assert alert.age_days == 7
         assert alert.max_age_days == 90
 
     def test_check_key_warning(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         # 80 days old, threshold is 72 days (80% of 90)
         checker.mark_rotated("key1", now - timedelta(days=80))
         alert = checker.check_key("key1", now)
@@ -85,7 +84,7 @@ class TestCredentialRotationChecker:
         assert alert.age_days == 80
 
     def test_check_key_expired(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.mark_rotated("key1", now - timedelta(days=100))
         alert = checker.check_key("key1", now)
         assert alert.status == AlertStatus.expired
@@ -97,7 +96,7 @@ class TestCredentialRotationChecker:
         assert alert.age_days == -1
 
     def test_check_key_custom_policy(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.set_policy("short-lived", 7)
         checker.mark_rotated("short-lived", now - timedelta(days=4))
         # 4 days old, warning threshold is int(7*0.8)=5 days -> ok at day 4
@@ -105,14 +104,14 @@ class TestCredentialRotationChecker:
         assert alert.status == AlertStatus.ok
 
     def test_check_key_custom_policy_expired(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.set_policy("short-lived", 7)
         checker.mark_rotated("short-lived", now - timedelta(days=8))
         alert = checker.check_key("short-lived", now)
         assert alert.status == AlertStatus.expired
 
     def test_check_all(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.mark_rotated("key-a", now - timedelta(days=10))
         checker.mark_rotated("key-b", now - timedelta(days=95))
 
@@ -124,7 +123,7 @@ class TestCredentialRotationChecker:
         assert alerts[1].status == AlertStatus.expired
 
     def test_check_all_sorted(self, checker):
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         alerts = checker.check_all(["z-key", "a-key"], now)
         assert alerts[0].key == "a-key"
         assert alerts[1].key == "z-key"
@@ -152,7 +151,7 @@ class TestRunRotationCheck:
     def test_sends_alert_on_expired(self, tmp_path):
         policies_path = tmp_path / "policies.yaml"
         checker = CredentialRotationChecker(policies_path=policies_path)
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.mark_rotated("old-key", now - timedelta(days=100))
 
         vault = MagicMock()
@@ -183,7 +182,7 @@ class TestRunRotationCheck:
     def test_no_alert_when_all_ok(self, tmp_path):
         policies_path = tmp_path / "policies.yaml"
         checker = CredentialRotationChecker(policies_path=policies_path)
-        now = datetime(2025, 6, 1, tzinfo=timezone.utc)
+        now = datetime(2025, 6, 1, tzinfo=UTC)
         checker.mark_rotated("fresh-key", now - timedelta(days=1))
 
         vault = MagicMock()

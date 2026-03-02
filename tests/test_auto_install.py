@@ -7,11 +7,11 @@ import yaml
 
 from superpowers.auto_install import (
     BUILTIN_TEMPLATES,
+    _match_template,
+    _tokenize,
     check_and_install,
     install_from_template,
     suggest_skill,
-    _match_template,
-    _tokenize,
 )
 from superpowers.skill_registry import SkillRegistry
 

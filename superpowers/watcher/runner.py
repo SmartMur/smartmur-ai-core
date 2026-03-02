@@ -6,7 +6,6 @@ import logging
 import os
 import signal
 import sys
-from pathlib import Path
 
 from superpowers.config import get_data_dir
 

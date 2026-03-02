@@ -13,8 +13,8 @@ logger = logging.getLogger("telegram-bot")
 
 
 def main():
-    from superpowers.config import Settings
     from msg_gateway.inbound import InboundListener
+    from superpowers.config import Settings
 
     logger.info("Starting Telegram bot with Claude AI responses")
     stop = threading.Event()

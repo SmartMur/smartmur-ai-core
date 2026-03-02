@@ -118,7 +118,7 @@ def vault_init():
     v = Vault()
     try:
         pubkey = v.init()
-        console.print(f"[bold green]Vault initialized.[/bold green]")
+        console.print("[bold green]Vault initialized.[/bold green]")
         console.print(f"  Identity: {v.identity_file}")
         console.print(f"  Vault:    {v.vault_path}")
         console.print(f"  Public key: [cyan]{pubkey}[/cyan]")

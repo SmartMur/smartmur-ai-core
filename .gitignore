@@ -17,8 +17,11 @@ node_modules/
 # Superpowers runtime data
 .claude-superpowers/
 
-# Encrypted secrets (but NOT vault templates)
+# Encrypted secrets and key material
 *.enc
+*.key
+*.pem
+*.p12
 !vault/**/*.enc.example
 
 # Logs

@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import subprocess
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -15,12 +13,10 @@ from superpowers.workflow.base import (
     StepType,
     WorkflowConfig,
     WorkflowError,
-    WorkflowStatus,
 )
 from superpowers.workflow.builtins import install_builtins
 from superpowers.workflow.engine import WorkflowEngine
 from superpowers.workflow.loader import WorkflowLoader
-
 
 # --- Base types ---
 

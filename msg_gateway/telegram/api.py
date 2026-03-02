@@ -155,3 +155,45 @@ class TelegramApi:
 
     def set_my_commands(self, commands: list[dict[str, str]]) -> ApiResponse:
         return self.call("setMyCommands", {"commands": commands})
+
+    def set_message_reaction(
+        self,
+        chat_id: str,
+        message_id: int,
+        reaction: str = "\U0001f44d",  # thumbs up
+    ) -> None:
+        """Send a reaction emoji on a message. Fire-and-forget."""
+        self.fire_and_forget(
+            "setMessageReaction",
+            {
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "reaction": [{"type": "emoji", "emoji": reaction}],
+            },
+        )
+
+    def set_webhook(
+        self,
+        url: str,
+        secret_token: str = "",
+        max_connections: int = 40,
+        allowed_updates: list[str] | None = None,
+    ) -> ApiResponse:
+        """Register a webhook URL with Telegram."""
+        payload: dict[str, Any] = {
+            "url": url,
+            "max_connections": max_connections,
+        }
+        if secret_token:
+            payload["secret_token"] = secret_token
+        if allowed_updates:
+            payload["allowed_updates"] = allowed_updates
+        return self.call("setWebhook", payload)
+
+    def delete_webhook(self, drop_pending: bool = False) -> ApiResponse:
+        """Remove the current webhook."""
+        return self.call("deleteWebhook", {"drop_pending_updates": drop_pending})
+
+    def get_file(self, file_id: str) -> ApiResponse:
+        """Get file info for downloading."""
+        return self.call("getFile", {"file_id": file_id})

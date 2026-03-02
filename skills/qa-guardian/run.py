@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -11,10 +10,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from superpowers.qa_guardian import QAGuardian
-from superpowers.audit import AuditLog
-from superpowers.config import get_data_dir
-from superpowers import telegram_notify
+from superpowers import telegram_notify  # noqa: E402
+from superpowers.audit import AuditLog  # noqa: E402
+from superpowers.config import get_data_dir  # noqa: E402
+from superpowers.qa_guardian import QAGuardian  # noqa: E402
 
 
 def main() -> int:

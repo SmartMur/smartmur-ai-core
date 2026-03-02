@@ -39,7 +39,7 @@ script: run.sh              # Entry point relative to skill directory
 
 # Optional fields
 slash_command: true          # Register as Claude Code slash command (default: false)
-triggers: []                 # Event triggers (reserved for Phase 3 cron integration)
+triggers: []                 # Event triggers for cron integration (e.g., ["cron:daily"])
 dependencies: []             # Required binaries that must be on PATH (e.g., [nmap, jq])
 permissions: []              # Permission scopes (e.g., [ssh, vault, nmap])
 ```
@@ -54,7 +54,7 @@ permissions: []              # Permission scopes (e.g., [ssh, vault, nmap])
 | `author`        | Yes      | string     | Who wrote this skill |
 | `script`        | Yes      | string     | Path to the entry point script, relative to skill dir |
 | `slash_command`  | No       | boolean    | If `true`, `claw skill sync` creates a Claude Code slash command |
-| `triggers`      | No       | list[str]  | Reserved for cron/event triggers (Phase 3) |
+| `triggers`      | No       | list[str]  | Event triggers for cron integration (e.g., `cron:daily`) |
 | `dependencies`  | No       | list[str]  | Binaries checked via `which` before execution |
 | `permissions`   | No       | list[str]  | Scopes controlling environment access during sandboxed runs |
 
@@ -63,8 +63,8 @@ permissions: []              # Permission scopes (e.g., [ssh, vault, nmap])
 The `permissions` list controls what the skill can access when run in sandboxed mode (`run_sandboxed`):
 
 - **`vault`** -- The skill receives the full environment, including vault-injected secrets. Without this permission, sandboxed execution strips the environment to `PATH`, `HOME`, `LANG`, and `TERM` only.
-- **`ssh`** -- Declares that the skill needs SSH access (documentation/intent, enforcement coming in Phase 6).
-- **`nmap`** -- Declares network scanning capability (documentation/intent).
+- **`ssh`** -- Declares that the skill needs SSH access (used for documentation and intent signaling).
+- **`nmap`** -- Declares network scanning capability (used for documentation and intent signaling).
 
 Custom permission strings are allowed. The system currently enforces `vault`; other permissions serve as declarations for future phases.
 
@@ -169,7 +169,7 @@ usage() {
 
 main() {
     echo "[my-skill] running..."
-    # TODO: implement skill logic
+    # Add your skill logic here
 }
 
 main "$@"

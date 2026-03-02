@@ -6,7 +6,6 @@ import time
 
 from msg_gateway.telegram.session import HistoryEntry, SessionManager
 
-
 # --- HistoryEntry ---
 
 

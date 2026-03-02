@@ -27,13 +27,18 @@ claude-superpowers/
 │   └── launchd.py            # Service management (systemd/launchd)
 ├── skills/                   # Skill directories (each has skill.yaml)
 │   ├── _template/            # Copy-paste starter skill
-│   └── network-scan/         # Example: scan home network subnets
-├── browser_engine/           # (Phase 5) Playwright-based browser automation
-├── msg_gateway/              # (Phase 4) Slack/Telegram/Discord/email gateway
-├── ssh_fabric/               # (Phase 6) Remote execution over SSH
-├── workflows/                # (Phase 7) Multi-step workflow engine
-├── tests/                    # Unit and integration tests
-├── docs/                     # This documentation
+│   ├── heartbeat/            # Infrastructure health check
+│   ├── network-scan/         # Scan home network subnets
+│   ├── deploy/               # Local deployment pipeline
+│   ├── infra-fixer/          # Docker infrastructure monitor
+│   ├── qa-guardian/          # Code quality scanner
+│   └── ...                   # 12 skills total
+├── msg_gateway/              # FastAPI messaging gateway + Telegram bot
+├── dashboard/                # FastAPI web dashboard (Alpine.js + htmx)
+├── workflows/                # YAML workflow definitions
+├── tests/                    # 982 tests
+├── docs/                     # Documentation
+├── deploy/                   # Deployment configs (systemd, CI/CD)
 └── pyproject.toml            # Project metadata + dependencies
 ```
 
@@ -89,8 +94,8 @@ claude-superpowers/
               └────────────┘│      │      │      │
                             v      v      v      v
               ┌──────────────────────────────────────┐
-              │         Future Phases (3-8)           │
-              │   msg | browser | ssh | wkflow       │
+              │       Messaging | Browser | SSH      │
+              │       Workflows | Memory | Watchers  │
               └──────────────────────────────────────┘
                               │
                               v
@@ -123,10 +128,11 @@ claude-superpowers/
 | Encryption       | age (CLI) via subprocess           |
 | Skill Manifests  | YAML (PyYAML 6.x)                 |
 | Scheduling       | APScheduler 3.x                   |
-| HTTP/API         | aiohttp 3.x, FastAPI (Phase 4+)   |
-| Browser          | Playwright (Phase 5)              |
-| SSH              | Paramiko 3.x (Phase 6)            |
-| Persistence      | Redis 5.x (Phase 7+)              |
+| HTTP/API         | aiohttp 3.x, FastAPI, uvicorn     |
+| Browser          | Playwright (Chromium)              |
+| SSH              | Paramiko 3.x                      |
+| Persistence      | SQLite (memory, cron), Redis 5.x (sessions, pubsub) |
+| MCP              | mcp (FastMCP) for Claude Code integration |
 | Testing          | pytest 8.x, ruff (linting)        |
 | Build            | setuptools 69+                    |
 
@@ -136,31 +142,11 @@ claude-superpowers/
 |-------|-------------------------------|----------------|
 | 1     | Core scaffold, vault, skills  | **Complete**   |
 | 2     | Cron daemon (APScheduler)     | **Complete**   |
-| 3     | Messaging gateway             | Planned        |
-| 4     | Browser engine (Playwright)   | Planned        |
-| 5     | SSH fabric (Paramiko)         | Planned        |
-| 6     | Workflow orchestrator          | Planned        |
-| 7     | Dashboard + status API         | Planned        |
+| 3     | Messaging gateway             | **Complete**   |
+| 4     | SSH fabric (Paramiko)         | **Complete**   |
+| 5     | Browser engine (Playwright)   | **Complete**   |
+| 6     | Workflow orchestrator          | **Complete**   |
+| 7     | Persistent memory             | **Complete**   |
+| 8     | Watchers, dashboard, glue     | **Complete**   |
 
-### Phase 1 Deliverables (Complete)
-
-- Project scaffold with `pyproject.toml`, `claw` entry point
-- Encrypted vault with age keypair generation and optional macOS Keychain integration
-- Skill registry with discovery, validation, install/uninstall
-- Skill loader with dependency checking and sandboxed execution
-- Skill creator with bash/python templates and auto-sync
-- CLI commands for all of the above
-- Slash command generation via symlinks into `~/.claude/commands/`
-
-### Phase 2 Deliverables (Complete)
-
-- APScheduler-based cron engine with SQLite job store
-- Four job types: shell, claude, webhook, skill
-- Three schedule formats: cron expressions, interval strings, daily-at patterns
-- Job execution runner with stdout/stderr/exit code capture
-- Per-job output logging to `~/.claude-superpowers/cron/output/{id}/`
-- Cross-platform daemon management (`systemd --user` on Linux, `launchd` on macOS)
-- CLI commands: `claw cron list/add/remove/enable/disable/logs/run/status`
-- CLI commands: `claw daemon install/uninstall/status/logs`
-- Job persistence via `jobs.json` + SQLite
-- Heartbeat skill for homelab infrastructure monitoring
+All 8 phases are shipped. See the individual doc pages for details on each subsystem.

@@ -11,28 +11,6 @@
 </head>
 <body x-data="app()" x-init="init()">
 
-  <!-- Login modal -->
-  <div x-show="showLogin" x-cloak class="modal-overlay">
-      <div class="modal" style="max-width:360px">
-        <div class="modal-title">Claw Dashboard Login</div>
-        <div x-show="loginError" class="text-red mb-4" x-text="loginError" style="font-size:14px"></div>
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" x-model="loginUser" placeholder="admin"
-                 @keyup.enter="$refs.loginPassInput.focus()">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input class="form-input" type="password" x-model="loginPass" x-ref="loginPassInput"
-                 @keyup.enter="doLogin()">
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-primary" style="width:100%" @click="doLogin()">Sign In</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast notifications -->
   <div class="toast-container">
     <template x-for="(t, i) in toasts" :key="i">
@@ -45,43 +23,70 @@
   <div class="app-layout">
     <!-- Sidebar -->
     <nav class="sidebar">
-      <div class="sidebar-brand"><span>CLAW</span>
-        <button class="btn btn-sm" style="margin-left:auto;font-size:11px;padding:2px 8px" @click="doLogout()">Logout</button>
+      <div class="sidebar-brand">
+        <span>CLAW</span>
       </div>
       <div class="sidebar-nav">
+        <div class="nav-section"><span class="nav-label">Main</span></div>
         <a class="nav-item" :class="{ active: page === 'home' }" @click="go('home')">
           <span class="nav-icon">&#9632;</span> <span class="nav-label">Dashboard</span>
         </a>
+        <a class="nav-item" :class="{ active: page === 'chat' }" @click="go('chat')">
+          <span class="nav-icon">&#9993;</span> <span class="nav-label">Chat</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'jobmonitor' }" @click="go('jobmonitor')">
+          <span class="nav-icon">&#9881;</span> <span class="nav-label">Jobs</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'notifications' }" @click="go('notifications')">
+          <span class="nav-icon">&#128276;</span> <span class="nav-label">Notifications</span>
+          <span x-show="unreadCount > 0" class="nav-badge" x-text="unreadCount"></span>
+        </a>
+
+        <div class="nav-section"><span class="nav-label">Automation</span></div>
         <a class="nav-item" :class="{ active: page === 'cron' }" @click="go('cron')">
           <span class="nav-icon">&#9200;</span> <span class="nav-label">Cron</span>
-        </a>
-        <a class="nav-item" :class="{ active: page === 'msg' }" @click="go('msg')">
-          <span class="nav-icon">&#9993;</span> <span class="nav-label">Messaging</span>
-        </a>
-        <a class="nav-item" :class="{ active: page === 'ssh' }" @click="go('ssh')">
-          <span class="nav-icon">&#62;</span> <span class="nav-label">SSH</span>
         </a>
         <a class="nav-item" :class="{ active: page === 'workflows' }" @click="go('workflows')">
           <span class="nav-icon">&#9881;</span> <span class="nav-label">Workflows</span>
         </a>
-        <a class="nav-item" :class="{ active: page === 'memory' }" @click="go('memory')">
-          <span class="nav-icon">&#128200;</span> <span class="nav-label">Memory</span>
-        </a>
         <a class="nav-item" :class="{ active: page === 'skills' }" @click="go('skills')">
           <span class="nav-icon">&#9889;</span> <span class="nav-label">Skills</span>
         </a>
+        <a class="nav-item" :class="{ active: page === 'watchers' }" @click="go('watchers')">
+          <span class="nav-icon">&#128065;</span> <span class="nav-label">Watchers</span>
+        </a>
+
+        <div class="nav-section"><span class="nav-label">Infrastructure</span></div>
+        <a class="nav-item" :class="{ active: page === 'msg' }" @click="go('msg')">
+          <span class="nav-icon">&#128172;</span> <span class="nav-label">Messaging</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'ssh' }" @click="go('ssh')">
+          <span class="nav-icon">&#62;</span> <span class="nav-label">SSH</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'memory' }" @click="go('memory')">
+          <span class="nav-icon">&#128200;</span> <span class="nav-label">Memory</span>
+        </a>
+        <a class="nav-item" :class="{ active: page === 'browser' }" @click="go('browser')">
+          <span class="nav-icon">&#127760;</span> <span class="nav-label">Browser</span>
+        </a>
+
+        <div class="nav-section"><span class="nav-label">System</span></div>
         <a class="nav-item" :class="{ active: page === 'audit' }" @click="go('audit')">
           <span class="nav-icon">&#128220;</span> <span class="nav-label">Audit</span>
         </a>
         <a class="nav-item" :class="{ active: page === 'vault' }" @click="go('vault')">
           <span class="nav-icon">&#128274;</span> <span class="nav-label">Vault</span>
         </a>
-        <a class="nav-item" :class="{ active: page === 'watchers' }" @click="go('watchers')">
-          <span class="nav-icon">&#128065;</span> <span class="nav-label">Watchers</span>
+        <a class="nav-item" :class="{ active: page === 'settings' }" @click="go('settings')">
+          <span class="nav-icon">&#9881;</span> <span class="nav-label">Settings</span>
         </a>
-        <a class="nav-item" :class="{ active: page === 'browser' }" @click="go('browser')">
-          <span class="nav-icon">&#127760;</span> <span class="nav-label">Browser</span>
-        </a>
+      </div>
+      <div class="sidebar-footer">
+        <span class="user-label">Claw v2</span>
+        <button class="btn-icon" @click="toggleTheme()" :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
+          <span x-text="theme === 'dark' ? '&#9728;' : '&#9790;'"></span>
+        </button>
+        <button class="btn btn-sm" @click="doLogout()">Logout</button>
       </div>
     </nav>
 
@@ -108,6 +113,171 @@
                 <div class="card-detail" x-text="s.detail"></div>
               </div>
             </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- CHAT -->
+      <template x-if="page === 'chat'">
+        <div x-data="chatPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Chat</h1>
+            <p>Talk with Claude</p>
+          </div>
+          <div class="chat-layout">
+            <!-- Conversation sidebar -->
+            <div class="chat-sidebar">
+              <div class="chat-sidebar-header">
+                <h3>History</h3>
+                <button class="btn btn-sm btn-primary" @click="newConversation()">+ New</button>
+              </div>
+              <div class="chat-list">
+                <template x-for="c in conversations" :key="c.id">
+                  <div class="chat-list-item" :class="{ active: currentConv && currentConv.id === c.id }"
+                       @click="selectConversation(c.id)">
+                    <div class="chat-item-title" x-text="c.title"></div>
+                    <div class="chat-item-date" x-text="formatTime(c.updated_at)"></div>
+                  </div>
+                </template>
+                <div x-show="conversations.length === 0" class="text-muted" style="padding:16px;font-size:13px">
+                  No conversations yet
+                </div>
+              </div>
+            </div>
+            <!-- Chat main -->
+            <div class="chat-main">
+              <div id="chatMessages" class="chat-messages">
+                <template x-if="!currentConv && messages.length === 0">
+                  <div class="chat-empty">Start a new conversation or select one from the sidebar</div>
+                </template>
+                <template x-for="(m, i) in messages" :key="i">
+                  <div class="chat-bubble" :class="m.role">
+                    <span x-text="m.content"></span>
+                  </div>
+                </template>
+                <!-- Streaming response -->
+                <template x-if="streaming && streamingText">
+                  <div class="chat-bubble assistant">
+                    <span x-text="streamingText"></span><span class="streaming-indicator"></span>
+                  </div>
+                </template>
+              </div>
+              <div class="chat-input-area">
+                <textarea class="chat-input" x-model="inputMsg"
+                          placeholder="Type a message..."
+                          @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
+                          rows="1"></textarea>
+                <button class="chat-send-btn" @click="sendMessage()" :disabled="streaming || !inputMsg.trim()">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- JOB MONITOR -->
+      <template x-if="page === 'jobmonitor'">
+        <div x-data="jobsPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Job Monitor</h1>
+            <p>Track queued, running, and completed tasks</p>
+          </div>
+
+          <div class="job-status-bar">
+            <div class="job-stat" @click="filter = ''; load()">
+              <div class="job-stat-value" x-text="jobs.length"></div>
+              <div class="job-stat-label">Total</div>
+            </div>
+            <div class="job-stat" @click="filter = 'queued'; load()">
+              <div class="job-stat-value text-muted" x-text="jobCounts().queued"></div>
+              <div class="job-stat-label">Queued</div>
+            </div>
+            <div class="job-stat" @click="filter = 'running'; load()">
+              <div class="job-stat-value" style="color:var(--yellow)" x-text="jobCounts().running"></div>
+              <div class="job-stat-label">Running</div>
+            </div>
+            <div class="job-stat" @click="filter = 'completed'; load()">
+              <div class="job-stat-value text-green" x-text="jobCounts().completed"></div>
+              <div class="job-stat-label">Completed</div>
+            </div>
+            <div class="job-stat" @click="filter = 'failed'; load()">
+              <div class="job-stat-value text-red" x-text="jobCounts().failed"></div>
+              <div class="job-stat-label">Failed</div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn" @click="load()">Refresh</button>
+            <button class="btn btn-primary" @click="createJob()">+ Create Job</button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th><th>Name</th><th>Type</th><th>Started</th><th>Duration</th>
+                <th>Output</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="j in jobs" :key="j.id">
+                <tr>
+                  <td><span class="tag" :class="statusTag(j.status)" x-text="j.status"></span></td>
+                  <td x-text="j.name"></td>
+                  <td><span class="tag" x-text="j.job_type"></span></td>
+                  <td class="text-muted" x-text="formatTime(j.started_at)"></td>
+                  <td class="font-mono" x-text="formatDuration(j.duration)"></td>
+                  <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+                      x-text="j.output || j.error || '-'"></td>
+                  <td>
+                    <button class="btn btn-sm btn-danger" @click="deleteJob(j.id)">Del</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <div x-show="jobs.length === 0" class="text-muted mt-4">No jobs recorded</div>
+        </div>
+      </template>
+
+      <!-- NOTIFICATIONS -->
+      <template x-if="page === 'notifications'">
+        <div x-data="notificationsPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Notifications</h1>
+            <p>Event feed and alerts</p>
+          </div>
+          <div class="toolbar">
+            <div class="flex gap-2">
+              <button class="btn" :class="{ 'btn-primary': !unreadOnly }" @click="unreadOnly = false; load()">All</button>
+              <button class="btn" :class="{ 'btn-primary': unreadOnly }" @click="unreadOnly = true; load()">Unread</button>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn" @click="markAllRead()">Mark All Read</button>
+              <button class="btn" @click="load()">Refresh</button>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+            <template x-for="n in notifications" :key="n.id">
+              <div class="notification-item" :class="{ unread: !n.read }">
+                <div class="notification-icon" :class="n.level">
+                  <span x-text="levelIcon(n.level)"></span>
+                </div>
+                <div class="notification-body">
+                  <div class="notification-title" x-text="n.title"></div>
+                  <div x-show="n.detail" class="notification-detail" x-text="n.detail"></div>
+                  <div class="notification-time">
+                    <span x-text="n.source"></span> &middot; <span x-text="formatTime(n.created_at)"></span>
+                  </div>
+                </div>
+                <div class="flex gap-2" style="align-items:center">
+                  <button x-show="!n.read" class="btn btn-sm" @click="markRead(n.id)">Read</button>
+                  <button class="btn btn-sm btn-danger" @click="deleteNotification(n.id)">Del</button>
+                </div>
+              </div>
+            </template>
+            <div x-show="notifications.length === 0" class="text-muted" style="padding:24px;text-align:center">
+              No notifications
+            </div>
           </div>
         </div>
       </template>
@@ -620,7 +790,7 @@
         <div x-data="vaultPage()" x-init="load()">
           <div class="page-header">
             <h1>Vault</h1>
-            <p>Encrypted credential store (key names only — no secrets shown)</p>
+            <p>Encrypted credential store (key names only)</p>
           </div>
           <div class="status-grid mb-4">
             <div class="status-card">
@@ -693,6 +863,44 @@
             </div>
           </template>
           <div x-show="profiles.length === 0" class="text-muted">No browser profiles saved</div>
+        </div>
+      </template>
+
+      <!-- SETTINGS -->
+      <template x-if="page === 'settings'">
+        <div x-data="settingsPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Settings</h1>
+            <p>Integration status and configuration</p>
+          </div>
+
+          <template x-if="overview">
+            <div>
+              <div class="settings-section">
+                <h3>Integrations</h3>
+                <template x-for="int in overview.integrations" :key="int.name">
+                  <div class="integration-row">
+                    <span class="dot" :class="int.configured ? 'dot-green' : 'dot-gray'"></span>
+                    <span class="integration-name" x-text="int.name"></span>
+                    <span class="integration-detail" x-text="int.detail"></span>
+                    <span class="tag" :class="int.configured ? 'tag-green' : ''" x-text="int.configured ? 'Active' : 'Inactive'"></span>
+                  </div>
+                </template>
+              </div>
+
+              <div class="status-grid">
+                <div class="status-card">
+                  <div class="card-title">Cron Jobs</div>
+                  <div class="card-value" x-text="overview.cron_count"></div>
+                </div>
+                <div class="status-card">
+                  <div class="card-title">Notification Profiles</div>
+                  <div class="card-value" x-text="overview.profile_count"></div>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div x-show="!overview" class="loading"><div class="spinner"></div></div>
         </div>
       </template>
 

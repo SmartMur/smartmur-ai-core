@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import shutil
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -9,7 +7,6 @@ import yaml
 
 from superpowers.watcher.base import WatchAction, WatcherError, WatchRule
 from superpowers.watcher.engine import WatcherEngine
-
 
 # --- WatchRule dataclass ---
 

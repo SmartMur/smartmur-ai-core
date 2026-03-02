@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from msg_gateway.telegram.types import (
     CallbackQuery,
     Chat,
@@ -13,7 +11,6 @@ from msg_gateway.telegram.types import (
     Voice,
     parse_updates,
 )
-
 
 # ---------------------------------------------------------------------------
 # User

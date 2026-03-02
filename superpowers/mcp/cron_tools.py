@@ -128,7 +128,6 @@ def register(mcp: FastMCP) -> None:
             limit: Maximum number of log entries to return (default 5).
         """
         try:
-            from pathlib import Path
             from superpowers.config import get_data_dir
 
             log_dir = get_data_dir() / "cron" / "output" / job_id

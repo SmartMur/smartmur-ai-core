@@ -6,8 +6,7 @@ import json
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 
 import click
 from rich.console import Console
@@ -78,7 +77,7 @@ def _send_telegram_update(message: str, chat_id: str = "") -> tuple[bool, str]:
 def _queue_telegram_update(message: str) -> None:
     PENDING_TELEGRAM_UPDATES.parent.mkdir(parents=True, exist_ok=True)
     entry = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
         "message": message,
     }
     with open(PENDING_TELEGRAM_UPDATES, "a") as f:
@@ -191,7 +190,7 @@ def intake_run(request_text: str, execute: bool, max_workers: int, notify_telegr
         )
 
     console.print(table)
-    console.print(f"[dim]Session saved to ~/.claude-superpowers/runtime/current_request.json[/dim]")
+    console.print("[dim]Session saved to ~/.claude-superpowers/runtime/current_request.json[/dim]")
 
     if notify_telegram:
         counts = {

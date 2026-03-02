@@ -95,10 +95,10 @@ def watcher_test(rule_name: str):
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
-    from watchdog.events import FileCreatedEvent
-
     # Simulate with a dummy file path based on the rule's path pattern
     from pathlib import Path
+
+    from watchdog.events import FileCreatedEvent
 
     watch_path = Path(rule.path).expanduser()
     if any(c in watch_path.name for c in ("*", "?", "[")):
