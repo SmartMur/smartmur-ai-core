@@ -49,5 +49,5 @@ claw browse profiles delete myprofile
 - Screenshots default to temp files unless `--output` is specified
 
 ```
-cd ~/Projects/claude-superpowers && claw browse $ARGUMENTS
+cd /home/ray/claude-superpowers && .venv/bin/claw browse $ARGUMENTS
 ```

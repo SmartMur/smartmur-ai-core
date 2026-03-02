@@ -10,4 +10,4 @@ Retrieve a stored memory by key.
 - `/recall "pve1-ip" --category fact`
 
 ## Implementation
-Run: `cd ~/Projects/claude-superpowers && .venv/bin/claw memory recall $ARGUMENTS`
+Run: `cd /home/ray/claude-superpowers && .venv/bin/claw memory recall $ARGUMENTS`

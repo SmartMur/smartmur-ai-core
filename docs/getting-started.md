@@ -3,10 +3,17 @@
 ## Prerequisites
 
 - **Python 3.12+** (3.14 recommended)
-- **Homebrew** (macOS)
+- **Debian/Ubuntu package manager** (`apt`)
 - **age** encryption tool
 
 Install age:
+
+```bash
+sudo apt update
+sudo apt install -y age
+```
+
+On macOS you can still use:
 
 ```bash
 brew install age
@@ -24,7 +31,7 @@ age-keygen --version
 Clone the repo and install in editable mode:
 
 ```bash
-cd ~/Projects/claude-superpowers
+cd /path/to/claude-superpowers
 pip install -e ".[dev]"
 ```
 
@@ -147,7 +154,7 @@ claw status                           # System health check
 
 ### `age: command not found`
 
-Install age: `brew install age`
+Install age on Debian/Ubuntu: `sudo apt install -y age` (or `brew install age` on macOS).
 
 ### `Identity file not found ... Run claw vault init`
 

@@ -18,6 +18,7 @@ class Skill:
     dependencies: list[str] = field(default_factory=list)
     slash_command: bool = False
     permissions: list[str] = field(default_factory=list)
+    skill_type: str = ""
 
 
 REQUIRED_FIELDS = {"name", "version", "description", "author", "script"}
@@ -39,6 +40,7 @@ def _parse_skill_yaml(skill_yaml: Path) -> Skill:
         dependencies=data.get("dependencies", []),
         slash_command=data.get("slash_command", False),
         permissions=data.get("permissions", []),
+        skill_type=data.get("skill_type", ""),
     )
 
 

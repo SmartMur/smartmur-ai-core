@@ -7,9 +7,15 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture()
-def client():
+def client(monkeypatch):
+    monkeypatch.setenv("DASHBOARD_USER", "admin")
+    monkeypatch.setenv("DASHBOARD_PASS", "superpowers")
+    # Reset cached settings so env vars are picked up
+    import dashboard.deps as deps
+    deps._settings = None
     from dashboard.app import app
-    return TestClient(app)
+    yield TestClient(app)
+    deps._settings = None
 
 
 def _basic_header(user: str, password: str) -> dict:

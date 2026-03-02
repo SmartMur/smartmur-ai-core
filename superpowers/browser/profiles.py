@@ -10,9 +10,10 @@ from superpowers.browser.base import BrowserError
 
 class ProfileManager:
     def __init__(self, profiles_dir: Path | None = None):
-        self._profiles_dir = profiles_dir or (
-            Path.home() / ".claude-superpowers" / "browser" / "profiles"
-        )
+        if profiles_dir is None:
+            from superpowers.config import get_data_dir
+            profiles_dir = get_data_dir() / "browser" / "profiles"
+        self._profiles_dir = profiles_dir
         self._profiles_dir.mkdir(parents=True, exist_ok=True)
 
     def list_profiles(self) -> list[str]:

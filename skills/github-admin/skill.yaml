@@ -1,0 +1,13 @@
+name: github-admin
+version: "1.0.0"
+description: "GitHub administration — auth, branch protection, repo audit"
+author: claude-superpowers
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [gh, python3]
+permissions:
+  - network
+  - subprocess
+schedule: null
+env_keys: []

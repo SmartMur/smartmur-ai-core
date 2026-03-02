@@ -34,7 +34,8 @@ class MemoryStore:
 
     def __init__(self, db_path: Path | None = None) -> None:
         if db_path is None:
-            db_path = Path.home() / ".claude-superpowers" / "memory.db"
+            from superpowers.config import get_data_dir
+            db_path = get_data_dir() / "memory.db"
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()

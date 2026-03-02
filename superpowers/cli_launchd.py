@@ -1,4 +1,4 @@
-"""Click subcommands for `claw daemon` — launchd service management."""
+"""Click subcommands for `claw daemon` service management."""
 
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ from rich.table import Table
 from superpowers.launchd import (
     LOG_DIR,
     install_cron_daemon,
+    service_backend,
+    service_label,
     service_status,
     uninstall_plist,
 )
@@ -22,12 +24,12 @@ SERVICE_NAME = "claude-superpowers-cron"
 
 @click.group()
 def daemon():
-    """Manage the cron daemon (launchd service)."""
+    """Manage the cron daemon service."""
 
 
 @daemon.command()
 def install():
-    """Install the launchd plist and start the daemon."""
+    """Install and start the daemon service."""
     try:
         path = install_cron_daemon()
         console.print(f"[green]Installed and loaded:[/green] {path}")
@@ -35,13 +37,13 @@ def install():
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
     except subprocess.CalledProcessError as e:
-        console.print(f"[red]launchctl failed:[/red] {e}")
+        console.print(f"[red]{service_backend()} command failed:[/red] {e}")
         sys.exit(1)
 
 
 @daemon.command()
 def uninstall():
-    """Unload and remove the daemon plist."""
+    """Stop and remove the daemon service definition."""
     try:
         uninstall_plist(SERVICE_NAME)
         console.print("[green]Daemon uninstalled.[/green]")
@@ -59,7 +61,8 @@ def status():
     table.add_column("Field", style="bold")
     table.add_column("Value")
 
-    table.add_row("Service", f"com.dreday.{SERVICE_NAME}")
+    table.add_row("Backend", service_backend())
+    table.add_row("Service", service_label(SERVICE_NAME))
     table.add_row(
         "Running",
         "[green]Yes[/green]" if info["running"] else "[red]No[/red]",

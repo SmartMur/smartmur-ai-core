@@ -96,7 +96,8 @@ def aggregate_status():
     # Vault
     try:
         from pathlib import Path
-        vault_file = Path.home() / ".claude-superpowers" / "vault.enc"
+        from superpowers.config import get_data_dir
+        vault_file = get_data_dir() / "vault.enc"
         initialized = vault_file.exists()
         subs.append(SubsystemStatus(
             name="vault", ok=initialized,

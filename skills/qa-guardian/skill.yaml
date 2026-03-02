@@ -1,0 +1,9 @@
+name: qa-guardian
+version: "1.0.0"
+description: "Autonomous code quality guardian — security, quality, test health, and efficiency checks"
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [python3]
+permissions: [file-read]

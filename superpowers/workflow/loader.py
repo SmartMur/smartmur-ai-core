@@ -12,7 +12,8 @@ from superpowers.workflow.base import StepConfig, StepType, WorkflowConfig, Work
 class WorkflowLoader:
     def __init__(self, workflows_dir: Path | None = None):
         if workflows_dir is None:
-            workflows_dir = Path.home() / ".claude-superpowers" / "workflows"
+            from superpowers.config import get_data_dir
+            workflows_dir = get_data_dir() / "workflows"
         self._dir = workflows_dir
 
     def load(self, name: str) -> WorkflowConfig:

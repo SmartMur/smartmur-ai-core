@@ -1,0 +1,9 @@
+name: cloudflared-fixer
+version: "1.0.0"
+description: "Monitor and auto-fix cloudflared tunnel container — crash loop detection, diagnostics, recovery"
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [docker, python3]
+permissions: [docker]

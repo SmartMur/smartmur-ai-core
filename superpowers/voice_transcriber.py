@@ -10,7 +10,9 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = Path.home() / ".claude-superpowers" / "models" / "ggml-base.en.bin"
+from superpowers.config import get_data_dir
+
+DEFAULT_MODEL = get_data_dir() / "models" / "ggml-base.en.bin"
 
 
 def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> str:
@@ -27,7 +29,7 @@ def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> 
     if not model_path.is_file():
         return "[error: whisper model not found — run: curl -L -o ~/.claude-superpowers/models/ggml-base.en.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin]"
     if not shutil.which("whisper-cli"):
-        return "[error: whisper-cli not found — run: brew install whisper-cpp]"
+        return "[error: whisper-cli not found — install whisper.cpp (Debian: apt install whisper.cpp)]"
 
     with tempfile.TemporaryDirectory() as tmp:
         wav_path = Path(tmp) / "audio.wav"
@@ -35,7 +37,7 @@ def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> 
         # Convert to 16kHz mono WAV (whisper requirement)
         ffmpeg = shutil.which("ffmpeg")
         if not ffmpeg:
-            return "[error: ffmpeg not found — run: brew install ffmpeg]"
+            return "[error: ffmpeg not found — install it (Debian: apt install ffmpeg)]"
 
         result = subprocess.run(
             [ffmpeg, "-i", str(audio_path), "-ar", "16000", "-ac", "1",

@@ -9,6 +9,8 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from superpowers.config import get_data_dir
+
 console = Console()
 
 
@@ -67,7 +69,7 @@ def status_dashboard():
 
     # --- Vault ---
     try:
-        data_dir = Path.home() / ".claude-superpowers"
+        data_dir = get_data_dir()
         vault_file = data_dir / "vault.enc"
         if vault_file.exists():
             sections.append("[cyan]Vault:[/cyan] [green]initialized[/green]")
@@ -78,7 +80,7 @@ def status_dashboard():
 
     # --- Memory ---
     try:
-        memory_db = Path.home() / ".claude-superpowers" / "memory.db"
+        memory_db = get_data_dir() / "memory.db"
         if memory_db.exists():
             sections.append("[cyan]Memory:[/cyan] [green]active[/green]")
         else:

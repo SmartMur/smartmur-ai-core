@@ -7,6 +7,7 @@ from superpowers.cli_skill import skill_auto_install, skill_info, skill_link, sk
 from superpowers.cli_skill_create import skill_create
 from superpowers.cli_cron import cron_group
 from superpowers.cli_dashboard import dashboard_cmd
+from superpowers.cli_intake import intake_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
@@ -27,6 +28,7 @@ main.add_command(audit_group)
 main.add_command(browse_group)
 main.add_command(cron_group)
 main.add_command(dashboard_cmd)
+main.add_command(intake_group)
 main.add_command(daemon)
 main.add_command(memory_group)
 main.add_command(msg_group)

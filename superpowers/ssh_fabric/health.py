@@ -15,7 +15,9 @@ from superpowers.ssh_fabric.executor import SSHExecutor
 from superpowers.ssh_fabric.hosts import HostRegistry
 
 
-DEFAULT_OUTPUT = Path.home() / ".claude-superpowers" / "ssh" / "health.json"
+from superpowers.config import get_data_dir
+
+DEFAULT_OUTPUT = get_data_dir() / "ssh" / "health.json"
 
 
 @dataclass

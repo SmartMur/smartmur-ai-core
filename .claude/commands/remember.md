@@ -11,4 +11,4 @@ Store a persistent memory for future sessions.
 - `/remember "prefer-ruff" "Use ruff instead of flake8 for linting" --category preference`
 
 ## Implementation
-Run: `cd ~/Projects/claude-superpowers && .venv/bin/claw memory remember $ARGUMENTS`
+Run: `cd /home/ray/claude-superpowers && .venv/bin/claw memory remember $ARGUMENTS`

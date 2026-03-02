@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shlex
 import subprocess
 import tempfile
 import uuid
@@ -109,7 +110,8 @@ class CronEngine:
         data_dir: Path | None = None,
     ):
         if data_dir is None:
-            data_dir = Path.home() / ".claude-superpowers" / "cron"
+            from superpowers.config import get_data_dir
+            data_dir = get_data_dir() / "cron"
         self._data_dir = Path(data_dir)
 
         if jobs_file is None:
@@ -237,8 +239,8 @@ class CronEngine:
 
     def _run_shell(self, job: Job) -> tuple[str, int]:
         result = subprocess.run(
-            job.command,
-            shell=True,
+            shlex.split(job.command),
+            shell=False,
             capture_output=True,
             text=True,
             timeout=300,

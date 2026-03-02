@@ -156,7 +156,8 @@ def workflow_validate(name: str):
 @workflow_group.command("init")
 def workflow_init():
     """Install built-in workflow templates."""
-    workflows_dir = Path.home() / ".claude-superpowers" / "workflows"
+    from superpowers.config import get_data_dir
+    workflows_dir = get_data_dir() / "workflows"
     created = install_builtins(workflows_dir)
     if created:
         for name in created:

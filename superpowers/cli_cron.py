@@ -12,10 +12,11 @@ from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 
+from superpowers.config import get_data_dir
 from superpowers.cron_engine import CronEngine
 
 console = Console()
-OUTPUT_DIR = Path.home() / ".claude-superpowers" / "cron" / "output"
+OUTPUT_DIR = get_data_dir() / "cron" / "output"
 
 
 def _engine() -> CronEngine:

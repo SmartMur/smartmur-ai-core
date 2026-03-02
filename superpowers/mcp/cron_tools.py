@@ -129,8 +129,9 @@ def register(mcp: FastMCP) -> None:
         """
         try:
             from pathlib import Path
+            from superpowers.config import get_data_dir
 
-            log_dir = Path.home() / ".claude-superpowers" / "cron" / "output" / job_id
+            log_dir = get_data_dir() / "cron" / "output" / job_id
             if not log_dir.is_dir():
                 return f"No logs found for job {job_id}"
 

@@ -31,7 +31,8 @@ class ProfileManager:
     ):
         self._registry = registry
         if profiles_path is None:
-            profiles_path = Path.home() / ".claude-superpowers" / "profiles.yaml"
+            from superpowers.config import get_data_dir
+            profiles_path = get_data_dir() / "profiles.yaml"
         self._path = profiles_path
         self._profiles: dict[str, NotificationProfile] = {}
         self._load()

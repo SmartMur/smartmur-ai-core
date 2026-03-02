@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
+import shlex
 import subprocess
 import threading
 import time
@@ -38,7 +40,8 @@ class TriggerManager:
 
     def __init__(self, triggers_path: Path | None = None):
         if triggers_path is None:
-            triggers_path = Path.home() / ".claude-superpowers" / "triggers.yaml"
+            from superpowers.config import get_data_dir
+            triggers_path = get_data_dir() / "triggers.yaml"
         self._path = triggers_path
         self.rules: list[TriggerRule] = []
         self._load()
@@ -72,8 +75,8 @@ class TriggerManager:
         try:
             if rule.action == "shell":
                 result = subprocess.run(
-                    rule.command, shell=True, capture_output=True,
-                    text=True, timeout=120, env={**__import__("os").environ, **env},
+                    shlex.split(rule.command), capture_output=True,
+                    text=True, timeout=120, env={**os.environ, **env},
                 )
                 return result.stdout + result.stderr
             elif rule.action == "claude":
@@ -124,6 +127,21 @@ class TelegramPoller:
     def stop(self) -> None:
         self._running = False
 
+    def _tg_api(self, method: str, payload: dict) -> None:
+        """Fire-and-forget Telegram API call."""
+        url = f"https://api.telegram.org/bot{self._token}/{method}"
+        data = json.dumps(payload).encode()
+        req = urllib.request.Request(
+            url, data=data, headers={"Content-Type": "application/json"},
+        )
+        try:
+            urllib.request.urlopen(req, timeout=10)
+        except Exception:
+            pass
+
+    def _send_typing(self, chat_id: str) -> None:
+        self._tg_api("sendChatAction", {"chat_id": chat_id, "action": "typing"})
+
     def _poll(self) -> None:
         url = f"https://api.telegram.org/bot{self._token}/getUpdates"
         params = f"?offset={self._offset}&timeout=30"
@@ -150,7 +168,10 @@ class TelegramPoller:
             voice = msg.get("voice") or msg.get("audio")
             if voice:
                 logger.info("Voice message from %s — transcribing", chat_id)
-                self._handle_voice(voice, chat_id)
+                threading.Thread(
+                    target=self._handle_voice, args=(voice, chat_id),
+                    daemon=True,
+                ).start()
                 continue
 
             text = msg.get("text", "")
@@ -168,7 +189,6 @@ class TelegramPoller:
             else:
                 # No trigger — route to Claude for AI response
                 self._reply_with_claude(text, chat_id)
-
 
     def _handle_voice(self, voice: dict, chat_id: str) -> None:
         """Download, transcribe, and reply with voice message text."""
@@ -192,42 +212,48 @@ class TelegramPoller:
             ch = self._registry.get("telegram")
             ch.send(chat_id, f"🎙 *Transcription:*\n\n{text}")
             logger.info("Transcribed voice from %s: %s", chat_id, text[:100])
-            # Also respond to the transcribed content
             if text and not text.startswith("["):
                 self._reply_with_claude(text, chat_id)
         finally:
-            # Clean up temp file
             audio_path.unlink(missing_ok=True)
             audio_path.parent.rmdir()
 
-
     def _reply_with_claude(self, text: str, chat_id: str) -> None:
+        """Route to Claude in a background thread so the poller isn't blocked."""
+        threading.Thread(
+            target=self._claude_worker, args=(text, chat_id),
+            daemon=True, name=f"claude-{chat_id}",
+        ).start()
+
+    def _claude_worker(self, text: str, chat_id: str) -> None:
         """Send text to Claude CLI and reply with the response."""
+        self._send_typing(chat_id)
         logger.info("Routing to Claude: %s", text[:100])
         try:
-            env = {k: v for k, v in __import__("os").environ.items()
-                   if k not in ("CLAUDECODE", "ANTHROPIC_API_KEY") or (k == "ANTHROPIC_API_KEY" and v)}
+            env = {k: v for k, v in os.environ.items()
+                   if k != "CLAUDECODE" and not (k == "ANTHROPIC_API_KEY" and not v)}
             result = subprocess.run(
                 ["claude", "-p", text, "--output-format", "text"],
-                capture_output=True, text=True, timeout=120, env=env,
+                capture_output=True, text=True, timeout=300, env=env,
             )
             reply = (result.stdout or result.stderr or "[no response]").strip()
             if reply:
-                ch = self._registry.get("telegram")
-                # Telegram has a 4096 char limit
-                for i in range(0, len(reply), 4000):
-                    ch.send(chat_id, reply[i:i + 4000])
+                self._send_reply(chat_id, reply)
                 logger.info("Claude replied to %s (%d chars)", chat_id, len(reply))
         except subprocess.TimeoutExpired:
-            ch = self._registry.get("telegram")
-            ch.send(chat_id, "[Response timed out — try a shorter question]")
+            self._send_reply(chat_id, "[Response timed out — try a shorter question]")
             logger.warning("Claude timed out for %s", chat_id)
         except FileNotFoundError:
-            ch = self._registry.get("telegram")
-            ch.send(chat_id, "[Claude CLI not found on this system]")
+            self._send_reply(chat_id, "[Claude CLI not found]")
             logger.error("claude CLI not found")
         except Exception as exc:
             logger.error("Claude reply error: %s", exc)
+
+    def _send_reply(self, chat_id: str, text: str) -> None:
+        """Send reply, splitting at Telegram's 4096 char limit."""
+        ch = self._registry.get("telegram")
+        for i in range(0, len(text), 4000):
+            ch.send(chat_id, text[i:i + 4000])
 
 
 class InboundListener:
@@ -241,15 +267,33 @@ class InboundListener:
 
     def start(self) -> None:
         if self._settings.telegram_bot_token:
-            poller = TelegramPoller(
+            # Use the refactored poller from msg_gateway.telegram package
+            from msg_gateway.telegram.poller import TelegramPoller as NewPoller
+
+            # Parse allowed chat IDs from settings
+            allowed_ids = None
+            if hasattr(self._settings, "allowed_chat_ids") and self._settings.allowed_chat_ids:
+                allowed_ids = [
+                    cid.strip()
+                    for cid in self._settings.allowed_chat_ids.split(",")
+                    if cid.strip()
+                ]
+
+            poller = NewPoller(
                 self._settings.telegram_bot_token,
-                self._triggers,
-                self._registry,
+                trigger_manager=self._triggers,
+                redis_url=self._settings.redis_url,
+                allowed_chat_ids=allowed_ids,
+                max_history=getattr(self._settings, "telegram_max_history", 20),
+                session_ttl=getattr(self._settings, "telegram_session_ttl", 3600),
+                max_per_chat=getattr(self._settings, "telegram_max_per_chat", 2),
+                max_global=getattr(self._settings, "telegram_max_global", 5),
+                queue_overflow=getattr(self._settings, "telegram_queue_overflow", 10),
             )
             t = threading.Thread(target=poller.start, daemon=True, name="telegram-poller")
             t.start()
             self._threads.append(t)
-            logger.info("Telegram inbound listener started")
+            logger.info("Telegram inbound listener started (new pipeline)")
 
         if not self._threads:
             logger.warning("No inbound listeners configured")

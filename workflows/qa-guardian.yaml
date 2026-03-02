@@ -1,0 +1,19 @@
+name: qa-guardian
+description: "Run QA Guardian checks, summarize findings, notify via Telegram"
+notify_profile: info
+
+steps:
+  - name: run-checks
+    type: skill
+    command: qa-guardian
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Read the QA Guardian report at ~/.claude-superpowers/qa-guardian/latest.json and summarize the top 3 issues with recommended fixes."
+    on_failure: continue
+
+  - name: notify
+    type: shell
+    command: "echo QA Guardian workflow complete"
+    on_failure: continue

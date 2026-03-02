@@ -1,4 +1,4 @@
-"""Entry point for the watcher daemon — launched by launchd."""
+"""Entry point for the watcher daemon process."""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ import signal
 import sys
 from pathlib import Path
 
-LOG_DIR = Path.home() / ".claude-superpowers" / "logs"
+from superpowers.config import get_data_dir
+
+LOG_DIR = get_data_dir() / "logs"
 
 
 def setup_logging() -> logging.Logger:

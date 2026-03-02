@@ -5,9 +5,14 @@ __pycache__/
 dist/
 build/
 .venv/
+.pytest_cache/
+.ruff_cache/
 
 # Environment
 .env
+
+# Node
+node_modules/
 
 # Superpowers runtime data
 .claude-superpowers/
@@ -16,6 +21,9 @@ build/
 *.enc
 !vault/**/*.enc.example
 
+# Logs
+*.log
+
 # IDE
 .idea/
 .vscode/
@@ -23,4 +31,6 @@ build/
 
 # OS
 .DS_Store
+._*
+.AppleDouble
 skillhub/

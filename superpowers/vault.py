@@ -9,12 +9,12 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-AGE_BIN = shutil.which("age") or "/opt/homebrew/bin/age"
-AGE_KEYGEN_BIN = shutil.which("age-keygen") or "/opt/homebrew/bin/age-keygen"
+AGE_BIN = shutil.which("age") or "age"
+AGE_KEYGEN_BIN = shutil.which("age-keygen") or "age-keygen"
 
-DEFAULT_DIR = Path.home() / ".claude-superpowers"
-DEFAULT_VAULT = DEFAULT_DIR / "vault.enc"
-DEFAULT_IDENTITY = DEFAULT_DIR / "age-identity.txt"
+def _default_vault_dir() -> Path:
+    from superpowers.config import get_data_dir
+    return get_data_dir()
 
 KEYCHAIN_SERVICE = "claude-superpowers-vault"
 KEYCHAIN_ACCOUNT = "age-identity"
@@ -30,8 +30,9 @@ class Vault:
         vault_path: str | Path | None = None,
         identity_file: str | Path | None = None,
     ):
-        self.vault_path = Path(vault_path or DEFAULT_VAULT)
-        self.identity_file = Path(identity_file or DEFAULT_IDENTITY)
+        dd = _default_vault_dir()
+        self.vault_path = Path(vault_path) if vault_path else dd / "vault.enc"
+        self.identity_file = Path(identity_file) if identity_file else dd / "age-identity.txt"
         self._pubkey: str | None = None
 
     @property

@@ -1,0 +1,111 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
+          - staging
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy via SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<'DEPLOY_SCRIPT'
+            set -euo pipefail
+
+            cd /home/ray/claude-superpowers
+
+            echo "==> Pulling latest code..."
+            git pull --ff-only
+
+            echo "==> Installing Python dependencies..."
+            .venv/bin/pip install -e ".[dev]"
+
+            echo "==> Building Docker containers..."
+            docker compose -f docker-compose.prod.yaml build
+
+            echo "==> Starting services..."
+            docker compose -f docker-compose.prod.yaml up -d
+
+            echo "==> Waiting for services to start..."
+            sleep 5
+
+            echo "==> Running health check..."
+            curl -sf http://localhost:8200/health || {
+              echo "Health check failed!"
+              exit 1
+            }
+
+            echo "==> Deploy complete."
+          DEPLOY_SCRIPT
+
+      - name: Notify success via Telegram
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
+            curl -sf -X POST \
+              "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"chat_id\": \"${TELEGRAM_CHAT_ID}\",
+                \"text\": \"[DEPLOYED] claude-superpowers deployed successfully\\nRef: ${GITHUB_SHA:0:8}\\nTriggered by: ${GITHUB_ACTOR}\",
+                \"parse_mode\": \"Markdown\"
+              }" || true
+          fi
+
+      - name: Notify failure via Telegram
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
+            curl -sf -X POST \
+              "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"chat_id\": \"${TELEGRAM_CHAT_ID}\",
+                \"text\": \"[DEPLOY FAILED] claude-superpowers deployment failed\\nRef: ${GITHUB_SHA:0:8}\\nSee: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\",
+                \"parse_mode\": \"Markdown\"
+              }" || true
+          fi
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

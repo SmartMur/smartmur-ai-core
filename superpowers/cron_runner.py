@@ -1,4 +1,4 @@
-"""Entry point for the cron daemon — launched by launchd."""
+"""Entry point for the cron daemon process."""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ import sys
 import threading
 from pathlib import Path
 
-LOG_DIR = Path.home() / ".claude-superpowers" / "logs"
+from superpowers.config import get_data_dir
+
+LOG_DIR = get_data_dir() / "logs"
 
 
 def setup_logging() -> logging.Logger:

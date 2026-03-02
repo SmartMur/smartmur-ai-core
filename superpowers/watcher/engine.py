@@ -3,6 +3,7 @@ from __future__ import annotations
 import fnmatch
 import logging
 import os
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -44,7 +45,8 @@ class _RuleHandler(FileSystemEventHandler):
 class WatcherEngine:
     def __init__(self, rules_path: Path | None = None):
         if rules_path is None:
-            rules_path = Path.home() / ".claude-superpowers" / "watchers.yaml"
+            from superpowers.config import get_data_dir
+            rules_path = get_data_dir() / "watchers.yaml"
         self._rules_path = Path(rules_path)
         self._rules: list[WatchRule] = []
         self._observer: Observer | None = None
@@ -146,8 +148,8 @@ class WatcherEngine:
         for k, v in rule.args.items():
             env[f"WATCHER_{k.upper()}"] = str(v)
         result = subprocess.run(
-            rule.command,
-            shell=True,
+            shlex.split(rule.command),
+            shell=False,
             capture_output=True,
             text=True,
             timeout=300,

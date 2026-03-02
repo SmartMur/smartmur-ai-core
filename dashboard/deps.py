@@ -15,6 +15,11 @@ security = HTTPBasic()
 
 def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> str:
     settings = get_settings()
+    if not settings.dashboard_user or not settings.dashboard_pass:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Dashboard credentials not configured. Set DASHBOARD_USER and DASHBOARD_PASS env vars.",
+        )
     user_ok = secrets.compare_digest(
         credentials.username.encode("utf-8"),
         settings.dashboard_user.encode("utf-8"),

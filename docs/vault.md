@@ -25,7 +25,14 @@ No age library is linked -- the `age` and `age-keygen` CLI binaries must be inst
 
 ### Prerequisites
 
-Install age via Homebrew:
+Install age on Debian/Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install -y age
+```
+
+On macOS:
 
 ```bash
 brew install age
@@ -41,14 +48,14 @@ This does three things:
 
 1. **Generates an age keypair** at `~/.claude-superpowers/age-identity.txt` (chmod 600)
 2. **Creates an empty encrypted vault** at `~/.claude-superpowers/vault.enc` (chmod 600)
-3. **Stores the identity file path** in macOS Keychain under the service `claude-superpowers-vault`
+3. **Optionally stores the identity file path** in macOS Keychain (macOS only) under the service `claude-superpowers-vault`
 
 Output:
 
 ```
 Vault initialized.
-  Identity: /Users/you/.claude-superpowers/age-identity.txt
-  Vault:    /Users/you/.claude-superpowers/vault.enc
+  Identity: /home/you/.claude-superpowers/age-identity.txt
+  Vault:    /home/you/.claude-superpowers/vault.enc
   Public key: age1ql3z7hjy54pw3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p
 ```
 
@@ -107,7 +114,7 @@ Deleted DB_PASSWORD
 
 Raises an error if the key does not exist.
 
-## macOS Keychain Integration
+## Optional macOS Keychain Integration
 
 On macOS, `claw vault init` stores the identity file path in the system Keychain:
 

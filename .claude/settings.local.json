@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/python -m pytest tests/ --tb=short -q 2>&1 | tail -30)",
+      "Bash(.venv/bin/claw --help 2>&1)",
+      "Bash(.venv/bin/python -m pip install -e \".[dev]\" 2>&1 | tail -10)",
+      "Bash(python3 -m venv --clear /home/ray/claude-superpowers/.venv && /home/ray/claude-superpowers/.venv/bin/pip install -e \"/home/ray/claude-superpowers[dev]\" 2>&1 | tail -15)",
+      "Bash(sudo apt install -y python3.13-venv python3-pip 2>&1 | tail -10)",
+      "Bash(python3 --version && which python3 && python3 -c \"import ensurepip\" 2>&1)",
+      "Bash(/home/ray/claude-superpowers/.venv/bin/pip install -e \"/home/ray/claude-superpowers[dev]\" 2>&1 | tail -20)",
+      "Bash(.venv/bin/pytest tests/ --tb=short -q 2>&1)",
+      "Bash(/home/ray/claude-superpowers/.venv/bin/claw --help 2>&1)",
+      "Bash(PYTHONPATH=/home/ray/claude-superpowers .venv/bin/pytest tests/ --tb=short -q --timeout=10 -x 2>&1 | tail -40)",
+      "Bash(PYTHONPATH=. timeout 90 .venv/bin/pytest tests/ --tb=line -q 2>&1 | tail -50)",
+      "Bash(PYTHONPATH=. .venv/bin/pytest tests/test_telegram_callbacks.py tests/test_telegram_commands.py tests/test_telegram_types.py tests/test_vault.py --tb=short -q 2>&1)",
+      "Bash(dpkg -l 'libncurses*' 'libtinfo*' 'ncurses-*' 2>&1 | grep -E '^\\(ii|rc\\)')",
+      "Bash(export TERM=xterm-256color && clear 2>&1 && echo \"SUCCESS: clear command works\")",
+      "Bash(echo \"LD_LIBRARY_PATH=$LD_LIBRARY_PATH\" && echo \"PATH=$PATH\" | tr ':' '\\\\n' | head -10)",
+      "Bash(ldconfig -p 2>&1 | head -5)",
+      "Bash(/sbin/ldconfig -p 2>&1 | grep libtinfo)",
+      "Bash(TERM=xterm-256color LD_LIBRARY_PATH=\"$HOME/.local/lib\" clear 2>&1 && echo \"SUCCESS: clear works now\")",
+      "Bash(bash -lc 'echo \"TERM=$TERM\"; clear && echo \"clear works\"; tput cols && echo \"tput works\"')",
+      "Bash(bash -lc 'echo \"LD_LIBRARY_PATH=$LD_LIBRARY_PATH\"')",
+      "Bash(bash -xlc 'exit' 2>&1 | grep -i 'LD_LIBRARY\\\\|miniforge' | head -20)",
+      "Bash(env -i HOME=/home/ray LOGNAME=ray USER=ray SHELL=/bin/bash TERM=xterm-256color bash -lic 'echo \"TERM=$TERM\"; echo \"LD_LIBRARY_PATH=$LD_LIBRARY_PATH\"; clear && echo \"clear: OK\"; tput cols && echo \"tput: OK\"')"
+    ]
+  }
+}

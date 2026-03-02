@@ -7,7 +7,9 @@ from pathlib import Path
 from superpowers.ssh_fabric.base import AuthMethod, HostConfig, SSHError
 
 
-DEFAULT_HOSTS_PATH = Path.home() / ".claude-superpowers" / "hosts.yaml"
+from superpowers.config import get_data_dir
+
+DEFAULT_HOSTS_PATH = get_data_dir() / "hosts.yaml"
 
 
 class HostRegistry:

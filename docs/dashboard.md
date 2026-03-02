@@ -1,6 +1,6 @@
 # Claw Web Dashboard
 
-Browser-based UI for all claude-superpowers subsystems at `http://localhost:8200`.
+Browser-based UI for all claude-superpowers subsystems at `http://192.168.30.117:8200` (or `http://localhost:8200` from the server).
 
 ## Quick Start
 
@@ -119,8 +119,60 @@ PYTHONPATH=. pytest tests/test_dashboard.py -v
 
 Tests use dependency injection override (setting `deps._*` singletons to fakes) — no real engines or files needed.
 
+## Authentication
+
+The dashboard is protected by HTTP Basic authentication. All `/api/*` endpoints require valid credentials. Only the `/health` endpoint is public.
+
+- **Method**: HTTP Basic Auth
+- **Credentials**: Set via environment variables in `.env`:
+  - `DASHBOARD_USER` -- the username (default: `admin`)
+  - `DASHBOARD_PASS` -- a strong password (no default; must be set)
+- **URL**: `http://192.168.30.117:8200` (or `http://localhost:8200` from the server itself)
+
+### Sections Available
+
+| Section | Route | Description |
+|---------|-------|-------------|
+| Dashboard | `#/home` | Aggregate status for all subsystems |
+| Cron | `#/cron` | Scheduled job management |
+| Messaging | `#/msg` | Channel status, send messages, profiles |
+| SSH | `#/ssh` | Host management, remote commands, health |
+| Workflows | `#/workflows` | Multi-step workflow orchestration |
+| Memory | `#/memory` | Persistent key-value memory store |
+| Skills | `#/skills` | Skill registry, run skills |
+| Audit | `#/audit` | Append-only audit log viewer |
+| Vault | `#/vault` | Encrypted vault status (key names only) |
+| Watchers | `#/watchers` | File watcher rules |
+| Browser | `#/browser` | Browser automation profiles |
+
+### Changing the Password
+
+1. Generate a new strong password:
+   ```bash
+   python3 -c "import secrets; print(secrets.token_urlsafe(24))"
+   ```
+
+2. Edit `/home/ray/claude-superpowers/.env` and set the `DASHBOARD_PASS` line:
+   ```
+   DASHBOARD_PASS=<your-new-password>
+   ```
+   Do not use inline comments or leading spaces in the value.
+
+3. Recreate the dashboard container to pick up the new env:
+   ```bash
+   cd /home/ray/claude-superpowers && docker compose up -d dashboard
+   ```
+   Note: `docker compose restart` does NOT re-read `.env` -- you must use `up -d` to recreate.
+
+4. Verify:
+   ```bash
+   curl -u "admin:<your-new-password>" http://localhost:8200/api/status
+   ```
+
 ## Security Notes
 
 - Vault endpoint exposes key **names** only, never secret values
-- No authentication built-in — bind to localhost or use a reverse proxy
+- All `/api/*` endpoints require HTTP Basic authentication (credentials in `.env`)
+- The `/health` endpoint is unauthenticated (for Docker health checks and monitoring)
 - All destructive operations (delete job, forget memory, run workflow) require explicit POST/DELETE
+- Bind to localhost or use a reverse proxy for additional network-level protection

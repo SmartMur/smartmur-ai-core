@@ -1,0 +1,9 @@
+name: infra-fixer
+version: "1.0.0"
+description: "General-purpose infrastructure health monitor — checks all Docker services, detects crash loops, auto-fixes common issues"
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [docker, python3]
+permissions: [docker]

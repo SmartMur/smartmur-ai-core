@@ -10,8 +10,10 @@ import shutil
 import yaml
 
 
+from superpowers.config import get_data_dir
+
 DEFAULT_HUB_PATH = Path.home() / "Projects" / "claude-superpowers" / "skillhub"
-DEFAULT_SKILLS_DIR = Path.home() / ".claude-superpowers" / "skills"
+DEFAULT_SKILLS_DIR = get_data_dir() / "skills"
 
 
 @dataclass

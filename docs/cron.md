@@ -2,7 +2,7 @@
 
 ## Overview
 
-The cron subsystem is an APScheduler-based daemon that runs scheduled jobs in the background as a macOS launchd service. It supports shell commands, headless Claude sessions, HTTP webhooks, and registered skills -- all manageable through `claw cron` and `claw daemon` CLI commands.
+The cron subsystem is an APScheduler-based daemon that runs scheduled jobs in the background as a managed service. On Debian/Linux it uses a user-level `systemd` unit; on macOS it uses `launchd`. It supports shell commands, headless Claude sessions, HTTP webhooks, and registered skills -- all manageable through `claw cron` and `claw daemon` CLI commands.
 
 Jobs persist across restarts via a `jobs.json` manifest backed by a SQLite job store. Output from each execution is captured to structured log files under `~/.claude-superpowers/cron/output/`.
 
@@ -245,21 +245,22 @@ Example `jobs.json` entry:
 
 ## Daemon Management
 
-The cron daemon runs as a macOS launchd service. Manage it with `claw daemon`:
+The cron daemon runs as a managed background service. Manage it with `claw daemon`:
 
 ### `claw daemon install`
 
-Install the launchd plist and start the daemon.
+Install and start the daemon service.
 
 ```bash
 claw daemon install
 ```
 
-This creates `~/Library/LaunchAgents/com.claude-superpowers.cron.plist` and loads it via `launchctl`. The daemon starts automatically on login.
+On Debian/Linux, this creates `~/.config/systemd/user/claude-superpowers-cron.service` and starts it with `systemctl --user`.
+On macOS, this creates `~/Library/LaunchAgents/com.claude-superpowers.cron.plist` and loads it via `launchctl`.
 
 ### `claw daemon uninstall`
 
-Stop the daemon and remove the launchd plist.
+Stop the daemon and remove the service definition.
 
 ```bash
 claw daemon uninstall
@@ -282,7 +283,7 @@ claw daemon logs              # Recent entries
 claw daemon logs --follow     # Stream live
 ```
 
-Daemon logs are written to `~/.claude-superpowers/cron/daemon.log`.
+Daemon logs are written to `~/.claude-superpowers/logs/cron-daemon.log`.
 
 ## Modules
 
@@ -290,5 +291,5 @@ Daemon logs are written to `~/.claude-superpowers/cron/daemon.log`.
 |--------|------|---------|
 | `cron_engine` | `superpowers/cron_engine.py` | APScheduler setup, job type dispatch, schedule parsing |
 | `cron_runner` | `superpowers/cron_runner.py` | Job execution: subprocess, claude, HTTP, skill invocation |
-| `launchd` | `superpowers/launchd.py` | Plist generation, launchctl install/uninstall/status |
+| `launchd` | `superpowers/launchd.py` | Service management (`systemd --user` on Linux, `launchd` on macOS) |
 | `cli_cron` | `superpowers/cli_cron.py` | Click commands for `claw cron` and `claw daemon` |

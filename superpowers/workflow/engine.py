@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shlex
 import subprocess
 import time
 import urllib.error
@@ -106,7 +107,7 @@ class WorkflowEngine:
     def _run_shell(self, step: StepConfig) -> tuple[str, bool]:
         env = {**os.environ, **{f"WF_{k.upper()}": str(v) for k, v in step.args.items()}}
         result = subprocess.run(
-            step.command, shell=True, capture_output=True,
+            shlex.split(step.command), capture_output=True,
             text=True, timeout=step.timeout, env=env,
         )
         return result.stdout + result.stderr, result.returncode == 0

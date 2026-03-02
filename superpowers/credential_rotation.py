@@ -43,7 +43,8 @@ class RotationPolicy:
 class CredentialRotationChecker:
     def __init__(self, policies_path: Path | None = None):
         if policies_path is None:
-            policies_path = Path.home() / ".claude-superpowers" / "rotation_policies.yaml"
+            from superpowers.config import get_data_dir
+            policies_path = get_data_dir() / "rotation_policies.yaml"
         self._path = policies_path
         self._policies: dict[str, RotationPolicy] = {}
         self._load()

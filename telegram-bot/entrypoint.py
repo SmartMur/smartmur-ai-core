@@ -13,6 +13,7 @@ logger = logging.getLogger("telegram-bot")
 
 
 def main():
+    from superpowers.config import Settings
     from msg_gateway.inbound import InboundListener
 
     logger.info("Starting Telegram bot with Claude AI responses")
@@ -25,10 +26,12 @@ def main():
     signal.signal(signal.SIGTERM, handle_signal)
     signal.signal(signal.SIGINT, handle_signal)
 
-    listener = InboundListener()
+    settings = Settings.load()
+    listener = InboundListener(settings=settings)
     listener.start()
 
-    logger.info("Bot is live — listening for messages")
+    logger.info("Bot is live — listening for messages (auth=%s)",
+                "configured" if settings.allowed_chat_ids else "OPEN")
     stop.wait()
     logger.info("Bot stopped")
 

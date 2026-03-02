@@ -1,0 +1,9 @@
+name: tunnel-setup
+version: "1.0.0"
+description: "Cloudflare tunnel setup helper — validates token, manages container, checks connectivity"
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [docker, python3]
+permissions: [docker, file-write]

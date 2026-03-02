@@ -19,9 +19,10 @@ class BrowserEngine:
         profiles_dir: Path | None = None,
     ):
         self._config = config or BrowserConfig()
-        self._profiles_dir = profiles_dir or (
-            Path.home() / ".claude-superpowers" / "browser" / "profiles"
-        )
+        if profiles_dir is None:
+            from superpowers.config import get_data_dir
+            profiles_dir = get_data_dir() / "browser" / "profiles"
+        self._profiles_dir = profiles_dir
         self._playwright: Playwright | None = None
         self._context: BrowserContext | None = None
         self._page: Page | None = None

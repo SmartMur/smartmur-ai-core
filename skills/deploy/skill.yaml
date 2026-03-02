@@ -1,0 +1,9 @@
+name: deploy
+version: "1.0.0"
+description: "Deploy claude-superpowers — pull latest, rebuild containers, run health checks"
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [docker, git, python3]
+permissions: [docker]

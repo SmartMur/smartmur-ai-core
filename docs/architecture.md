@@ -24,7 +24,7 @@ claude-superpowers/
 │   ├── skill_creator.py      # Skill scaffolding templates
 │   ├── cron_engine.py        # APScheduler setup, schedule parsing, job dispatch
 │   ├── cron_runner.py        # Job execution: subprocess, claude, HTTP, skill
-│   └── launchd.py            # macOS launchd plist generation + management
+│   └── launchd.py            # Service management (systemd/launchd)
 ├── skills/                   # Skill directories (each has skill.yaml)
 │   ├── _template/            # Copy-paste starter skill
 │   └── network-scan/         # Example: scan home network subnets
@@ -47,10 +47,10 @@ claude-superpowers/
 ├── cron/                     # Cron job state
 │   ├── jobs.json             # Job manifest
 │   ├── jobstore.sqlite       # APScheduler trigger state
-│   ├── daemon.log            # Daemon process log
 │   └── output/{id}/          # Per-job execution logs
 ├── vault/                    # (reserved)
 └── logs/                     # Execution logs
+    └── cron-daemon.log       # Cron daemon log file
 ```
 
 ## Component Diagram
@@ -80,7 +80,7 @@ claude-superpowers/
               ┌────────────┐│      │      │      │
               │ Cron Engine││      │      │      │
               │(APScheduler││      │      │      │
-              │ + launchd) ││      │      │      │
+              │ + services)││      │      │      │
               └─────┬──────┘│      │      │      │
                     v       │      │      │      │
               ┌────────────┐│      │      │      │
@@ -104,13 +104,13 @@ claude-superpowers/
 ## Component Interactions
 
 1. **CLI layer** (`cli.py`) registers Click command groups. Each subsystem (`vault`, `skill`, etc.) has its own CLI module.
-2. **Vault** encrypts/decrypts a JSON blob using the `age` CLI. The identity file location is stored in macOS Keychain for convenience.
+2. **Vault** encrypts/decrypts a JSON blob using the `age` CLI. On macOS, the identity file location can be cached in Keychain as a convenience.
 3. **Skill Registry** discovers skills by scanning `skills/*/skill.yaml`, validates manifests, and syncs slash commands as symlinks into `~/.claude/commands/`.
 4. **Skill Loader** checks runtime dependencies (binaries on PATH), builds the execution command, and runs scripts in either full or sandboxed environments.
 5. **Skill Creator** scaffolds new skill directories from templates (bash or python), generates `skill.yaml`, `run.sh`/`run.py`, and `command.md`.
 6. **Cron Engine** (`cron_engine.py`) initializes APScheduler with a SQLite job store, parses schedule expressions (cron, interval, daily-at), and dispatches jobs to the runner. Schedule and job metadata are persisted in `jobs.json`.
 7. **Cron Runner** (`cron_runner.py`) executes jobs by type: subprocess for shell, `claude -p` for claude, HTTP POST for webhooks, and skill loader invocation for skills. Captures stdout/stderr/exit code to per-job log files.
-8. **Launchd** (`launchd.py`) generates a macOS launchd plist, installs/uninstalls via `launchctl`, and queries daemon status. The plist is written to `~/Library/LaunchAgents/com.claude-superpowers.cron.plist`.
+8. **Daemon service manager** (`launchd.py`) installs/uninstalls/query daemon status through `systemd --user` on Linux and `launchd` on macOS.
 9. **Settings** loads configuration from `.env` and environment variables into a typed dataclass.
 
 ## Tech Stack
@@ -145,7 +145,7 @@ claude-superpowers/
 ### Phase 1 Deliverables (Complete)
 
 - Project scaffold with `pyproject.toml`, `claw` entry point
-- Encrypted vault with age keypair generation, macOS Keychain integration
+- Encrypted vault with age keypair generation and optional macOS Keychain integration
 - Skill registry with discovery, validation, install/uninstall
 - Skill loader with dependency checking and sandboxed execution
 - Skill creator with bash/python templates and auto-sync
@@ -159,7 +159,7 @@ claude-superpowers/
 - Three schedule formats: cron expressions, interval strings, daily-at patterns
 - Job execution runner with stdout/stderr/exit code capture
 - Per-job output logging to `~/.claude-superpowers/cron/output/{id}/`
-- macOS launchd daemon with install/uninstall/status management
+- Cross-platform daemon management (`systemd --user` on Linux, `launchd` on macOS)
 - CLI commands: `claw cron list/add/remove/enable/disable/logs/run/status`
 - CLI commands: `claw daemon install/uninstall/status/logs`
 - Job persistence via `jobs.json` + SQLite

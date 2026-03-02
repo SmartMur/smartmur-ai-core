@@ -98,13 +98,13 @@ claw watcher test torrent-mover
 
 ## Daemon Setup
 
-For persistent background operation, use launchd:
+For persistent background operation on Debian/Linux, create a user `systemd` unit that runs:
 
 ```bash
-claw daemon install --service watcher
+claw watcher start
 ```
 
-Or run in foreground:
+For ad-hoc foreground use:
 
 ```bash
 claw watcher start

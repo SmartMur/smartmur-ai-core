@@ -1,0 +1,8 @@
+name: workspace-intake-smoke
+version: 0.1.0
+description: workspace intake smoke
+author: dre
+script: run.sh
+slash_command: true
+permissions: []
+triggers: []

@@ -10,17 +10,20 @@ from pathlib import Path
 class AuditLog:
     def __init__(self, log_path: Path | None = None):
         if log_path is None:
-            log_path = Path.home() / ".claude-superpowers" / "audit.log"
+            from superpowers.config import get_data_dir
+            log_path = get_data_dir() / "audit.log"
         self._path = Path(log_path)
         self._path.parent.mkdir(parents=True, exist_ok=True)
 
-    def log(self, action: str, detail: str, source: str = "") -> None:
+    def log(self, action: str, detail: str, source: str = "", metadata: dict | None = None) -> None:
         entry = {
             "ts": datetime.now(timezone.utc).isoformat(),
             "action": action,
             "detail": detail,
             "source": source,
         }
+        if metadata is not None:
+            entry["metadata"] = metadata
         with open(self._path, "a") as f:
             f.write(json.dumps(entry) + "\n")
 

@@ -19,6 +19,7 @@ dependencies = [
     "slack_sdk>=3.27",
     "playwright>=1.40",
     "mcp>=1.26.0",
+    "anthropic>=0.39",
 ]
 
 [project.optional-dependencies]
