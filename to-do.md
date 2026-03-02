@@ -11,10 +11,11 @@ All user requests are logged here. Updated as work completes.
 ## Backlog
 
 - [ ] **Provide Cloudflare tunnel token** — run `/tunnel-setup set-token <token>` after getting from Cloudflare dashboard
-- [ ] **Set up GitHub remote** for claude-superpowers — no git remote yet, CI/CD workflows ready
-- [ ] Confirm dashboard at :8200 shows all new skills
 
 ## Completed
+
+- [x] **GitHub remote set up** — git init, 127 files committed (`3c3cba4`), pushed to `SmartMur/claude-superpowers` (private). `.gitignore` updated. CI/CD ready to trigger on push.
+- [x] **Dashboard verified — all 12 skills visible** — fixed wrong default path in skill_registry/skill_creator, added `_template` exclusion, added skills volume mount to docker-compose.yaml
 
 - [x] **Externalized homelab credentials** — 6 compose files (Keycloak, Guacamole, Code-Server, Gitea, Frigate, CrowdSec) → env vars + .env.example files, pushed `688198d`
 - [x] **Restricted monitoring ports** — Prometheus/InfluxDB/Loki/Headscale bound to 127.0.0.1, pushed `d19e600`

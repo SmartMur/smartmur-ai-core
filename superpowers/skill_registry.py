@@ -23,7 +23,7 @@ class Skill:
 
 REQUIRED_FIELDS = {"name", "version", "description", "author", "script"}
 
-SKILLS_DIR_DEFAULT = Path.home() / "Projects" / "claude-superpowers" / "skills"
+SKILLS_DIR_DEFAULT = Path(__file__).resolve().parent.parent / "skills"
 GLOBAL_COMMANDS_DIR = Path.home() / ".claude" / "commands"
 
 
@@ -57,6 +57,9 @@ class SkillRegistry:
         for skill_yaml in sorted(self.skills_dir.rglob("skill.yaml")):
             # Only pick up top-level skill dirs (depth 1 under skills_dir)
             if skill_yaml.parent.parent != self.skills_dir:
+                continue
+            # Skip template/internal directories (prefixed with _)
+            if skill_yaml.parent.name.startswith("_"):
                 continue
             try:
                 skill = _parse_skill_yaml(skill_yaml)

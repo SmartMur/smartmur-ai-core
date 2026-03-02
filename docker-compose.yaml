@@ -29,6 +29,7 @@ services:
       - .env
     volumes:
       - ${HOME}/.claude-superpowers:/root/.claude-superpowers
+      - ./skills:/app/skills:ro
     restart: unless-stopped
 
 volumes:

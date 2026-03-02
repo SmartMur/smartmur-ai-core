@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-SKILLS_DIR = Path.home() / "Projects" / "claude-superpowers" / "skills"
+SKILLS_DIR = Path(__file__).resolve().parent.parent / "skills"
 
 BASH_TEMPLATE = """\
 #!/usr/bin/env bash

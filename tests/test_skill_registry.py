@@ -46,11 +46,14 @@ class TestDiscover:
         assert len(skills) == 1
         assert skills[0].name == "test-skill"
 
-    def test_discovers_template_in_real_dir(self):
+    def test_skips_underscore_prefixed_dirs(self):
+        """Directories prefixed with _ (e.g. _template) are excluded from discovery."""
         reg = SkillRegistry()
         skills = reg.discover()
         names = [s.name for s in skills]
-        assert "template-skill" in names
+        assert "template-skill" not in names
+        # But real skills should still be found
+        assert len(skills) >= 1
 
     def test_ignores_nested_dirs(self, tmp_skills):
         nested = tmp_skills / "test-skill" / "sub" / "nested"
