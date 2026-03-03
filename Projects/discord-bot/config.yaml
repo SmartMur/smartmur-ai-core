@@ -1,0 +1,92 @@
+discord:
+  guild_id: ""
+
+server:
+  name: "SmartMur Community"
+  description: "Open-source and self-hosted builders community."
+  icon_path: "./assets/server-icon.png"
+
+roles:
+  - name: "Admin"
+    color: "0x22C55E"
+    permissions: "8"
+    hoist: true
+    mentionable: true
+  - name: "Moderator"
+    color: "0x60A5FA"
+    permissions: "1099511627776"
+    hoist: true
+    mentionable: true
+  - name: "Member"
+    color: "0xF59E0B"
+    permissions: "0"
+    hoist: false
+    mentionable: false
+
+admin:
+  username: "ray"
+  password_length: 32
+  credentials_file: "./admin_credentials.json"
+  discord_role: "Admin"
+
+categories:
+  - name: "START HERE"
+    channels:
+      - name: "welcome"
+        type: "text"
+      - name: "rules"
+        type: "text"
+      - name: "announcements"
+        type: "text"
+      - name: "roles"
+        type: "text"
+
+  - name: "COMMUNITY"
+    channels:
+      - name: "general"
+        type: "text"
+      - name: "introductions"
+        type: "text"
+      - name: "showcase"
+        type: "text"
+      - name: "off-topic"
+        type: "text"
+
+  - name: "PROJECTS"
+    channels:
+      - name: "home-media"
+        type: "text"
+      - name: "homelab"
+        type: "text"
+      - name: "k3s-cluster"
+        type: "text"
+      - name: "dotfiles"
+        type: "text"
+
+  - name: "SUPPORT"
+    channels:
+      - name: "help"
+        type: "text"
+      - name: "troubleshooting"
+        type: "text"
+      - name: "feature-requests"
+        type: "text"
+
+  - name: "OPERATIONS"
+    channels:
+      - name: "deployments"
+        type: "text"
+      - name: "incidents"
+        type: "text"
+      - name: "automation"
+        type: "text"
+
+  - name: "VOICE"
+    channels:
+      - name: "General Voice"
+        type: "voice"
+      - name: "Build Room"
+        type: "voice"
+      - name: "Support Room"
+        type: "voice"
+
