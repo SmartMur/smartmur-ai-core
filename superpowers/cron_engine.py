@@ -104,6 +104,8 @@ def _dispatch_job(engine_id: str, job_id: str) -> None:
 
 
 class CronEngine:
+    PID_FILENAME = "cron-daemon.pid"
+
     def __init__(
         self,
         jobs_file: Path | None = None,
@@ -120,6 +122,7 @@ class CronEngine:
 
         self._output_dir = self._data_dir / "output"
         self._db_path = self._data_dir / "scheduler.db"
+        self._pid_file = self._data_dir / self.PID_FILENAME
 
         self._jobs: dict[str, Job] = {}
 
@@ -139,6 +142,18 @@ class CronEngine:
         )
 
         self._load_jobs()
+
+    # --- Properties ---
+
+    @property
+    def jobs(self) -> dict[str, Job]:
+        """Public read-only access to the jobs dict."""
+        return self._jobs
+
+    @property
+    def running(self) -> bool:
+        """Whether the underlying APScheduler is running."""
+        return self._scheduler.running
 
     # --- Public API ---
 
@@ -199,14 +214,63 @@ class CronEngine:
     def get_job(self, job_id: str) -> Job:
         return self._get_or_raise(job_id)
 
+    def run_job(self, job_id: str) -> Job:
+        """Public wrapper: execute a job immediately and return the updated Job."""
+        self._execute_job(job_id)
+        return self._get_or_raise(job_id)
+
     def start(self) -> None:
         if not self._scheduler.running:
             self._scheduler.start()
+        self._write_pid_file()
 
     def stop(self) -> None:
         if self._scheduler.running:
             self._scheduler.shutdown(wait=True)
+        self._remove_pid_file()
         _engine_registry.pop(self._engine_id, None)
+
+    def _write_pid_file(self) -> None:
+        """Write the current PID to the pid file so CLI can detect the daemon."""
+        self._pid_file.write_text(str(os.getpid()))
+
+    def _remove_pid_file(self) -> None:
+        """Clean up the pid file on shutdown."""
+        try:
+            self._pid_file.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    @staticmethod
+    def daemon_status(data_dir: Path | None = None) -> dict:
+        """Check whether the cron daemon is running (via PID file).
+
+        Returns a dict with keys: running (bool), pid (int|None).
+        """
+        if data_dir is None:
+            from superpowers.config import get_data_dir
+            data_dir = get_data_dir() / "cron"
+        pid_file = data_dir / CronEngine.PID_FILENAME
+
+        if not pid_file.exists():
+            return {"running": False, "pid": None}
+
+        try:
+            pid = int(pid_file.read_text().strip())
+        except (ValueError, OSError):
+            return {"running": False, "pid": None}
+
+        # Check if process is actually alive
+        try:
+            os.kill(pid, 0)  # signal 0: existence check only
+            return {"running": True, "pid": pid}
+        except (ProcessLookupError, PermissionError):
+            # Stale PID file — process no longer running
+            try:
+                pid_file.unlink(missing_ok=True)
+            except OSError:
+                pass
+            return {"running": False, "pid": None}
 
     # --- Execution ---
 

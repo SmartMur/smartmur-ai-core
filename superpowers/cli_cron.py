@@ -65,7 +65,7 @@ def cron_list():
 
     for job in jobs:
         enabled = "[green]yes[/green]" if job.enabled else "[red]no[/red]"
-        last_run = job.last_run.strftime("%Y-%m-%d %H:%M") if job.last_run else "-"
+        last_run = job.last_run[:16] if job.last_run else "-"
         status = job.last_status or "-"
         status_styled = (
             f"[green]{status}[/green]" if status == "ok"
@@ -257,12 +257,15 @@ def cron_status():
     jobs = engine.list_jobs()
     enabled_jobs = [j for j in jobs if j.enabled]
 
-    running = hasattr(engine, "running") and engine.running
+    daemon_info = CronEngine.daemon_status()
+    running = daemon_info["running"]
+    pid = daemon_info["pid"]
 
     table = Table(show_header=False, box=None, padding=(0, 2))
     table.add_column("Field", style="bold")
     table.add_column("Value")
-    table.add_row("Scheduler", "[green]running[/green]" if running else "[yellow]stopped[/yellow]")
+    status_text = f"[green]running[/green] (PID {pid})" if running else "[yellow]stopped[/yellow]"
+    table.add_row("Scheduler", status_text)
     table.add_row("Total jobs", str(len(jobs)))
     table.add_row("Enabled", str(len(enabled_jobs)))
     table.add_row("Disabled", str(len(jobs) - len(enabled_jobs)))
@@ -278,7 +281,7 @@ def cron_status():
         fire_table.add_column("Last Status")
 
         for job in enabled_jobs:
-            last_run = job.last_run.strftime("%Y-%m-%d %H:%M") if job.last_run else "-"
+            last_run = job.last_run[:16] if job.last_run else "-"
             status = job.last_status or "-"
             status_styled = (
                 f"[green]{status}[/green]" if status == "ok"
