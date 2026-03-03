@@ -36,6 +36,7 @@ class Job:
     args: dict[str, Any] = field(default_factory=dict)
     output_channel: str = "file"
     enabled: bool = True
+    llm_model: str = ""  # Per-job model override; empty = use global JOB_MODEL
     created_at: str = ""
     last_run: str = ""
     last_status: str = ""
@@ -166,6 +167,7 @@ class CronEngine:
         args: dict | None = None,
         output_channel: str = "file",
         enabled: bool = True,
+        llm_model: str = "",
     ) -> Job:
         job = Job(
             id=str(uuid.uuid4()),
@@ -176,6 +178,7 @@ class CronEngine:
             args=args or {},
             output_channel=output_channel,
             enabled=enabled,
+            llm_model=llm_model,
         )
         self._jobs[job.id] = job
 
@@ -274,6 +277,17 @@ class CronEngine:
 
     # --- Execution ---
 
+    def _job_env(self, job: Job) -> dict[str, str]:
+        """Build environment dict for a job subprocess.
+
+        Sets ``LLM_MODEL`` from the per-job override, falling back to the
+        global ``JOB_MODEL`` config (which itself defaults to ``"claude"``).
+        """
+        env = dict(os.environ)
+        model = job.llm_model or os.environ.get("JOB_MODEL", "claude")
+        env["LLM_MODEL"] = model
+        return env
+
     def _execute_job(self, job_id: str) -> None:
         job = self._jobs.get(job_id)
         if job is None:
@@ -302,13 +316,15 @@ class CronEngine:
         self._save_jobs()
 
     def _run_shell(self, job: Job) -> tuple[str, int]:
+        env = self._job_env(job)
+        env.update({f"JOB_{k.upper()}": str(v) for k, v in job.args.items()})
         result = subprocess.run(
             shlex.split(job.command),
             shell=False,
             capture_output=True,
             text=True,
             timeout=300,
-            env={**os.environ, **{f"JOB_{k.upper()}": str(v) for k, v in job.args.items()}},
+            env=env,
         )
         return result.stdout + result.stderr, result.returncode
 
@@ -319,6 +335,7 @@ class CronEngine:
             capture_output=True,
             text=True,
             timeout=600,
+            env=self._job_env(job),
         )
         return result.stdout + result.stderr, result.returncode
 

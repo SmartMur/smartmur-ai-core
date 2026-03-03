@@ -849,20 +849,121 @@
       <template x-if="page === 'browser'">
         <div x-data="browserPage()" x-init="load()">
           <div class="page-header">
-            <h1>Browser Profiles</h1>
-            <p>Persistent browser sessions</p>
+            <h1>Browser Engine</h1>
+            <p>Headless browser automation via Playwright</p>
           </div>
-          <template x-if="profiles.length > 0">
-            <div class="status-grid">
-              <template x-for="p in profiles" :key="p.name">
-                <div class="status-card">
-                  <div class="card-title">Profile</div>
-                  <div class="card-value text-accent" x-text="p.name"></div>
-                </div>
-              </template>
+
+          <!-- Engine status cards -->
+          <div class="status-grid mb-4">
+            <div class="status-card">
+              <div class="card-title">Engine</div>
+              <div class="card-value" :class="engineStatus.engine_online ? 'text-green' : 'text-red'"
+                   x-text="engineStatus.engine_online ? 'Online' : 'Offline'"></div>
+            </div>
+            <div class="status-card">
+              <div class="card-title">Active Sessions</div>
+              <div class="card-value" x-text="engineStatus.active_sessions"></div>
+            </div>
+            <div class="status-card">
+              <div class="card-title">Profiles</div>
+              <div class="card-value" x-text="engineStatus.profiles.length"></div>
+            </div>
+            <div class="status-card">
+              <div class="card-title">Uptime</div>
+              <div class="card-value font-mono" x-text="formatUptime(engineStatus.uptime_seconds)"></div>
+            </div>
+          </div>
+
+          <div x-show="engineStatus.error && !engineStatus.engine_online" class="text-red mb-4"
+               style="padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px">
+            Engine unreachable: <span x-text="engineStatus.error"></span>
+          </div>
+
+          <!-- Active sessions -->
+          <template x-if="engineStatus.sessions.length > 0">
+            <div class="mb-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Active Sessions</h3>
+              <table class="data-table">
+                <thead><tr><th>Profile</th><th>Current URL</th><th>Page Title</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <template x-for="s in engineStatus.sessions" :key="s.profile">
+                    <tr>
+                      <td class="text-accent" x-text="s.profile"></td>
+                      <td class="font-mono" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+                          x-text="s.current_url"></td>
+                      <td x-text="s.current_title"></td>
+                      <td>
+                        <div class="btn-group">
+                          <button class="btn btn-sm" @click="screenshotSession(s.profile)">Screenshot</button>
+                          <button class="btn btn-sm btn-danger" @click="closeSession(s.profile)">Close</button>
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </template>
-          <div x-show="profiles.length === 0" class="text-muted">No browser profiles saved</div>
+
+          <!-- Saved profiles -->
+          <template x-if="engineStatus.profiles.length > 0">
+            <div class="mb-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Saved Profiles</h3>
+              <div class="status-grid">
+                <template x-for="p in engineStatus.profiles" :key="p">
+                  <div class="status-card">
+                    <div class="card-title">Profile</div>
+                    <div class="card-value text-accent" x-text="p"></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- Navigate -->
+          <h3 class="mb-4" style="color:var(--text-secondary)">Navigate</h3>
+          <div style="max-width:600px" class="mb-4">
+            <div class="form-group">
+              <label class="form-label">URL</label>
+              <input class="form-input" x-model="navForm.url" placeholder="https://example.com"
+                     @keyup.enter="doNavigate()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile</label>
+              <input class="form-input" x-model="navForm.profile" placeholder="default">
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-primary" @click="doNavigate()" :disabled="!engineStatus.engine_online">Navigate</button>
+              <button class="btn" @click="doScreenshot()" :disabled="!engineStatus.engine_online">Navigate + Screenshot</button>
+            </div>
+          </div>
+
+          <!-- Navigation result -->
+          <template x-if="navResult">
+            <div class="mb-4" style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px">
+              <div class="mb-4">
+                <span class="dot" :class="navResult.ok ? 'dot-green' : 'dot-red'"></span>
+                <strong x-text="navResult.title || '(no title)'"></strong>
+              </div>
+              <div class="font-mono text-muted mb-4" x-text="navResult.url"></div>
+              <div x-show="navResult.error" class="text-red" x-text="navResult.error"></div>
+            </div>
+          </template>
+
+          <!-- Screenshot result -->
+          <template x-if="screenshotData">
+            <div class="mb-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)">Screenshot</h3>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+                <img :src="'data:image/png;base64,' + screenshotData" style="max-width:100%;border-radius:4px" alt="Screenshot">
+              </div>
+            </div>
+          </template>
+
+          <div class="toolbar mt-4">
+            <button class="btn" @click="load()">Refresh</button>
+            <button class="btn btn-danger" @click="closeAllSessions()" :disabled="engineStatus.active_sessions === 0">Close All Sessions</button>
+          </div>
         </div>
       </template>
 

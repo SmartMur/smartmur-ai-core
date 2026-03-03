@@ -1,17 +1,19 @@
-"""Job monitor: track queued/running/completed tasks."""
+"""Job monitor: track queued/running/completed tasks and git-branch job orchestration."""
 
 from __future__ import annotations
 
 import asyncio
 import json
+import logging
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from dashboard.deps import get_jobs_db
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class JobOut(BaseModel):
@@ -31,6 +33,78 @@ class JobCreate(BaseModel):
     name: str
     job_type: str = "shell"
 
+
+class JobBranchOut(BaseModel):
+    """A job that ran on a git branch."""
+
+    job_id: str
+    branch: str
+    sha: str = ""
+    date: str = ""
+    status: str = "unknown"
+    name: str = ""
+
+
+class JobBranchDetail(BaseModel):
+    """Full detail for a git-branch job."""
+
+    job_id: str
+    name: str
+    branch: str
+    status: str
+    output: str = ""
+    error: str = ""
+    return_code: int | None = None
+    commit_sha: str | None = None
+    pr_url: str | None = None
+    changed_files: list[str] = []
+    started_at: float | None = None
+    completed_at: float | None = None
+    duration: float | None = None
+
+
+# --- Git branch job endpoints (must be before /{jid} to avoid path conflicts) ---
+
+@router.get("/branches", response_model=list[JobBranchOut])
+def list_job_branches():
+    """List all job/* branches and their status."""
+    try:
+        from superpowers.job_runner import JobRunner
+
+        runner = JobRunner()
+        return runner.list_job_branches()
+    except Exception as exc:
+        logger.warning("Failed to list job branches: %s", exc)
+        return []
+
+
+@router.get("/branches/{job_id}", response_model=JobBranchDetail)
+def get_job_branch(job_id: str):
+    """Get details for a specific git-branch job."""
+    from superpowers.job_runner import JobRunner
+
+    runner = JobRunner()
+    result = runner.get_job(job_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Job branch not found")
+    return JobBranchDetail(
+        job_id=result.job_id,
+        name=result.name,
+        branch=result.branch,
+        status=result.status.value,
+        output=result.output,
+        error=result.error,
+        return_code=result.return_code,
+        commit_sha=result.commit_sha,
+        pr_url=result.pr_url,
+        changed_files=result.changed_files,
+        started_at=result.started_at,
+        completed_at=result.completed_at,
+        duration=result.duration,
+    )
+
+
+# --- DB-backed job endpoints ---
 
 @router.get("", response_model=list[JobOut])
 def list_jobs(limit: int = 50, status: str | None = None):

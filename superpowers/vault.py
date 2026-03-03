@@ -9,8 +9,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-AGE_BIN = shutil.which("age") or "age"
-AGE_KEYGEN_BIN = shutil.which("age-keygen") or "age-keygen"
+_EXTRA_PATHS = [os.path.expanduser("~/.local/bin"), "/usr/local/bin"]
+AGE_BIN = shutil.which("age", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS])) or "age"
+AGE_KEYGEN_BIN = shutil.which("age-keygen", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS])) or "age-keygen"
 
 def _default_vault_dir() -> Path:
     from superpowers.config import get_data_dir

@@ -519,13 +519,112 @@ function watcherPage() {
 
 function browserPage() {
   return {
-    profiles: [],
+    engineStatus: {
+      engine_online: false,
+      status: 'unknown',
+      uptime_seconds: 0,
+      active_sessions: 0,
+      sessions: [],
+      profiles: [],
+      error: '',
+    },
+    navForm: { url: '', profile: 'default' },
+    navResult: null,
+    screenshotData: null,
 
     async load() {
       try {
-        this.profiles = await GET('/browser/profiles');
+        this.engineStatus = await GET('/browser/status');
       } catch (e) {
-        _toast(this, 'Failed to load browser profiles', 'error');
+        this.engineStatus.engine_online = false;
+        this.engineStatus.error = e.message;
+        _toast(this, 'Failed to load browser engine status', 'error');
+      }
+    },
+
+    formatUptime(seconds) {
+      if (!seconds) return '-';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      if (h > 0) return h + 'h ' + m + 'm';
+      if (m > 0) return m + 'm ' + s + 's';
+      return s + 's';
+    },
+
+    async doNavigate() {
+      if (!this.navForm.url.trim()) return;
+      this.screenshotData = null;
+      try {
+        this.navResult = await POST('/browser/navigate', {
+          url: this.navForm.url,
+          profile: this.navForm.profile,
+        });
+        if (this.navResult.ok) {
+          _toast(this, 'Navigated to ' + this.navResult.title, 'success');
+        } else {
+          _toast(this, 'Navigation failed: ' + (this.navResult.error || 'unknown'), 'error');
+        }
+        await this.load();
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async doScreenshot() {
+      if (!this.navForm.url.trim()) return;
+      try {
+        const res = await POST('/browser/screenshot', {
+          url: this.navForm.url,
+          profile: this.navForm.profile,
+          full_page: true,
+        });
+        if (res.ok) {
+          this.navResult = { url: res.url, title: res.title, ok: true };
+          this.screenshotData = res.image_base64;
+          _toast(this, 'Screenshot captured', 'success');
+        } else {
+          _toast(this, 'Screenshot failed: ' + (res.error || 'unknown'), 'error');
+        }
+        await this.load();
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async screenshotSession(profile) {
+      try {
+        const res = await POST('/browser/screenshot', { profile, full_page: true });
+        if (res.ok) {
+          this.screenshotData = res.image_base64;
+          _toast(this, 'Screenshot captured', 'success');
+        } else {
+          _toast(this, 'Screenshot failed: ' + (res.error || 'unknown'), 'error');
+        }
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async closeSession(profile) {
+      if (!confirm('Close browser session "' + profile + '"?')) return;
+      try {
+        await DEL('/browser/sessions/' + profile);
+        _toast(this, 'Session closed', 'success');
+        await this.load();
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async closeAllSessions() {
+      if (!confirm('Close all browser sessions?')) return;
+      try {
+        await DEL('/browser/sessions');
+        _toast(this, 'All sessions closed', 'success');
+        await this.load();
+      } catch (e) {
+        _toast(this, e.message, 'error');
       }
     },
   };

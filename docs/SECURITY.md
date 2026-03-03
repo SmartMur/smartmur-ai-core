@@ -44,9 +44,73 @@ Behavior:
 
 Finding your chat ID: Send any message to the bot and check the application logs for the rejected chat ID.
 
+### Webhook Signature Validation (Phase G)
+
+Inbound webhooks are validated using **fail-closed** middleware (`msg_gateway/middleware.py`).
+
+| Channel  | Mechanism | Env Variable |
+|----------|-----------|--------------|
+| Telegram | `X-Telegram-Bot-Api-Secret-Token` header | `TELEGRAM_WEBHOOK_SECRET` |
+| Slack    | HMAC-SHA256 (`v0` signing) | `SLACK_SIGNING_SECRET` |
+| Discord  | Ed25519 signature (via PyNaCl) | `DISCORD_PUBLIC_KEY` |
+
+**Behavior:**
+- All POST requests to `/webhook/*` paths MUST carry a valid signature
+- If the corresponding env var is not set, the request is **rejected** (not allowed through)
+- Set `WEBHOOK_REQUIRE_SIGNATURE=false` to disable validation (not recommended; for debugging only)
+- Health endpoints (`/health`, `/api/health`) are always exempt
+
+### Rate Limiting (Phase G)
+
+Both the message gateway and the dashboard enforce per-IP rate limiting via token-bucket middleware.
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `RATE_LIMIT_PER_IP` | `60` | Max requests per minute per IP address |
+| `RATE_LIMIT_PER_USER` | `120` | Max requests per minute per authenticated user |
+
+**Behavior:**
+- Returns `429 Too Many Requests` with `Retry-After: 60` header when exceeded
+- Health endpoints are exempt from rate limiting
+- Token buckets refill continuously (not in fixed windows)
+- Stale buckets are cleaned up after 10 minutes of inactivity
+
+Middleware files:
+- `msg_gateway/middleware.py` -- webhook validation + rate limiting for the message gateway
+- `dashboard/middleware.py` -- rate limiting for the dashboard
+
+### Startup Security Validation (Phase G)
+
+`Settings.validate_security()` checks configuration at startup and logs warnings for:
+
+- Missing `DASHBOARD_USER` or `DASHBOARD_PASS`
+- Insecure default credential values (e.g., "admin", "password", "changeme")
+- `ENVIRONMENT=production` without `FORCE_HTTPS=true`
+- `WEBHOOK_REQUIRE_SIGNATURE` disabled
+
+Call `settings.validate_security()` in your app startup to surface issues early.
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `FORCE_HTTPS` | `false` (dev) / `true` (production) | Enforce HTTPS transport |
+| `ENVIRONMENT` | `development` | Set to `production` to auto-enable HTTPS enforcement |
+
+### Channel Adapter Interface (Phase G)
+
+A new abstract base class (`msg_gateway/channels/base.py`) defines the contract for inbound channel adapters:
+
+- `name: str` -- channel identifier
+- `receive(request) -> Message` -- parse inbound webhook payload
+- `acknowledge(message) -> None` -- send read receipt or reaction
+- `start_processing_indicator(message) -> None` -- show typing indicator
+- `send_response(message, response) -> None` -- send reply
+- `supports_streaming: bool` -- whether the adapter supports streaming responses
+
+This is separate from the simpler `superpowers/channels/base.py::Channel` class (outbound-only). Existing adapters can migrate to this interface incrementally.
+
 ### Webhook / API Security
 
-The message gateway (`msg-gateway`) at port 8100 has no built-in authentication. It is intended to run on localhost or behind a reverse proxy that provides authentication.
+The message gateway (`msg-gateway`) at port 8100 now includes webhook signature validation and rate limiting middleware. It should still be run on localhost or behind a reverse proxy for additional protection.
 
 The MCP server (`claw-mcp`) communicates over stdio and inherits the security context of the calling process (Claude Code).
 
@@ -183,14 +247,37 @@ audit_search(query="ssh", limit=50)
 - [ ] Use Cloudflare Tunnel or VPN for remote access (see `docs/cloudflared-setup.md`)
 - [ ] Restrict Redis to localhost (`bind 127.0.0.1` in redis.conf or Docker network isolation)
 
+### Webhook Security (Phase G)
+
+- [ ] Set `TELEGRAM_WEBHOOK_SECRET` for Telegram webhook validation
+- [ ] Set `SLACK_SIGNING_SECRET` for Slack webhook validation
+- [ ] Set `DISCORD_PUBLIC_KEY` for Discord webhook validation
+- [ ] Verify `WEBHOOK_REQUIRE_SIGNATURE=true` (default) is not overridden
+- [ ] Test webhook rejection by sending unsigned requests
+
+### Rate Limiting (Phase G)
+
+- [ ] Verify rate limiting is active on both dashboard and msg-gateway
+- [ ] Tune `RATE_LIMIT_PER_IP` if needed (default: 60 req/min)
+- [ ] Tune `RATE_LIMIT_PER_USER` if needed (default: 120 req/min)
+- [ ] Monitor 429 responses in logs for false positives
+
 ### Credentials
 
 - [ ] Set strong `DASHBOARD_PASS` (use `python3 -c "import secrets; print(secrets.token_urlsafe(24))"`)
+- [ ] Avoid insecure defaults ("admin", "password", "changeme", etc.) for DASHBOARD_USER/DASHBOARD_PASS
+- [ ] Run `settings.validate_security()` at startup to detect misconfigurations
 - [ ] Set `ALLOWED_CHAT_IDS` for the Telegram bot (empty = all messages rejected)
 - [ ] Store sensitive tokens in the vault, not in `.env` where possible
 - [ ] Review `~/.claude-superpowers/age-identity.txt` permissions: must be `600`
 - [ ] Review `~/.claude-superpowers/vault.enc` permissions: must be `600`
 - [ ] Set up credential rotation policies (`claw vault rotation policy`)
+
+### HTTPS / Transport (Phase G)
+
+- [ ] Set `ENVIRONMENT=production` in production deployments (auto-enables FORCE_HTTPS)
+- [ ] Or explicitly set `FORCE_HTTPS=true`
+- [ ] Use a TLS-terminating reverse proxy (nginx, Caddy, or Cloudflare Tunnel)
 
 ### Skills
 
@@ -230,7 +317,7 @@ audit_search(query="ssh", limit=50)
 
 3. **Dashboard transport**: The dashboard serves over HTTP by default. Credentials are sent as Base64-encoded Basic auth headers. Without TLS (reverse proxy or Cloudflare Tunnel), credentials are visible on the network.
 
-4. **Message gateway**: The `msg-gateway` service has no authentication. Anyone who can reach port 8100 can send messages through configured channels.
+4. **Message gateway**: The `msg-gateway` service now validates webhook signatures (Phase G) but the `/send` endpoint has no authentication. Anyone who can reach port 8100 can send messages through configured channels unless network-level restrictions are in place.
 
 5. **Cron job environment**: Shell-type cron jobs inherit the daemon's environment, which may include secrets loaded from `.env`. Job output logs may contain sensitive output.
 

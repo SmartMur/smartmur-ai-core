@@ -27,10 +27,32 @@ services:
       - "8200:8200"
     env_file:
       - .env
+    environment:
+      - BROWSER_ENGINE_URL=http://browser-engine:8300
     volumes:
       - ${HOME}/.claude-superpowers:/root/.claude-superpowers
       - ./skills:/app/skills:ro
+    depends_on:
+      - browser-engine
     restart: unless-stopped
+
+  browser-engine:
+    build:
+      context: .
+      dockerfile: browser_engine/Dockerfile
+    ports:
+      - "8300:8300"
+    volumes:
+      - ${HOME}/.claude-superpowers/browser:/data/browser
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8300/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   telegram-bot:
     build:

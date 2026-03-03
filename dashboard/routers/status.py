@@ -132,17 +132,40 @@ def aggregate_status():
     except Exception:
         subs.append(SubsystemStatus(name="audit", ok=False, detail="unavailable"))
 
-    # Browser
+    # Browser — query the browser-engine service for real status
     try:
-        from dashboard.deps import get_browser_profiles
-        pm = get_browser_profiles()
-        profiles = pm.list_profiles()
-        subs.append(SubsystemStatus(
-            name="browser", ok=True,
-            detail=f"{len(profiles)} profiles",
-            count=len(profiles),
-        ))
+        import os
+        import httpx
+        engine_url = os.environ.get("BROWSER_ENGINE_URL", "http://browser-engine:8300")
+        with httpx.Client(timeout=3.0) as client:
+            resp = client.get(f"{engine_url}/status")
+            resp.raise_for_status()
+            data = resp.json()
+            active = data.get("active_sessions", 0)
+            profiles = data.get("profiles", [])
+            detail_parts = []
+            if active > 0:
+                detail_parts.append(f"{active} active session{'s' if active != 1 else ''}")
+            if profiles:
+                detail_parts.append(f"{len(profiles)} profile{'s' if len(profiles) != 1 else ''}")
+            detail_parts.append("engine running")
+            subs.append(SubsystemStatus(
+                name="browser", ok=True,
+                detail=", ".join(detail_parts),
+                count=active + len(profiles),
+            ))
     except Exception:
-        subs.append(SubsystemStatus(name="browser", ok=False, detail="unavailable"))
+        # Fallback: check local profiles
+        try:
+            from dashboard.deps import get_browser_profiles
+            pm = get_browser_profiles()
+            profiles = pm.list_profiles()
+            subs.append(SubsystemStatus(
+                name="browser", ok=len(profiles) > 0,
+                detail=f"{len(profiles)} profiles (engine offline)",
+                count=len(profiles),
+            ))
+        except Exception:
+            subs.append(SubsystemStatus(name="browser", ok=False, detail="engine offline"))
 
     return AggregateStatus(subsystems=subs)
