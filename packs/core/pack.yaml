@@ -1,0 +1,13 @@
+name: core
+version: "1.0.0"
+description: "Core automation pack — essential skills and workflows"
+author: SmartMur
+skills:
+  - heartbeat
+  - docker-monitor
+  - backup-status
+  - ssl-cert-check
+  - network-scan
+workflows:
+  - deploy
+  - health-check

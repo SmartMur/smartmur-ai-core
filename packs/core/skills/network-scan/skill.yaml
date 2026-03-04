@@ -1,0 +1,16 @@
+name: network-scan
+version: "1.0.0"
+description: "Scan network hosts — ping sweep, port check, formatted status report. No nmap required."
+author: DreDay
+slash_command: true
+script: run.py
+triggers: []
+dependencies: [python3, ping]
+permissions: []
+env:
+  NETWORK_SCAN_HOSTS: ""        # "ip:label,ip:label" — defaults to known homelab hosts
+  NETWORK_SCAN_SUBNETS: ""      # "192.168.30.0/24" — optional subnet sweep
+  NETWORK_SCAN_PORTS: ""        # "22,80,443,8080,8443" — defaults to common ports
+  NETWORK_SCAN_CRITICAL: ""     # "ip,ip" — hosts that must be up (exit 1 if any down)
+  NETWORK_SCAN_TIMEOUT: "2"     # Ping/connect timeout in seconds
+  NETWORK_SCAN_WORKERS: "20"    # Max parallel scan threads

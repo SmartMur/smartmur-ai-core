@@ -1,0 +1,32 @@
+name: debt-analysis
+description: "Tech debt analysis — TODOs, deprecated APIs, outdated dependencies, stale code"
+notify_profile: ""
+steps:
+  - name: todo-scan
+    type: shell
+    command: "echo '=== TODO/FIXME/HACK/XXX ===' && grep -rn --include='*.py' --include='*.yaml' --include='*.sh' -E '(TODO|FIXME|HACK|XXX|DEPRECATED)' . 2>/dev/null | grep -v '.venv' | head -50 || echo 'None found'"
+    timeout: 60
+    on_failure: continue
+
+  - name: outdated-deps
+    type: shell
+    command: "pip list --outdated --format=columns 2>/dev/null || echo 'Cannot check outdated packages'"
+    timeout: 120
+    on_failure: continue
+
+  - name: dead-code
+    type: shell
+    command: "echo '=== Unused imports (ruff F401) ===' && ruff check . --select=F401 2>/dev/null || echo 'No unused imports'; echo '=== Empty files ===' && find . -name '*.py' -not -path './.venv/*' -empty 2>/dev/null || echo 'None'"
+    timeout: 60
+    on_failure: continue
+
+  - name: stale-branches
+    type: shell
+    command: "echo '=== Local branches ===' && git branch -v 2>/dev/null || echo 'Not a git repo'; echo '=== Uncommitted changes ===' && git status --short 2>/dev/null | wc -l && echo 'modified files'"
+    timeout: 30
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Analyze the tech debt findings. Categorize debt as: critical (blocking), moderate (should fix soon), low (nice to have). Estimate effort for each category. Recommend a prioritized debt paydown plan."
+    on_failure: continue

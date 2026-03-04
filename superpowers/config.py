@@ -281,3 +281,4 @@ class Settings:
         (self.data_dir / "browser" / "profiles").mkdir(exist_ok=True)
         (self.data_dir / "memory").mkdir(exist_ok=True)
         (self.data_dir / "workflows").mkdir(exist_ok=True)
+        (self.data_dir / "reports").mkdir(exist_ok=True)

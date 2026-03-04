@@ -1,0 +1,32 @@
+name: profile-repo
+description: "Repository profiling — languages, size, dependencies, test coverage"
+notify_profile: ""
+steps:
+  - name: repo-stats
+    type: shell
+    command: "echo '=== Repo Size ===' && du -sh . 2>/dev/null; echo '=== File Counts ===' && find . -type f -not -path './.git/*' -not -path './.venv/*' -not -path './node_modules/*' 2>/dev/null | sed 's/.*\\.//' | sort | uniq -c | sort -rn | head -20"
+    timeout: 60
+    on_failure: continue
+
+  - name: language-breakdown
+    type: shell
+    command: "echo '=== Python ===' && find . -name '*.py' -not -path './.venv/*' 2>/dev/null | wc -l; echo '=== YAML ===' && find . -name '*.yaml' -o -name '*.yml' 2>/dev/null | wc -l; echo '=== Shell ===' && find . -name '*.sh' 2>/dev/null | wc -l; echo '=== Lines of Code ===' && find . -name '*.py' -not -path './.venv/*' 2>/dev/null | xargs wc -l 2>/dev/null | tail -1"
+    timeout: 60
+    on_failure: continue
+
+  - name: dependency-count
+    type: shell
+    command: "echo '=== Python Deps ===' && pip list --format=freeze 2>/dev/null | wc -l; echo '=== Direct Deps ===' && test -f pyproject.toml && grep -c '\"' pyproject.toml 2>/dev/null || echo 0; echo '=== npm Deps ===' && test -f package.json && node -e 'console.log(Object.keys(require(\"./package.json\").dependencies||{}).length)' 2>/dev/null || echo 0"
+    timeout: 60
+    on_failure: continue
+
+  - name: test-coverage
+    type: shell
+    command: "find . -path '*/tests/*' -name '*.py' -not -path './.venv/*' 2>/dev/null | wc -l && echo 'test files'; find . -path '*/tests/*' -name '*.py' -not -path './.venv/*' 2>/dev/null | xargs grep -c 'def test_' 2>/dev/null | awk -F: '{s+=$2} END {print s \" total test functions\"}'"
+    timeout: 60
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Create a concise repo profile card from the collected data. Include: primary language, total LOC, number of dependencies, test count, and repo size. Format as a structured summary."
+    on_failure: continue

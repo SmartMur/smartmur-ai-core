@@ -1,0 +1,10 @@
+name: ssl-cert-check
+version: "0.1.0"
+description: "Check SSL certificate expiry for domains"
+author: DreDay
+slash_command: true
+script: run.sh
+triggers: []
+dependencies: [openssl]
+permissions: []
+tags: [ssl, security, monitoring]

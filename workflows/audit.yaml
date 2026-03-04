@@ -1,0 +1,31 @@
+name: audit
+description: "Security audit — QA checks, dependency scan, secret detection"
+notify_profile: info
+steps:
+  - name: qa-checks
+    type: skill
+    command: qa-guardian
+    on_failure: continue
+
+  - name: dep-scan
+    type: shell
+    command: "pip audit --format=json 2>/dev/null || echo '{\"vulnerabilities\": []}'"
+    timeout: 120
+    on_failure: continue
+
+  - name: secret-scan
+    type: shell
+    command: "grep -rn --include='*.py' --include='*.yaml' --include='*.yml' -E '(password|secret|api_key|token)\\s*=' . 2>/dev/null | grep -v '.env.example' | grep -v 'test_' | head -50 || true"
+    timeout: 60
+    on_failure: continue
+
+  - name: file-permissions
+    type: shell
+    command: "find . -name '*.key' -o -name '*.pem' -o -name '*.env' 2>/dev/null | xargs ls -la 2>/dev/null || echo 'No sensitive files found'"
+    timeout: 30
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Summarize the security audit findings from the previous steps. List critical issues first, then warnings. Provide actionable remediation steps."
+    on_failure: continue

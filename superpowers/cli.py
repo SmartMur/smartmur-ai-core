@@ -1,15 +1,19 @@
 import click
 
 from superpowers import __version__
+from superpowers.cli_agent import agent_group
 from superpowers.cli_audit import audit_group
 from superpowers.cli_browse import browse_group
 from superpowers.cli_cron import cron_group
 from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_intake import intake_group
 from superpowers.cli_jobs import jobs_group
+from superpowers.cli_pack import pack_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
+from superpowers.cli_orchestrate import orchestrate_group
+from superpowers.cli_report import report_group
 from superpowers.cli_setup import setup_group
 from superpowers.cli_skill import (
     skill_auto_install,
@@ -35,6 +39,7 @@ def main():
     """Claude Superpowers — autonomous skill execution and orchestration."""
 
 
+main.add_command(agent_group)
 main.add_command(audit_group)
 main.add_command(browse_group)
 main.add_command(cron_group)
@@ -44,12 +49,15 @@ main.add_command(jobs_group)
 main.add_command(daemon)
 main.add_command(memory_group)
 main.add_command(msg_group)
+main.add_command(orchestrate_group)
+main.add_command(pack_group)
 main.add_command(setup_group)
 main.add_command(ssh_group)
 main.add_command(template_group)
 main.add_command(vault_group)
 main.add_command(watcher_group)
 main.add_command(workflow_group)
+main.add_command(report_group)
 main.add_command(status_dashboard)
 
 

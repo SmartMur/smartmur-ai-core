@@ -19,6 +19,7 @@ from dashboard.routers import (
     memory,
     messaging,
     notifications,
+    reports,
     settings,
     skills,
     ssh,
@@ -59,6 +60,7 @@ api_router.include_router(notifications.router, prefix="/notifications", tags=["
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
 api_router.include_router(github.router, prefix="/github", tags=["github"])
+api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
 app.include_router(api_router)
 
 # --- Static files (SPA) ---

@@ -1,0 +1,26 @@
+name: compliance-check
+description: "License compliance and policy checks"
+notify_profile: info
+steps:
+  - name: license-scan
+    type: shell
+    command: "pip show --verbose $(pip list --format=freeze 2>/dev/null | head -30 | cut -d= -f1) 2>/dev/null | grep -E '^(Name|License):' || echo 'No license data available'"
+    timeout: 120
+    on_failure: continue
+
+  - name: license-files
+    type: shell
+    command: "find . -maxdepth 2 -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' 2>/dev/null | head -20; echo '---'; cat LICENSE 2>/dev/null || echo 'No LICENSE file found'"
+    timeout: 30
+    on_failure: continue
+
+  - name: policy-check
+    type: shell
+    command: "echo '=== .gitignore ===' && test -f .gitignore && echo 'Present' || echo 'MISSING'; echo '=== .env.example ===' && test -f .env.example && echo 'Present' || echo 'MISSING'; echo '=== SECURITY.md ===' && find . -maxdepth 2 -name 'SECURITY*' | head -1 || echo 'MISSING'"
+    timeout: 30
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Review the license compliance and policy check results. Flag any copyleft licenses that may conflict with MIT. Note any missing required files (LICENSE, .gitignore, SECURITY.md)."
+    on_failure: continue

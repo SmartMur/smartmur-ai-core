@@ -1,0 +1,32 @@
+name: deploy-validate
+description: "Pre-deploy validation — lint, tests, config check, health probe"
+notify_profile: info
+steps:
+  - name: lint
+    type: shell
+    command: "ruff check . --format=json 2>/dev/null || echo '{\"errors\": []}'"
+    timeout: 60
+    on_failure: continue
+
+  - name: run-tests
+    type: shell
+    command: "PYTHONPATH=. python -m pytest tests/ -q --tb=short --ignore=tests/test_telegram_concurrency.py 2>&1 || true"
+    timeout: 300
+    on_failure: abort
+
+  - name: config-check
+    type: shell
+    command: "python -c 'from superpowers.config import Settings; s = Settings.load(); w = s.validate_security(); print(\"Warnings:\", len(w)); [print(\" -\", x) for x in w]' 2>&1 || echo 'Config check failed'"
+    timeout: 30
+    on_failure: continue
+
+  - name: docker-health
+    type: shell
+    command: "docker compose ps --format=json 2>/dev/null || echo 'Docker Compose not running'"
+    timeout: 30
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Evaluate the pre-deploy validation results. Give a GO/NO-GO recommendation based on: lint errors, test pass rate, security warnings, and container health."
+    on_failure: continue

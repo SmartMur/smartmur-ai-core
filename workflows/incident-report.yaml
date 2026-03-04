@@ -1,0 +1,26 @@
+name: incident-report
+description: "Incident documentation generator — collect logs, timeline, impact"
+notify_profile: info
+steps:
+  - name: collect-logs
+    type: shell
+    command: "echo '=== Recent Docker Logs ===' && docker compose logs --tail=50 --no-color 2>/dev/null || echo 'No Docker logs'; echo '=== System Journal ===' && journalctl --no-pager -n 30 --since '1 hour ago' 2>/dev/null || echo 'No journal access'"
+    timeout: 60
+    on_failure: continue
+
+  - name: service-state
+    type: shell
+    command: "echo '=== Docker Containers ===' && docker ps -a --format 'table {{.Names}}\t{{.Status}}\t{{.CreatedAt}}' 2>/dev/null || echo 'Docker unavailable'; echo '=== Disk Usage ===' && df -h / 2>/dev/null; echo '=== Memory ===' && free -h 2>/dev/null"
+    timeout: 30
+    on_failure: continue
+
+  - name: recent-changes
+    type: shell
+    command: "echo '=== Git Log (last 10) ===' && git log --oneline -10 2>/dev/null || echo 'Not a git repo'; echo '=== Modified Files ===' && git diff --stat HEAD~3 2>/dev/null || true"
+    timeout: 30
+    on_failure: continue
+
+  - name: generate-report
+    type: claude_prompt
+    command: "Generate a structured incident report from the collected data. Include: 1) Summary, 2) Timeline of events, 3) Impact assessment, 4) Root cause analysis (if determinable), 5) Remediation steps, 6) Lessons learned. Format in markdown."
+    on_failure: continue

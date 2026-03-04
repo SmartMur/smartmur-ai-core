@@ -1,0 +1,41 @@
+name: code-health
+description: "Code quality metrics — complexity, duplication, lint, coverage"
+notify_profile: ""
+steps:
+  - name: lint-report
+    type: shell
+    command: "ruff check . --statistics 2>/dev/null || echo 'Ruff not available or no issues'"
+    timeout: 60
+    on_failure: continue
+
+  - name: complexity
+    type: shell
+    command: "find . -name '*.py' -not -path './.venv/*' -not -path './node_modules/*' 2>/dev/null | head -50 | xargs python -c \"
+import ast, sys
+for f in sys.argv[1:]:
+    try:
+        tree = ast.parse(open(f).read())
+        funcs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+        long = [n.name for n in funcs if (n.end_lineno or n.lineno) - n.lineno > 50]
+        if long: print(f'{f}: long functions: {long}')
+    except: pass
+\" 2>/dev/null || echo 'Complexity check unavailable'"
+    timeout: 60
+    on_failure: continue
+
+  - name: duplication
+    type: shell
+    command: "find . -name '*.py' -not -path './.venv/*' 2>/dev/null | xargs grep -l 'def ' 2>/dev/null | wc -l && echo 'files with functions'; echo '=== Duplicate imports ===' && find . -name '*.py' -not -path './.venv/*' 2>/dev/null | xargs grep '^import\\|^from' 2>/dev/null | sort | uniq -cd | sort -rn | head -10"
+    timeout: 60
+    on_failure: continue
+
+  - name: test-ratio
+    type: shell
+    command: "src=$(find . -name '*.py' -not -path './.venv/*' -not -path '*/tests/*' 2>/dev/null | xargs cat 2>/dev/null | wc -l); test_lines=$(find . -path '*/tests/*.py' 2>/dev/null | xargs cat 2>/dev/null | wc -l); echo \"Source lines: $src\"; echo \"Test lines: $test_lines\"; echo \"Test ratio: $(echo \"scale=2; $test_lines / ($src + 1)\" | bc 2>/dev/null || echo 'N/A')\""
+    timeout: 60
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Analyze the code health metrics. Score the project on: linting (A-F), complexity (A-F), test coverage ratio (A-F), duplication (A-F). Provide an overall code health grade and top 3 improvement recommendations."
+    on_failure: continue

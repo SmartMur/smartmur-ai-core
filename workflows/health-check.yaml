@@ -1,0 +1,31 @@
+name: health-check
+description: "Service health — ping hosts, check ports, HTTP probe endpoints"
+notify_profile: info
+steps:
+  - name: heartbeat
+    type: skill
+    command: heartbeat
+    on_failure: continue
+
+  - name: port-scan
+    type: shell
+    command: "for port in 8100 8200 6379 9222; do (echo >/dev/tcp/localhost/$port) 2>/dev/null && echo \"Port $port: OPEN\" || echo \"Port $port: CLOSED\"; done"
+    timeout: 30
+    on_failure: continue
+
+  - name: http-probe
+    type: shell
+    command: "for url in http://localhost:8100/health http://localhost:8200/health; do code=$(curl -sf -o /dev/null -w '%{http_code}' \"$url\" 2>/dev/null || echo '000'); echo \"$url -> $code\"; done"
+    timeout: 30
+    on_failure: continue
+
+  - name: docker-status
+    type: shell
+    command: "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo 'Docker not available'"
+    timeout: 30
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Compile a health check report from all probe results. List each service with UP/DOWN status. Flag any services that need attention."
+    on_failure: continue

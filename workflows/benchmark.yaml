@@ -1,0 +1,26 @@
+name: benchmark
+description: "Performance benchmarks — test speed, import time, build time"
+notify_profile: ""
+steps:
+  - name: test-speed
+    type: shell
+    command: "PYTHONPATH=. python -m pytest tests/ -q --tb=no --no-header 2>&1 | tail -5 || echo 'Tests not runnable'"
+    timeout: 300
+    on_failure: continue
+
+  - name: import-time
+    type: shell
+    command: "python -X importtime -c 'import superpowers' 2>&1 | tail -10 || echo 'Import timing unavailable'"
+    timeout: 30
+    on_failure: continue
+
+  - name: docker-build-time
+    type: shell
+    command: "test -f Dockerfile && time docker build --no-cache -t bench-test . 2>&1 | tail -5 && docker rmi bench-test 2>/dev/null || echo 'No Dockerfile or Docker unavailable'"
+    timeout: 600
+    on_failure: continue
+
+  - name: summarize
+    type: claude_prompt
+    command: "Analyze the benchmark results. Report test execution time, import overhead, and build time. Compare against typical baselines and flag any performance concerns."
+    on_failure: continue
