@@ -10,6 +10,7 @@ All user requests are logged here. Updated as work completes.
 - [x] **Sprint 2 validation run (tmux)** — session `overnight-agents-20260304-023817`; `169 passed` (`tests/test_dag_executor.py`, `tests/test_policy_engine.py`, `tests/test_dashboard_orchestrations.py`)
 - [x] **Full test suite verification** — `2010 passed in 37.13s` (local run on 2026-03-04)
 - [x] **Private repos security baseline hardening (2026-03-04)** — all private SmartMur repos now have `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `.github/dependabot.yml`, workflow coverage (including `security.yml`), vulnerability alerts + automated security fixes enabled, and `0` open Dependabot alerts
+- [x] **Macbook->VM project sync cron configured (2026-03-04)** — `/home/ray/bin/macbook_projects_sync.sh` pulls `dre@192.168.20.141:/Users/dre/Projects/` to `/home/ray/Projects/` every 15 minutes with lockfile and logs at `/home/ray/logs/macbook-projects-sync.log`; initial full sync completed (`rc=0`)
 - [x] **Overnight remote run (docker-host)** — session `overnight-agents-20260304-023817` executed and closed; logs saved in `docs/reports/remote-runs/20260304-023817/`
 
 ## Backlog
