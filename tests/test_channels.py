@@ -55,6 +55,7 @@ class TestBaseChannel:
 class TestSlackChannel:
     def test_requires_token(self):
         from superpowers.channels.slack import SlackChannel
+
         with pytest.raises(ChannelError, match="token is required"):
             SlackChannel(bot_token="")
 
@@ -103,7 +104,8 @@ class TestSlackChannel:
         mock_resp = MagicMock()
         mock_resp.__getitem__ = lambda s, k: {"error": "channel_not_found"}[k]
         mock_client.chat_postMessage.side_effect = SlackApiError(
-            "error", mock_resp,
+            "error",
+            mock_resp,
         )
 
         with patch("slack_sdk.WebClient", return_value=mock_client):
@@ -119,6 +121,7 @@ class TestSlackChannel:
 class TestTelegramChannel:
     def test_requires_token(self):
         from superpowers.channels.telegram import TelegramChannel
+
         with pytest.raises(ChannelError, match="token is required"):
             TelegramChannel(bot_token="")
 
@@ -127,10 +130,12 @@ class TestTelegramChannel:
 
         ch = TelegramChannel(bot_token="123:ABC")
 
-        response_data = json.dumps({
-            "ok": True,
-            "result": {"message_id": 42},
-        }).encode()
+        response_data = json.dumps(
+            {
+                "ok": True,
+                "result": {"message_id": 42},
+            }
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data
@@ -148,10 +153,12 @@ class TestTelegramChannel:
 
         ch = TelegramChannel(bot_token="123:ABC")
 
-        response_data = json.dumps({
-            "ok": False,
-            "description": "Bad Request: chat not found",
-        }).encode()
+        response_data = json.dumps(
+            {
+                "ok": False,
+                "description": "Bad Request: chat not found",
+            }
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data
@@ -169,10 +176,12 @@ class TestTelegramChannel:
 
         ch = TelegramChannel(bot_token="123:ABC")
 
-        response_data = json.dumps({
-            "ok": True,
-            "result": {"username": "test_bot", "id": 123},
-        }).encode()
+        response_data = json.dumps(
+            {
+                "ok": True,
+                "result": {"username": "test_bot", "id": 123},
+            }
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data
@@ -192,6 +201,7 @@ class TestTelegramChannel:
 class TestDiscordChannel:
     def test_requires_token(self):
         from superpowers.channels.discord import DiscordChannel
+
         with pytest.raises(ChannelError, match="token is required"):
             DiscordChannel(bot_token="")
 
@@ -218,9 +228,12 @@ class TestDiscordChannel:
 
         ch = DiscordChannel(bot_token="test-token")
 
-        response_data = json.dumps({
-            "username": "TestBot", "discriminator": "1234",
-        }).encode()
+        response_data = json.dumps(
+            {
+                "username": "TestBot",
+                "discriminator": "1234",
+            }
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data
@@ -240,6 +253,7 @@ class TestDiscordChannel:
 class TestEmailChannel:
     def test_requires_host(self):
         from superpowers.channels.email import EmailChannel
+
         with pytest.raises(ChannelError, match="SMTP host is required"):
             EmailChannel(host="", user="u", password="p")
 
@@ -335,10 +349,15 @@ class TestChannelRegistry:
     @patch("superpowers.channels.registry.sys")
     def test_available_all(self, mock_sys):
         mock_sys.platform = "darwin"
-        reg = ChannelRegistry(self._settings(
-            slack_bot_token="x", telegram_bot_token="x",
-            discord_bot_token="x", smtp_host="x", smtp_user="x",
-        ))
+        reg = ChannelRegistry(
+            self._settings(
+                slack_bot_token="x",
+                telegram_bot_token="x",
+                discord_bot_token="x",
+                smtp_host="x",
+                smtp_user="x",
+            )
+        )
         assert len(reg.available()) == 5
 
     def test_get_unknown_channel(self):
@@ -368,8 +387,12 @@ class TestChannelRegistry:
         assert ch.channel_type == ChannelType.discord
 
     def test_get_email_creates_adapter(self):
-        reg = ChannelRegistry(self._settings(
-            smtp_host="smtp.test.com", smtp_user="u", smtp_pass="p",
-        ))
+        reg = ChannelRegistry(
+            self._settings(
+                smtp_host="smtp.test.com",
+                smtp_user="u",
+                smtp_pass="p",
+            )
+        )
         ch = reg.get("email")
         assert ch.channel_type == ChannelType.email

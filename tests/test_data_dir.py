@@ -13,8 +13,11 @@ def test_get_data_dir_default():
 
     with mock.patch.dict(os.environ, {}, clear=True):
         # Remove both env vars if present
-        env = {k: v for k, v in os.environ.items()
-               if k not in ("SUPERPOWERS_DATA_DIR", "CLAUDE_SUPERPOWERS_DATA_DIR")}
+        env = {
+            k: v
+            for k, v in os.environ.items()
+            if k not in ("SUPERPOWERS_DATA_DIR", "CLAUDE_SUPERPOWERS_DATA_DIR")
+        }
         with mock.patch.dict(os.environ, env, clear=True):
             result = get_data_dir()
             assert result == Path.home() / ".claude-superpowers"
@@ -49,10 +52,14 @@ def test_get_data_dir_preferred_over_legacy(tmp_path):
 
     preferred = str(tmp_path / "preferred")
     legacy = str(tmp_path / "legacy")
-    with mock.patch.dict(os.environ, {
-        "SUPERPOWERS_DATA_DIR": preferred,
-        "CLAUDE_SUPERPOWERS_DATA_DIR": legacy,
-    }, clear=False):
+    with mock.patch.dict(
+        os.environ,
+        {
+            "SUPERPOWERS_DATA_DIR": preferred,
+            "CLAUDE_SUPERPOWERS_DATA_DIR": legacy,
+        },
+        clear=False,
+    ):
         result = get_data_dir()
         assert result == Path(preferred)
 
@@ -62,8 +69,11 @@ def test_settings_data_dir_default():
     from superpowers.config import Settings, get_data_dir
 
     with mock.patch.dict(os.environ, {}, clear=True):
-        env = {k: v for k, v in os.environ.items()
-               if k not in ("SUPERPOWERS_DATA_DIR", "CLAUDE_SUPERPOWERS_DATA_DIR")}
+        env = {
+            k: v
+            for k, v in os.environ.items()
+            if k not in ("SUPERPOWERS_DATA_DIR", "CLAUDE_SUPERPOWERS_DATA_DIR")
+        }
         with mock.patch.dict(os.environ, env, clear=True):
             s = Settings()
             assert s.data_dir == get_data_dir()
@@ -94,6 +104,7 @@ def test_audit_log_uses_data_dir(tmp_path):
     with mock.patch.dict(os.environ, {"SUPERPOWERS_DATA_DIR": custom}, clear=False):
         os.environ.pop("CLAUDE_SUPERPOWERS_DATA_DIR", None)
         from superpowers.audit import AuditLog
+
         audit = AuditLog()
         assert audit.path == Path(custom) / "audit.log"
 
@@ -104,6 +115,7 @@ def test_memory_store_uses_data_dir(tmp_path):
     with mock.patch.dict(os.environ, {"SUPERPOWERS_DATA_DIR": custom}, clear=False):
         os.environ.pop("CLAUDE_SUPERPOWERS_DATA_DIR", None)
         from superpowers.memory.store import MemoryStore
+
         store = MemoryStore()
         assert store.db_path == Path(custom) / "memory.db"
 
@@ -114,6 +126,7 @@ def test_vault_uses_data_dir(tmp_path):
     with mock.patch.dict(os.environ, {"SUPERPOWERS_DATA_DIR": custom}, clear=False):
         os.environ.pop("CLAUDE_SUPERPOWERS_DATA_DIR", None)
         from superpowers.vault import Vault
+
         v = Vault()
         assert v.vault_path == Path(custom) / "vault.enc"
         assert v.identity_file == Path(custom) / "age-identity.txt"

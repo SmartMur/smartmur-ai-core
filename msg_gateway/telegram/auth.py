@@ -20,11 +20,7 @@ class AuthGate:
             self._allowed = set(allowed_ids)
         else:
             raw = os.environ.get("ALLOWED_CHAT_IDS", "")
-            self._allowed = {
-                cid.strip()
-                for cid in raw.split(",")
-                if cid.strip()
-            }
+            self._allowed = {cid.strip() for cid in raw.split(",") if cid.strip()}
         self._reject_log: set[str] = set()
 
     @property

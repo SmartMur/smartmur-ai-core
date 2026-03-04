@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 from pathlib import Path
 
 import pytest
 
 from superpowers.job_runner import JobResult, JobRunner, JobRunnerError, JobStatus
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -204,10 +202,7 @@ class TestAutoCommit:
         assert "feat: add data file" in log.stdout
 
     def test_changed_files_tracked(self, runner: JobRunner, git_repo: Path):
-        cmd = (
-            f"echo a > {git_repo / 'file_a.txt'} && "
-            f"echo b > {git_repo / 'file_b.txt'}"
-        )
+        cmd = f"echo a > {git_repo / 'file_a.txt'} && echo b > {git_repo / 'file_b.txt'}"
         result = runner.run(name="multi-file", command=cmd)
         assert "file_a.txt" in result.changed_files
         assert "file_b.txt" in result.changed_files
@@ -266,7 +261,7 @@ class TestPRCreation:
 
 class TestAutoMerge:
     def test_can_auto_merge_allowed_paths(self, runner: JobRunner, git_repo: Path):
-        result = runner.run(
+        runner.run(
             name="docs-change",
             command=f"echo 'doc' > {git_repo / 'docs' / 'guide.txt'}; echo 'note' > {git_repo / 'CHANGELOG.md'}",
         )
@@ -288,10 +283,7 @@ class TestAutoMerge:
         assert not runner.can_auto_merge(result)
 
     def test_cannot_auto_merge_mixed_paths(self, runner: JobRunner, git_repo: Path):
-        cmd = (
-            f"echo 'doc' > {git_repo / 'README.md'} && "
-            f"echo 'code' > {git_repo / 'main.py'}"
-        )
+        cmd = f"echo 'doc' > {git_repo / 'README.md'} && echo 'code' > {git_repo / 'main.py'}"
         result = runner.run(name="mixed", command=cmd)
         assert not runner.can_auto_merge(result)
 

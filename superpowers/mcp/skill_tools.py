@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+
 from mcp.server.fastmcp import FastMCP
 
 
@@ -35,7 +37,7 @@ def register(mcp: FastMCP) -> None:
             return f"Skill '{name}' — {status}\n{output.strip()}"
         except KeyError:
             return f"Skill not found: {name}"
-        except Exception as exc:
+        except (ImportError, RuntimeError, OSError, subprocess.SubprocessError, ValueError) as exc:
             return f"Error running skill '{name}': {exc}"
 
     @mcp.tool()
@@ -53,7 +55,7 @@ def register(mcp: FastMCP) -> None:
             for s in skills:
                 lines.append(f"  {s.name} (v{s.version}) — {s.description}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error listing skills: {exc}"
 
     @mcp.tool()
@@ -86,5 +88,5 @@ def register(mcp: FastMCP) -> None:
             return "\n".join(lines)
         except KeyError:
             return f"Skill not found: {name}"
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error getting skill info: {exc}"

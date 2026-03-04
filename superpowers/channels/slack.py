@@ -19,7 +19,9 @@ class SlackChannel(Channel):
             from slack_sdk.errors import SlackApiError
         except ImportError:
             return SendResult(
-                ok=False, channel="slack", target=target,
+                ok=False,
+                channel="slack",
+                target=target,
                 error="slack_sdk not installed: pip install slack_sdk",
             )
 
@@ -27,13 +29,24 @@ class SlackChannel(Channel):
         try:
             resp = client.chat_postMessage(channel=target, text=message)
             return SendResult(
-                ok=True, channel="slack", target=target,
+                ok=True,
+                channel="slack",
+                target=target,
                 message=f"ts={resp['ts']}",
             )
         except SlackApiError as exc:
             return SendResult(
-                ok=False, channel="slack", target=target,
+                ok=False,
+                channel="slack",
+                target=target,
                 error=str(exc.response["error"]),
+            )
+        except (OSError, RuntimeError, ValueError) as exc:
+            return SendResult(
+                ok=False,
+                channel="slack",
+                target=target,
+                error=f"Unexpected error: {exc}",
             )
 
     def test_connection(self) -> SendResult:
@@ -42,7 +55,9 @@ class SlackChannel(Channel):
             from slack_sdk.errors import SlackApiError
         except ImportError:
             return SendResult(
-                ok=False, channel="slack", target="",
+                ok=False,
+                channel="slack",
+                target="",
                 error="slack_sdk not installed: pip install slack_sdk",
             )
 
@@ -50,11 +65,22 @@ class SlackChannel(Channel):
         try:
             resp = client.auth_test()
             return SendResult(
-                ok=True, channel="slack", target="",
+                ok=True,
+                channel="slack",
+                target="",
                 message=f"bot={resp['user']}, team={resp['team']}",
             )
         except SlackApiError as exc:
             return SendResult(
-                ok=False, channel="slack", target="",
+                ok=False,
+                channel="slack",
+                target="",
                 error=str(exc.response["error"]),
+            )
+        except (OSError, RuntimeError, ValueError) as exc:
+            return SendResult(
+                ok=False,
+                channel="slack",
+                target="",
+                error=f"Unexpected error: {exc}",
             )

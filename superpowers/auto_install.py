@@ -13,20 +13,20 @@ BUILTIN_TEMPLATES: dict[str, dict] = {
         "script_type": "bash",
         "tags": ["network", "scan", "hosts", "nmap", "ping"],
         "script": (
-            '#!/usr/bin/env bash\n'
-            'set -euo pipefail\n\n'
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n\n"
             'SUBNET="${1:-192.168.1.0/24}"\n'
             'echo "[network-scan] scanning $SUBNET ..."\n\n'
-            'if command -v nmap &>/dev/null; then\n'
+            "if command -v nmap &>/dev/null; then\n"
             '    nmap -sn "$SUBNET" | grep -E "Nmap scan|Host is"\n'
-            'else\n'
-            '    # Fallback: ping sweep\n'
+            "else\n"
+            "    # Fallback: ping sweep\n"
             '    BASE="${SUBNET%.*}"\n'
-            '    for i in $(seq 1 254); do\n'
+            "    for i in $(seq 1 254); do\n"
             '        ping -c1 -W1 "${BASE}.${i}" &>/dev/null && echo "${BASE}.${i} is up" &\n'
-            '    done\n'
-            '    wait\n'
-            'fi\n'
+            "    done\n"
+            "    wait\n"
+            "fi\n"
         ),
     },
     "disk-usage": {
@@ -34,15 +34,15 @@ BUILTIN_TEMPLATES: dict[str, dict] = {
         "script_type": "bash",
         "tags": ["disk", "usage", "storage", "space", "df"],
         "script": (
-            '#!/usr/bin/env bash\n'
-            'set -euo pipefail\n\n'
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n\n"
             'THRESHOLD="${1:-80}"\n'
             'echo "[disk-usage] volumes above ${THRESHOLD}% usage:"\n'
             'echo ""\n'
-            'df -h | awk -v t="$THRESHOLD" \'NR>1 && +$5 >= t {print $0}\'\n'
+            "df -h | awk -v t=\"$THRESHOLD\" 'NR>1 && +$5 >= t {print $0}'\n"
             'echo ""\n'
             'echo "[disk-usage] full report:"\n'
-            'df -h\n'
+            "df -h\n"
         ),
     },
     "git-stats": {
@@ -50,13 +50,13 @@ BUILTIN_TEMPLATES: dict[str, dict] = {
         "script_type": "bash",
         "tags": ["git", "stats", "commits", "contributors", "repo"],
         "script": (
-            '#!/usr/bin/env bash\n'
-            'set -euo pipefail\n\n'
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n\n"
             'echo "[git-stats] Repository: $(basename "$(git rev-parse --show-toplevel)")"\n'
             'echo ""\n'
             'echo "Total commits: $(git rev-list --count HEAD)"\n'
             'echo "Contributors:"\n'
-            'git shortlog -sn --no-merges | head -10\n'
+            "git shortlog -sn --no-merges | head -10\n"
             'echo ""\n'
             'echo "Recent activity (last 7 days):"\n'
             'git log --oneline --since="7 days ago" | head -20\n'
@@ -67,13 +67,13 @@ BUILTIN_TEMPLATES: dict[str, dict] = {
         "script_type": "bash",
         "tags": ["docker", "health", "containers", "images", "status"],
         "script": (
-            '#!/usr/bin/env bash\n'
-            'set -euo pipefail\n\n'
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n\n"
             'echo "[docker-health] Container status:"\n'
             'docker ps -a --format "table {{.Names}}\\t{{.Status}}\\t{{.Ports}}" 2>/dev/null || echo "Docker not available"\n'
             'echo ""\n'
             'echo "[docker-health] Disk usage:"\n'
-            'docker system df 2>/dev/null || true\n'
+            "docker system df 2>/dev/null || true\n"
         ),
     },
     "log-search": {
@@ -81,18 +81,18 @@ BUILTIN_TEMPLATES: dict[str, dict] = {
         "script_type": "bash",
         "tags": ["log", "search", "grep", "syslog", "errors"],
         "script": (
-            '#!/usr/bin/env bash\n'
-            'set -euo pipefail\n\n'
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n\n"
             'PATTERN="${1:-error}"\n'
             'LINES="${2:-50}"\n'
             'echo "[log-search] searching for: $PATTERN (last $LINES matches)"\n'
             'echo ""\n\n'
             'if [[ "$(uname)" == "Darwin" ]]; then\n'
             '    log show --predicate "eventMessage CONTAINS[c] \'$PATTERN\'" --last 1h --style compact 2>/dev/null | tail -"$LINES"\n'
-            'else\n'
+            "else\n"
             '    journalctl --no-pager -n "$LINES" --grep="$PATTERN" 2>/dev/null || \\\n'
             '        grep -ri "$PATTERN" /var/log/syslog /var/log/messages 2>/dev/null | tail -"$LINES"\n'
-            'fi\n'
+            "fi\n"
         ),
     },
 }

@@ -21,6 +21,7 @@ COMMAND_MENU = [
     {"command": "skills", "description": "List available skills"},
     {"command": "run", "description": "Run a skill by name"},
     {"command": "mode", "description": "Switch chat/skill mode"},
+    {"command": "model", "description": "Switch LLM (claude/openai)"},
     {"command": "history", "description": "Show conversation history"},
     {"command": "reset", "description": "Clear conversation history"},
     {"command": "cancel", "description": "Cancel running job"},
@@ -35,10 +36,12 @@ class CommandRouter:
         api: TelegramApi,
         session: SessionManager,
         chat_modes: dict[str, str] | None = None,
+        chat_models: dict[str, str] | None = None,
     ):
         self._api = api
         self._session = session
         self._chat_modes = chat_modes if chat_modes is not None else {}
+        self._chat_models = chat_models if chat_models is not None else {}
         self._handlers: dict[str, Callable] = {
             "start": self._cmd_start,
             "help": self._cmd_help,
@@ -46,6 +49,7 @@ class CommandRouter:
             "skills": self._cmd_skills,
             "run": self._cmd_run,
             "mode": self._cmd_mode,
+            "model": self._cmd_model,
             "history": self._cmd_history,
             "reset": self._cmd_reset,
             "cancel": self._cmd_cancel,
@@ -60,7 +64,7 @@ class CommandRouter:
         if handler:
             try:
                 handler(message)
-            except Exception as exc:
+            except (RuntimeError, KeyError, ValueError, OSError, ImportError) as exc:
                 logger.error("Command /%s error: %s", cmd, exc)
                 self._reply(message.chat_id, f"Error executing /{cmd}: {exc}")
 
@@ -80,7 +84,8 @@ class CommandRouter:
         parse_mode: str | None = None,
     ) -> None:
         self._api.send_message(
-            chat_id, text,
+            chat_id,
+            text,
             parse_mode=parse_mode,
             reply_markup=reply_markup,
         )
@@ -118,7 +123,9 @@ class CommandRouter:
         try:
             result = subprocess.run(
                 ["claw", "cron", "status"],
-                capture_output=True, text=True, timeout=10,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0 and result.stdout.strip():
                 status_lines.append(f"  Cron: {result.stdout.strip()[:200]}")
@@ -130,10 +137,13 @@ class CommandRouter:
     def _cmd_skills(self, msg: Message) -> None:
         try:
             from superpowers.skill_registry import SkillRegistry
+
             registry = SkillRegistry()
             skills = registry.list()
             if not skills:
-                self._reply(msg.chat_id, "No skills installed. Use `claw skill auto-install` to add some.")
+                self._reply(
+                    msg.chat_id, "No skills installed. Use `claw skill auto-install` to add some."
+                )
                 return
 
             skill_names = [s.name for s in skills]
@@ -142,19 +152,22 @@ class CommandRouter:
                 f"Available skills ({len(skill_names)}):\nTap one to run it.",
                 reply_markup=skill_list_keyboard(skill_names),
             )
-        except Exception as exc:
+        except (ImportError, KeyError, OSError) as exc:
             self._reply(msg.chat_id, f"Could not list skills: {exc}")
 
     def _cmd_run(self, msg: Message) -> None:
         skill_name = msg.command_args.strip()
         if not skill_name:
-            self._reply(msg.chat_id, "Usage: /run <skill_name>\n\nUse /skills to see available skills.")
+            self._reply(
+                msg.chat_id, "Usage: /run <skill_name>\n\nUse /skills to see available skills."
+            )
             return
 
         self._reply(msg.chat_id, f"Running skill: {skill_name}...")
         try:
             from superpowers.skill_loader import SkillLoader
             from superpowers.skill_registry import SkillRegistry
+
             registry = SkillRegistry()
             loader = SkillLoader()
             skill = registry.get(skill_name)
@@ -162,8 +175,41 @@ class CommandRouter:
             output = (result.stdout + result.stderr).strip()[:3000]
             status = "completed" if result.returncode == 0 else "failed"
             self._reply(msg.chat_id, f"Skill {skill_name} {status}:\n\n{output}")
-        except Exception as exc:
+        except (ImportError, KeyError, RuntimeError, OSError, subprocess.SubprocessError) as exc:
             self._reply(msg.chat_id, f"Skill execution error: {exc}")
+
+    def _cmd_model(self, msg: Message) -> None:
+        args = msg.command_args.strip().lower()
+        current = self._chat_models.get(msg.chat_id, "auto")
+        valid = ("claude", "openai", "auto")
+
+        if args in valid:
+            if args == "auto":
+                self._chat_models.pop(msg.chat_id, None)
+            else:
+                self._chat_models[msg.chat_id] = args
+            self._reply(
+                msg.chat_id,
+                f"LLM switched to: {args}"
+                + (" (Claude primary, OpenAI fallback)" if args == "auto" else ""),
+            )
+            return
+
+        # Check which providers are available
+        from superpowers.llm_provider import get_provider
+
+        claude_ok = get_provider("claude").available()
+        openai_ok = get_provider("openai").available()
+
+        lines = [
+            f"Current model: {current}",
+            f"  Claude CLI: {'available' if claude_ok else 'not found'}",
+            f"  OpenAI API: {'configured' if openai_ok else 'no API key'}",
+            "",
+            "Usage: /model <claude|openai|auto>",
+            "  auto = Claude primary, OpenAI fallback",
+        ]
+        self._reply(msg.chat_id, "\n".join(lines))
 
     def _cmd_mode(self, msg: Message) -> None:
         args = msg.command_args.strip().lower()

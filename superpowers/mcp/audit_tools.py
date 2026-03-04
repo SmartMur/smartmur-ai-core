@@ -28,7 +28,7 @@ def register(mcp: FastMCP) -> None:
                 src = f" [{source}]" if source else ""
                 lines.append(f"  {ts}  {action}{src}  {detail}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error reading audit log: {exc}"
 
     @mcp.tool()
@@ -56,5 +56,5 @@ def register(mcp: FastMCP) -> None:
                 src = f" [{source}]" if source else ""
                 lines.append(f"  {ts}  {action}{src}  {detail}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error searching audit log: {exc}"

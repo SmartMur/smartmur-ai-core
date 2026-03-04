@@ -80,6 +80,4 @@ class HomeAssistantClient:
         return self.call_service(domain, "turn_off", entity_id)
 
     def set_temperature(self, entity_id: str, temp: float) -> dict:
-        return self.call_service(
-            "climate", "set_temperature", entity_id, {"temperature": temp}
-        )
+        return self.call_service("climate", "set_temperature", entity_id, {"temperature": temp})

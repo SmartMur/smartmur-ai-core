@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from dashboard.deps import get_channel_registry, get_profile_manager
+from superpowers.channels.base import ChannelError
 from dashboard.models import (
     ChannelInfo,
     ProfileOut,
@@ -22,10 +23,7 @@ ALL_CHANNELS = ["slack", "telegram", "discord", "email"]
 def list_channels():
     reg = get_channel_registry()
     available = reg.available()
-    return [
-        ChannelInfo(name=ch, configured=ch in available)
-        for ch in ALL_CHANNELS
-    ]
+    return [ChannelInfo(name=ch, configured=ch in available) for ch in ALL_CHANNELS]
 
 
 @router.post("/send", response_model=SendMessageResponse)
@@ -33,7 +31,7 @@ def send_message(req: SendMessageRequest):
     reg = get_channel_registry()
     try:
         ch = reg.get(req.channel)
-    except Exception as exc:
+    except (ChannelError, KeyError, ValueError, OSError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
     result = ch.send(req.target, req.message)
@@ -50,14 +48,14 @@ def test_channel(channel: str):
     reg = get_channel_registry()
     try:
         ch = reg.get(channel)
-    except Exception as exc:
+    except (ChannelError, KeyError, ValueError, OSError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    result = ch.send("test", "Claw dashboard test message")
+    result = ch.test_connection()
     return SendMessageResponse(
         ok=result.ok,
         channel=result.channel,
-        target="test",
+        target=result.target,
         error=result.error or "",
     )
 

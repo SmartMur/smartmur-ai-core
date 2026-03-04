@@ -6,19 +6,21 @@ Docker Compose deployment, standalone setup, reverse proxy configuration, and he
 
 ## Docker Compose (Full Stack)
 
-The `docker-compose.yaml` in the project root defines three services:
+The `docker-compose.yaml` in the project root defines five services:
 
 | Service | Port | Purpose |
 |---------|------|---------|
 | `redis` | 6379 | Session storage for Telegram bot, message pubsub |
 | `msg-gateway` | 8100 | HTTP API for multi-channel messaging |
 | `dashboard` | 8200 | Web UI + REST API for all subsystems |
+| `browser-engine` | 8300 | Playwright + Chrome browser automation engine |
+| `telegram-bot` | -- | Telegram Bot API polling service |
 
 ### Prerequisites
 
 - Docker Engine 20.10+
 - Docker Compose v2
-- `.env` file configured (see `docs/CONFIGURATION.md`)
+- `.env` file configured (see `docs/reference/CONFIGURATION.md`)
 
 ### Deploy
 
@@ -28,6 +30,8 @@ cd /home/ray/claude-superpowers
 # Configure environment
 cp .env.example .env
 # Edit .env with actual values -- at minimum set DASHBOARD_USER and DASHBOARD_PASS
+# Both default to empty string (all requests rejected). .env.example uses "admin" as
+# a template value for DASHBOARD_USER -- change it to a unique, non-trivial username.
 
 # Build and start
 docker compose up -d
@@ -102,17 +106,79 @@ services:
       - "8200:8200"
     env_file:
       - .env
+    environment:
+      - BROWSER_ENGINE_URL=http://browser-engine:8300
     volumes:
       - ${HOME}/.claude-superpowers:/root/.claude-superpowers
+      - ${HOME}/.ssh:/root/.ssh:ro
+      - ./skills:/app/skills:ro
+    depends_on:
+      - browser-engine
     restart: unless-stopped
 ```
 
-The dashboard volume mount gives the container access to jobs, memory DB, audit logs, and other runtime data. For production, append `:ro` to make it read-only:
+Volume mounts:
+- `~/.claude-superpowers` -- access to jobs, memory DB, audit logs, and other runtime data
+- `~/.ssh` (read-only) -- SSH keys for remote command execution via the SSH fabric
+- `./skills` (read-only) -- skill definitions for the skill registry
+
+The `BROWSER_ENGINE_URL` environment variable points the dashboard at the browser-engine service for browser automation API calls.
+
+For production, append `:ro` to the superpowers mount to make it read-only:
 
 ```yaml
     volumes:
       - ${HOME}/.claude-superpowers:/root/.claude-superpowers:ro
+      - ${HOME}/.ssh:/root/.ssh:ro
+      - ./skills:/app/skills:ro
 ```
+
+**Browser Engine**:
+```yaml
+services:
+  browser-engine:
+    build:
+      context: .
+      dockerfile: browser_engine/Dockerfile
+    ports:
+      - "8300:8300"
+    env_file:
+      - .env
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    volumes:
+      - ${HOME}/.claude-superpowers/browser/profiles:/data/browser/profiles
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8300/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+```
+
+The browser engine runs Playwright with a bundled Chromium browser. The volume mount persists browser profiles (cookies, localStorage, session data) across container restarts. The `PLAYWRIGHT_BROWSERS_PATH` environment variable tells Playwright where to find its bundled browser binaries inside the container.
+
+**Telegram Bot**:
+```yaml
+services:
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: telegram-bot/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ${HOME}/.claude:/root/.claude:ro
+      - ${HOME}/.claude.json:/root/.claude.json:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+```
+
+The Telegram bot mounts Claude configuration files (read-only) so it can invoke `claude -p` for processing inbound messages. It has no exposed port -- it uses Telegram Bot API long-polling for inbound messages and connects to Redis for session storage.
 
 ---
 
@@ -327,7 +393,7 @@ Caddy automatically provisions and renews TLS certificates via Let's Encrypt.
 
 ### Cloudflare Tunnel (Zero Port Exposure)
 
-For zero-port-exposure remote access, use Cloudflare Tunnels. See `docs/cloudflared-setup.md` for full setup.
+For zero-port-exposure remote access, use Cloudflare Tunnels. See `docs/guides/cloudflared-setup.md` for full setup.
 
 ```bash
 # Quick setup via skill
@@ -369,6 +435,7 @@ Use with nginx `ssl_certificate` / `ssl_certificate_key` directives.
 | Dashboard | `GET /health` | None | `200 OK` with `{"status": "ok"}` |
 | Dashboard API | `GET /api/status` | Basic | Aggregate health across all subsystems |
 | Message Gateway | `GET /health` | None | `200 OK` |
+| Browser Engine | `GET /health` | None | `200 OK` |
 
 ### Docker Health Checks
 
@@ -447,6 +514,9 @@ The dashboard home page (`#/home`) shows status cards for all 10 subsystems: cro
 | 6379 | Redis | `0.0.0.0` | TCP |
 | 8100 | Message Gateway | `0.0.0.0` | HTTP |
 | 8200 | Dashboard | `0.0.0.0` | HTTP |
+| 8300 | Browser Engine | `0.0.0.0` | HTTP |
+
+The Telegram bot has no exposed port (uses outbound long-polling).
 
 For production, bind services to `127.0.0.1` and use a reverse proxy for external access:
 
@@ -459,6 +529,9 @@ services:
   msg-gateway:
     ports:
       - "127.0.0.1:8100:8100"
+  browser-engine:
+    ports:
+      - "127.0.0.1:8300:8300"
   redis:
     ports:
       - "127.0.0.1:6379:6379"

@@ -13,20 +13,24 @@ from msg_gateway.telegram.types import CallbackQuery
 
 def _make_callback_query(data: str, chat_id: int = 100, query_id: str = "qid_123") -> CallbackQuery:
     """Create a CallbackQuery object from a dict, simulating Telegram's format."""
-    return CallbackQuery.from_dict({
-        "id": query_id,
-        "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-        "message": {
-            "message_id": 1,
-            "chat": {"id": chat_id, "type": "private"},
-            "text": "original message",
-            "date": 1700000000,
-        },
-        "data": data,
-    })
+    return CallbackQuery.from_dict(
+        {
+            "id": query_id,
+            "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+            "message": {
+                "message_id": 1,
+                "chat": {"id": chat_id, "type": "private"},
+                "text": "original message",
+                "date": 1700000000,
+            },
+            "data": data,
+        }
+    )
 
 
-def _make_handler(api: TelegramApi | None = None, chat_modes: dict | None = None) -> CallbackHandler:
+def _make_handler(
+    api: TelegramApi | None = None, chat_modes: dict | None = None
+) -> CallbackHandler:
     if api is None:
         api = MagicMock(spec=TelegramApi)
         api.answer_callback_query.return_value = ApiResponse(ok=True)
@@ -199,17 +203,19 @@ def test_handle_none_data():
 
     handler = _make_handler(api=api)
     # from_dict with empty data key produces data=""
-    query = CallbackQuery.from_dict({
-        "id": "qid_999",
-        "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-        "message": {
-            "message_id": 1,
-            "chat": {"id": 100, "type": "private"},
-            "text": "msg",
-            "date": 0,
-        },
-        "data": "",
-    })
+    query = CallbackQuery.from_dict(
+        {
+            "id": "qid_999",
+            "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+            "message": {
+                "message_id": 1,
+                "chat": {"id": 100, "type": "private"},
+                "text": "msg",
+                "date": 0,
+            },
+            "data": "",
+        }
+    )
     handler.handle(query)
 
     api.answer_callback_query.assert_called_once()

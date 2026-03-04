@@ -27,8 +27,17 @@ log = logging.getLogger("container-watchdog")
 # Containers we expect to be running. Keyed by compose project dir.
 WATCHED_CONTAINERS: dict[str, list[str]] = {
     "/home/ray/docker/home_media": [
-        "gluetun", "qbittorrent", "radarr", "sonarr", "lidarr",
-        "prowlarr", "bazarr", "plex", "jellyfin", "overseerr", "jellyseerr",
+        "gluetun",
+        "qbittorrent",
+        "radarr",
+        "sonarr",
+        "lidarr",
+        "prowlarr",
+        "bazarr",
+        "plex",
+        "jellyfin",
+        "overseerr",
+        "jellyseerr",
     ],
     "/home/ray/claude-superpowers": [
         "claude-superpowers-redis-1",
@@ -58,16 +67,19 @@ SWEEP_INTERVAL_SECS = 3600
 
 # ── State ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class WatchdogState:
     """Tracks alert cooldowns and pending grace-period checks."""
+
     last_alert: dict[str, float] = field(default_factory=dict)
     lock: threading.Lock = field(default_factory=threading.Lock)
 
     def can_alert(self, container: str) -> bool:
         with self.lock:
-            last = self.last_alert.get(container, 0)
-            return (time.monotonic() - last) >= ALERT_COOLDOWN_SECS
+            if container not in self.last_alert:
+                return True
+            return (time.monotonic() - self.last_alert[container]) >= ALERT_COOLDOWN_SECS
 
     def record_alert(self, container: str) -> None:
         with self.lock:
@@ -84,6 +96,7 @@ state = WatchdogState()
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
+
 def _ts() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
@@ -93,10 +106,12 @@ def _is_container_running(name: str) -> bool:
     try:
         result = subprocess.run(
             ["docker", "inspect", "--format", "{{.State.Running}}", name],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         return result.stdout.strip().lower() == "true"
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return False
 
 
@@ -105,11 +120,13 @@ def _has_restart_policy(name: str) -> bool:
     try:
         result = subprocess.run(
             ["docker", "inspect", "--format", "{{.HostConfig.RestartPolicy.Name}}", name],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         policy = result.stdout.strip().lower()
         return policy not in ("", "no")
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return False
 
 
@@ -118,12 +135,14 @@ def _get_running_containers() -> set[str]:
     try:
         result = subprocess.run(
             ["docker", "ps", "--format", "{{.Names}}"],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True,
+            text=True,
+            timeout=15,
         )
         if result.returncode != 0:
             return set()
         return {line.strip() for line in result.stdout.strip().splitlines() if line.strip()}
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return set()
 
 
@@ -132,14 +151,17 @@ def _container_exists(name: str) -> bool:
     try:
         result = subprocess.run(
             ["docker", "inspect", "--format", "{{.Name}}", name],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         return result.returncode == 0
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return False
 
 
 # ── Alert functions ──────────────────────────────────────────────────
+
 
 def send_down_alert(container: str, reason: str = "stopped") -> None:
     """Send a Telegram alert that a container is down."""
@@ -147,11 +169,7 @@ def send_down_alert(container: str, reason: str = "stopped") -> None:
         log.debug("Skipping alert for %s (cooldown)", container)
         return
 
-    msg = (
-        f"*CONTAINER DOWN*\n"
-        f"`{container}` is {reason}\n"
-        f"_{_ts()}_"
-    )
+    msg = f"*CONTAINER DOWN*\n`{container}` is {reason}\n_{_ts()}_"
     if notify(msg):
         state.record_alert(container)
         log.warning("Alert sent: %s is %s", container, reason)
@@ -162,11 +180,7 @@ def send_down_alert(container: str, reason: str = "stopped") -> None:
 def send_recovery_alert(container: str) -> None:
     """Send a Telegram notification that a container has recovered."""
     state.clear_alert(container)
-    msg = (
-        f"*CONTAINER RECOVERED*\n"
-        f"`{container}` is back up\n"
-        f"_{_ts()}_"
-    )
+    msg = f"*CONTAINER RECOVERED*\n`{container}` is back up\n_{_ts()}_"
     notify(msg)
     log.info("Recovery alert sent: %s", container)
 
@@ -174,16 +188,13 @@ def send_recovery_alert(container: str) -> None:
 def send_sweep_alert(down_containers: list[str]) -> None:
     """Send a summary alert for all down containers found during hourly sweep."""
     names = "\n".join(f"  - `{c}`" for c in sorted(down_containers))
-    msg = (
-        f"*WATCHDOG SWEEP — {len(down_containers)} container(s) down*\n"
-        f"{names}\n"
-        f"_{_ts()}_"
-    )
+    msg = f"*WATCHDOG SWEEP — {len(down_containers)} container(s) down*\n{names}\n_{_ts()}_"
     notify(msg)
     log.warning("Sweep alert: %d containers down", len(down_containers))
 
 
 # ── Real-time event listener ────────────────────────────────────────
+
 
 def _handle_event(container: str, event_type: str) -> None:
     """Handle a docker die/stop event with grace period."""
@@ -197,7 +208,9 @@ def _handle_event(container: str, event_type: str) -> None:
         if _is_container_running(container):
             log.info("%s recovered within grace period", container)
             return
-        send_down_alert(container, reason=f"{event_type} (not recovered after {GRACE_PERIOD_SECS}s)")
+        send_down_alert(
+            container, reason=f"{event_type} (not recovered after {GRACE_PERIOD_SECS}s)"
+        )
 
     t = threading.Thread(target=_check_after_grace, daemon=True)
     t.start()
@@ -210,12 +223,18 @@ def event_listener(stop_event: threading.Event) -> None:
         try:
             proc = subprocess.Popen(
                 [
-                    "docker", "events",
-                    "--filter", "event=die",
-                    "--filter", "event=stop",
-                    "--filter", "event=start",
-                    "--filter", "type=container",
-                    "--format", "{{.Actor.Attributes.name}} {{.Action}}",
+                    "docker",
+                    "events",
+                    "--filter",
+                    "event=die",
+                    "--filter",
+                    "event=stop",
+                    "--filter",
+                    "event=start",
+                    "--filter",
+                    "type=container",
+                    "--format",
+                    "{{.Actor.Attributes.name}} {{.Action}}",
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -241,15 +260,18 @@ def event_listener(stop_event: threading.Event) -> None:
 
             # If we get here, docker events exited unexpectedly
             if proc.poll() is not None and not stop_event.is_set():
-                log.warning("docker events process exited (rc=%s), restarting in 5s", proc.returncode)
+                log.warning(
+                    "docker events process exited (rc=%s), restarting in 5s", proc.returncode
+                )
                 time.sleep(5)
 
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError, ValueError) as e:
             log.error("Event listener error: %s, restarting in 10s", e)
             time.sleep(10)
 
 
 # ── Hourly sweep ─────────────────────────────────────────────────────
+
 
 def hourly_sweep(stop_event: threading.Event) -> None:
     """Periodically check all expected containers are running."""
@@ -278,6 +300,7 @@ def hourly_sweep(stop_event: threading.Event) -> None:
 
 
 # ── Status reporting ─────────────────────────────────────────────────
+
 
 def get_status() -> dict:
     """Get current watchdog status as a dict."""
@@ -311,6 +334,7 @@ def print_status() -> None:
 
 # ── Main daemon ──────────────────────────────────────────────────────
 
+
 def run_daemon() -> None:
     """Main entry point — starts event listener + hourly sweep."""
     logging.basicConfig(
@@ -326,11 +350,15 @@ def run_daemon() -> None:
     stop_event = threading.Event()
 
     # Start event listener thread
-    event_thread = threading.Thread(target=event_listener, args=(stop_event,), daemon=True, name="event-listener")
+    event_thread = threading.Thread(
+        target=event_listener, args=(stop_event,), daemon=True, name="event-listener"
+    )
     event_thread.start()
 
     # Start hourly sweep thread
-    sweep_thread = threading.Thread(target=hourly_sweep, args=(stop_event,), daemon=True, name="hourly-sweep")
+    sweep_thread = threading.Thread(
+        target=hourly_sweep, args=(stop_event,), daemon=True, name="hourly-sweep"
+    )
     sweep_thread.start()
 
     # Initial sweep — check status right away on startup
@@ -358,6 +386,7 @@ def run_daemon() -> None:
 
 
 # ── CLI ──────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     """CLI entry point with subcommands."""

@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WATCHDOG="$PROJECT_DIR/superpowers/container_watchdog.py"
-SERVICE="container-watchdog.service"
+source "$(dirname "$0")/../lib.sh"
+load_env
 
-# Source .env for Telegram credentials if available
-if [ -f "$PROJECT_DIR/.env" ]; then
-    set -a
-    source "$PROJECT_DIR/.env"
-    set +a
-fi
+SERVICE="container-watchdog.service"
 
 usage() {
     echo "Container Watchdog — real-time Docker monitoring with Telegram alerts"

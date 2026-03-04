@@ -764,6 +764,58 @@ body {
   margin-right: 12px;
 }
 
+/* Theme toggle switch */
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.theme-switch-icon {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+
+.theme-switch-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--border);
+  border-radius: 10px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.theme-switch-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.theme-switch input:checked + .theme-switch-slider {
+  background: var(--accent);
+}
+
+.theme-switch input:checked + .theme-switch-slider::after {
+  transform: translateX(16px);
+  background: #fff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar { width: 60px; }

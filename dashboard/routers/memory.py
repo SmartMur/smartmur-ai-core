@@ -57,7 +57,7 @@ def create_memory(req: MemoryCreateRequest):
             project=req.project,
         )
         return _entry_to_out(entry)
-    except Exception as exc:
+    except (OSError, ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
 

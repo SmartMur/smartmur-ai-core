@@ -110,4 +110,4 @@ def template_upgrade():
         action_str = style_map.get(action, action)
         console.print(f"  {name}: {action_str}")
 
-    console.print(f"\n[green]Upgrade complete.[/green]")
+    console.print("\n[green]Upgrade complete.[/green]")

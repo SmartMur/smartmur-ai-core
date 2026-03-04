@@ -35,6 +35,7 @@ class MemoryStore:
     def __init__(self, db_path: Path | None = None) -> None:
         if db_path is None:
             from superpowers.config import get_data_dir
+
             db_path = get_data_dir() / "memory.db"
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -123,18 +124,14 @@ class MemoryStore:
             params.append(project)
         where = " AND ".join(clauses)
         with self._conn() as conn:
-            row = conn.execute(
-                f"SELECT * FROM memories WHERE {where}", params
-            ).fetchone()
+            row = conn.execute(f"SELECT * FROM memories WHERE {where}", params).fetchone()
             if row is None:
                 return None
             conn.execute(
                 "UPDATE memories SET accessed_at = ?, access_count = access_count + 1 WHERE id = ?",
                 (_now(), row["id"]),
             )
-            updated = conn.execute(
-                "SELECT * FROM memories WHERE id = ?", (row["id"],)
-            ).fetchone()
+            updated = conn.execute("SELECT * FROM memories WHERE id = ?", (row["id"],)).fetchone()
             return _row_to_entry(updated)
 
     def search(
@@ -202,9 +199,7 @@ class MemoryStore:
 
         cutoff = (cutoff - timedelta(days=days)).isoformat()
         with self._conn() as conn:
-            cur = conn.execute(
-                "DELETE FROM memories WHERE accessed_at < ?", (cutoff,)
-            )
+            cur = conn.execute("DELETE FROM memories WHERE accessed_at < ?", (cutoff,))
             return cur.rowcount
 
     def stats(self) -> dict:
@@ -213,12 +208,8 @@ class MemoryStore:
             cats = conn.execute(
                 "SELECT category, COUNT(*) as cnt FROM memories GROUP BY category"
             ).fetchall()
-            oldest = conn.execute(
-                "SELECT MIN(created_at) FROM memories"
-            ).fetchone()[0]
-            newest = conn.execute(
-                "SELECT MAX(created_at) FROM memories"
-            ).fetchone()[0]
+            oldest = conn.execute("SELECT MIN(created_at) FROM memories").fetchone()[0]
+            newest = conn.execute("SELECT MAX(created_at) FROM memories").fetchone()[0]
             return {
                 "total": total,
                 "by_category": {r["category"]: r["cnt"] for r in cats},

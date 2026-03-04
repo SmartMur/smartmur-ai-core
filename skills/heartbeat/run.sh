@@ -3,7 +3,9 @@ set -euo pipefail
 
 # Heartbeat monitor — ping and HTTP checks for key network services
 
-FAILED=0
+source "$(dirname "$0")/../lib.sh"
+
+status_init "All services are UP." "One or more services are DOWN."
 
 declare -A HOSTS=(
     ["Switch"]="192.168.13.10"
@@ -21,44 +23,28 @@ declare -A HTTP_SERVICES=(
 )
 
 # Header
-printf "\n"
-printf "%-16s %-20s %-8s %-10s\n" "SERVICE" "ADDRESS" "TYPE" "STATUS"
-printf "%-16s %-20s %-8s %-10s\n" "-------" "-------" "----" "------"
+table_header "SERVICE:16" "ADDRESS:20" "TYPE:8" "STATUS:10"
 
 # Ping checks
 for name in "Switch" "CGM" "TrueNAS" "PVE1" "PVE2" "Docker Host"; do
     ip="${HOSTS[$name]}"
-    if ping -c 1 -W 2 "$ip" &>/dev/null; then
-        status="UP"
-        color="\033[32m"
+    if check_ping "$ip"; then
+        status="UP"; status_pass
     else
-        status="DOWN"
-        color="\033[31m"
-        FAILED=1
+        status="DOWN"; status_fail
     fi
-    printf "%-16s %-20s %-8s ${color}%-10s\033[0m\n" "$name" "$ip" "ICMP" "$status"
+    table_row_status 16 "$name" 20 "$ip" 8 "ICMP" 10 "$status"
 done
 
 # HTTP checks
 for name in "PVE1 API" "PVE2 API" "TrueNAS Web"; do
     url="${HTTP_SERVICES[$name]}"
-    if curl -sk --connect-timeout 5 --max-time 5 -o /dev/null -w '' "$url" 2>/dev/null; then
-        status="UP"
-        color="\033[32m"
+    if check_http "$url"; then
+        status="UP"; status_pass
     else
-        status="DOWN"
-        color="\033[31m"
-        FAILED=1
+        status="DOWN"; status_fail
     fi
-    printf "%-16s %-20s %-8s ${color}%-10s\033[0m\n" "$name" "$url" "HTTPS" "$status"
+    table_row_status 16 "$name" 20 "$url" 8 "HTTPS" 10 "$status"
 done
 
-printf "\n"
-
-if [ "$FAILED" -eq 1 ]; then
-    printf "\033[31m[!] One or more services are DOWN.\033[0m\n"
-    exit 1
-else
-    printf "\033[32m[OK] All services are UP.\033[0m\n"
-    exit 0
-fi
+status_summary

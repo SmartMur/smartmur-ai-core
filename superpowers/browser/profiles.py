@@ -12,6 +12,7 @@ class ProfileManager:
     def __init__(self, profiles_dir: Path | None = None):
         if profiles_dir is None:
             from superpowers.config import get_data_dir
+
             profiles_dir = get_data_dir() / "browser" / "profiles"
         self._profiles_dir = profiles_dir
         self._profiles_dir.mkdir(parents=True, exist_ok=True)
@@ -19,9 +20,7 @@ class ProfileManager:
     def list_profiles(self) -> list[str]:
         if not self._profiles_dir.exists():
             return []
-        return sorted(
-            d.name for d in self._profiles_dir.iterdir() if d.is_dir()
-        )
+        return sorted(d.name for d in self._profiles_dir.iterdir() if d.is_dir())
 
     def delete_profile(self, name: str) -> None:
         path = self._profiles_dir / name

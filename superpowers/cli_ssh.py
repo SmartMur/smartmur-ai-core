@@ -27,7 +27,7 @@ def _build_stack() -> tuple[HostRegistry, ConnectionPool, SSHExecutor]:
         from superpowers.vault import Vault
 
         vault = Vault(settings.vault_identity_file)
-    except Exception:
+    except (ImportError, OSError, RuntimeError, ValueError):
         pass
 
     pool = ConnectionPool(hosts, vault=vault)
@@ -38,9 +38,7 @@ def _build_stack() -> tuple[HostRegistry, ConnectionPool, SSHExecutor]:
 def _ha_client() -> HomeAssistantClient:
     settings = Settings.load()
     if not settings.home_assistant_url or not settings.home_assistant_token:
-        raise SSHError(
-            "HOME_ASSISTANT_URL and HOME_ASSISTANT_TOKEN must be set in .env"
-        )
+        raise SSHError("HOME_ASSISTANT_URL and HOME_ASSISTANT_TOKEN must be set in .env")
     return HomeAssistantClient(settings.home_assistant_url, settings.home_assistant_token)
 
 
@@ -269,7 +267,13 @@ def ha_call(domain: str, service: str, entity_id: str):
 
 
 @ha_group.command("list")
-@click.option("--filter", "-f", "filter_str", default=None, help="Filter entities by prefix (e.g. 'light', 'switch').")
+@click.option(
+    "--filter",
+    "-f",
+    "filter_str",
+    default=None,
+    help="Filter entities by prefix (e.g. 'light', 'switch').",
+)
 def ha_list(filter_str: str | None):
     """List Home Assistant entities.
 

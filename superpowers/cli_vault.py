@@ -13,6 +13,7 @@ console = Console()
 
 # --- Rotation subgroup ---
 
+
 @click.group("rotation")
 def rotation_group():
     """Credential rotation alerts."""

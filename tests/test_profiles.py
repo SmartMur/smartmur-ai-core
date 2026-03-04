@@ -170,9 +170,12 @@ mixed:
         mock_slack.send.return_value = SendResult(ok=True, channel="slack", target="#test")
 
         reg = MagicMock(spec=ChannelRegistry)
-        reg.get.side_effect = lambda name: {
-            "slack": mock_slack,
-        }.get(name) or (_ for _ in ()).throw(ChannelError("Discord not configured"))
+        reg.get.side_effect = lambda name: (
+            {
+                "slack": mock_slack,
+            }.get(name)
+            or (_ for _ in ()).throw(ChannelError("Discord not configured"))
+        )
 
         pm = ProfileManager(reg, profiles_path=path)
         results = pm.send("mixed", "hello")

@@ -26,7 +26,7 @@ def button_grid(
 ) -> dict[str, Any]:
     """Build a grid of buttons from (label, callback_data) tuples."""
     buttons = [inline_button(label, data) for label, data in items]
-    rows = [buttons[i:i + columns] for i in range(0, len(buttons), columns)]
+    rows = [buttons[i : i + columns] for i in range(0, len(buttons), columns)]
     return inline_keyboard(rows)
 
 
@@ -56,7 +56,6 @@ def mode_keyboard(current_mode: str = "chat") -> dict[str, Any]:
     ]
     # Mark current mode
     items = [
-        (f"{'> ' if data.endswith(current_mode) else ''}{label}", data)
-        for label, data in modes
+        (f"{'> ' if data.endswith(current_mode) else ''}{label}", data) for label, data in modes
     ]
     return button_grid(items, columns=2)

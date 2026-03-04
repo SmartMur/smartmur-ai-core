@@ -10,6 +10,7 @@ from superpowers.cli_jobs import jobs_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
+from superpowers.cli_setup import setup_group
 from superpowers.cli_skill import (
     skill_auto_install,
     skill_info,
@@ -19,7 +20,6 @@ from superpowers.cli_skill import (
     skill_sync,
     skill_validate,
 )
-from superpowers.cli_setup import setup_group
 from superpowers.cli_skill_create import skill_create
 from superpowers.cli_ssh import ssh_group
 from superpowers.cli_status import status_dashboard

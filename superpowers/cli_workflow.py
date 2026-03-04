@@ -155,6 +155,7 @@ def workflow_validate(name: str):
 def workflow_init():
     """Install built-in workflow templates."""
     from superpowers.config import get_data_dir
+
     workflows_dir = get_data_dir() / "workflows"
     created = install_builtins(workflows_dir)
     if created:

@@ -32,14 +32,16 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `DASHBOARD_USER` | string | `""` | HTTP Basic auth username for the web dashboard |
+| `DASHBOARD_USER` | string | `""` | HTTP Basic auth username. Code default is empty string; `.env.example` uses `admin` as a template value. **Must be set** to a non-trivial value |
 | `DASHBOARD_PASS` | string | `""` | HTTP Basic auth password. **Must be set** -- no insecure default |
+| `DASHBOARD_SECRET` | string | `""` | JWT signing key for session tokens. Auto-generated at startup if left empty |
 
 ### Infrastructure
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `REDIS_URL` | string | `redis://localhost:6379/0` | Redis connection URL for session storage and pubsub |
+| `BROWSER_ENGINE_URL` | string | `http://browser-engine:8300` | URL for the Playwright browser engine service. Set automatically in Docker Compose; override for local dev |
 
 ### Vault
 
@@ -64,6 +66,9 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 | `TELEGRAM_MAX_PER_CHAT` | integer | `2` | Maximum concurrent jobs per chat |
 | `TELEGRAM_MAX_GLOBAL` | integer | `5` | Maximum concurrent jobs across all chats |
 | `TELEGRAM_QUEUE_OVERFLOW` | integer | `10` | Maximum queued jobs before rejecting new requests |
+| `TELEGRAM_MODE` | string | `polling` | Transport mode: `webhook` or `polling` |
+| `TELEGRAM_WEBHOOK_URL` | string | `""` | Public HTTPS URL for webhook endpoint (e.g., `https://bot.example.com/webhook/telegram`). Required when `TELEGRAM_MODE=webhook` |
+| `TELEGRAM_ADMIN_CHAT_ID` | string | `""` | Admin chat ID for receiving access request notifications |
 
 ### Home Automation
 
@@ -71,6 +76,25 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 |----------|------|---------|-------------|
 | `HOME_ASSISTANT_URL` | string | `""` | Home Assistant base URL (e.g., `http://192.168.30.50:8123`) |
 | `HOME_ASSISTANT_TOKEN` | string | `""` | Home Assistant long-lived access token |
+
+### Model Routing (Phase F)
+
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `CHAT_MODEL` | string | `claude` | Model or provider used for interactive chat sessions |
+| `JOB_MODEL` | string | `claude` | Model or provider used for background cron and workflow jobs |
+
+### Security (Phase G)
+
+| Variable | Type | Default | Description |
+|----------|------|---------|-------------|
+| `ENVIRONMENT` | string | `development` | Runtime environment: `development` or `production`. Setting `production` auto-enables `FORCE_HTTPS` |
+| `FORCE_HTTPS` | boolean | `false` | Enforce HTTPS for all connections. Automatically `true` when `ENVIRONMENT=production` |
+| `WEBHOOK_REQUIRE_SIGNATURE` | boolean | `true` | Fail-closed webhook signature validation. Set to `false` to disable (not recommended) |
+| `RATE_LIMIT_PER_IP` | integer | `60` | Maximum requests per minute per IP address |
+| `RATE_LIMIT_PER_USER` | integer | `120` | Maximum requests per minute per authenticated user |
+| `SLACK_SIGNING_SECRET` | string | `""` | Slack HMAC signing secret for inbound webhook validation. Required for Slack webhooks |
+| `DISCORD_PUBLIC_KEY` | string | `""` | Discord application public key (hex) for Ed25519 webhook verification. Required for Discord webhooks |
 
 ### Data Directory
 
@@ -351,8 +375,10 @@ Defined in `docker-compose.yaml`:
 | `redis` | 6379 | `redis:7-alpine` | Session storage, message pubsub |
 | `msg-gateway` | 8100 | Built from `msg_gateway/Dockerfile` | HTTP API for sending messages |
 | `dashboard` | 8200 | Built from `dashboard/Dockerfile` | Web UI + REST API |
+| `browser-engine` | 8300 | Built from `browser_engine/Dockerfile` | Playwright + Chrome headless browser automation engine |
+| `telegram-bot` | -- | Built from `telegram-bot/Dockerfile` | Telegram bot service (no exposed port; connects outbound to Telegram API) |
 
-All services read from `.env` via `env_file`. The dashboard mounts `~/.claude-superpowers` read-only for access to jobs, memory, and audit data.
+All services read from `.env` via `env_file`. The dashboard mounts `~/.claude-superpowers` for access to jobs, memory, and audit data. The browser-engine mounts `~/.claude-superpowers/browser/profiles` for session persistence.
 
 ---
 

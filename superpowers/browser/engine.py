@@ -11,6 +11,11 @@ from superpowers.browser.base import BrowserConfig, BrowserError, PageResult
 if TYPE_CHECKING:
     from playwright.sync_api import BrowserContext, Page, Playwright
 
+try:
+    from playwright.sync_api import Error as PlaywrightError
+except ImportError:  # pragma: no cover
+    PlaywrightError = RuntimeError  # type: ignore[assignment,misc]
+
 
 class BrowserEngine:
     def __init__(
@@ -21,6 +26,7 @@ class BrowserEngine:
         self._config = config or BrowserConfig()
         if profiles_dir is None:
             from superpowers.config import get_data_dir
+
             profiles_dir = get_data_dir() / "browser" / "profiles"
         self._profiles_dir = profiles_dir
         self._playwright: Playwright | None = None
@@ -61,14 +67,16 @@ class BrowserEngine:
         if self._context:
             try:
                 self._context.close()
-            except Exception:
+            except (PlaywrightError, OSError, RuntimeError, Exception):  # noqa: BLE001
+                # Playwright.Error is a direct Exception subclass
                 pass
             self._context = None
             self._page = None
         if self._playwright:
             try:
                 self._playwright.stop()
-            except Exception:
+            except (PlaywrightError, OSError, RuntimeError, Exception):  # noqa: BLE001
+                # Playwright.Error is a direct Exception subclass
                 pass
             self._playwright = None
 
@@ -94,7 +102,16 @@ class BrowserEngine:
                 title=page.title(),
                 ok=ok,
             )
-        except Exception as exc:
+        except (PlaywrightError, RuntimeError, OSError, TimeoutError, ValueError) as exc:
+            return PageResult(
+                url=url,
+                title="",
+                ok=False,
+                error=str(exc),
+            )
+        except Exception as exc:  # noqa: BLE001
+            # Playwright.Error is a direct Exception subclass — no standard
+            # exception type covers all browser navigation failures
             return PageResult(
                 url=url,
                 title="",
@@ -107,6 +124,7 @@ class BrowserEngine:
         if path is None:
             fd, path = tempfile.mkstemp(suffix=".png", prefix="claw-screenshot-")
             import os
+
             os.close(fd)
         page.screenshot(path=path, full_page=True)
         return path
@@ -116,6 +134,7 @@ class BrowserEngine:
         if path is None:
             fd, path = tempfile.mkstemp(suffix=".png", prefix="claw-element-")
             import os
+
             os.close(fd)
         element = page.locator(selector).first
         element.screenshot(path=path)
@@ -149,7 +168,8 @@ class BrowserEngine:
         page.click(selector)
         try:
             page.wait_for_load_state("domcontentloaded", timeout=5000)
-        except Exception:
+        except (PlaywrightError, TimeoutError, RuntimeError, Exception):  # noqa: BLE001
+            # Playwright.Error is a direct Exception subclass
             pass
 
     def evaluate(self, js: str) -> str:

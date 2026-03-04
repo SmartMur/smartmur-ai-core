@@ -217,7 +217,9 @@ class TestWorkflowEngine:
         steps = [
             StepConfig(name="first", type=StepType.shell, command="echo ok"),
             StepConfig(
-                name="conditional", type=StepType.shell, command="echo yep",
+                name="conditional",
+                type=StepType.shell,
+                command="echo yep",
                 condition="previous.ok",
             ),
         ]
@@ -230,7 +232,9 @@ class TestWorkflowEngine:
         steps = [
             StepConfig(name="first", type=StepType.shell, command="exit 1", on_failure="continue"),
             StepConfig(
-                name="conditional", type=StepType.shell, command="echo nope",
+                name="conditional",
+                type=StepType.shell,
+                command="echo nope",
                 condition="previous.ok",
             ),
         ]
@@ -243,7 +247,9 @@ class TestWorkflowEngine:
         wf = WorkflowConfig(
             name="test",
             steps=[
-                StepConfig(name="fail", type=StepType.shell, command="exit 1", on_failure="rollback"),
+                StepConfig(
+                    name="fail", type=StepType.shell, command="exit 1", on_failure="rollback"
+                ),
             ],
             rollback_steps=[
                 StepConfig(name="undo", type=StepType.shell, command="echo rolled-back"),

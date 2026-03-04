@@ -70,7 +70,7 @@ class TelegramApi:
             except urllib.error.HTTPError as exc:
                 last_error = f"HTTP {exc.code}: {exc.reason}"
                 if exc.code in _RETRY_CODES and attempt < retries:
-                    wait = _BACKOFF_BASE * (2 ** attempt)
+                    wait = _BACKOFF_BASE * (2**attempt)
                     if exc.code == 429:
                         # Rate limited — check Retry-After header
                         retry_after = exc.headers.get("Retry-After")
@@ -78,7 +78,11 @@ class TelegramApi:
                             wait = max(wait, float(retry_after))
                     logger.warning(
                         "Telegram API %s error %d, retry %d/%d in %.1fs",
-                        method, exc.code, attempt + 1, retries, wait,
+                        method,
+                        exc.code,
+                        attempt + 1,
+                        retries,
+                        wait,
                     )
                     time.sleep(wait)
                     continue
@@ -87,10 +91,13 @@ class TelegramApi:
             except urllib.error.URLError as exc:
                 last_error = str(exc.reason)
                 if attempt < retries:
-                    wait = _BACKOFF_BASE * (2 ** attempt)
+                    wait = _BACKOFF_BASE * (2**attempt)
                     logger.warning(
                         "Telegram API %s network error, retry %d/%d in %.1fs",
-                        method, attempt + 1, retries, wait,
+                        method,
+                        attempt + 1,
+                        retries,
+                        wait,
                     )
                     time.sleep(wait)
                     continue
@@ -106,7 +113,7 @@ class TelegramApi:
         """Non-blocking API call that silently ignores errors."""
         try:
             self.call(method, payload, retries=0)
-        except Exception:
+        except (urllib.error.URLError, OSError, ValueError):
             pass
 
     # --- Convenience methods ---

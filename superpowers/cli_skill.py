@@ -117,6 +117,7 @@ def skill_link():
 
 # --- SkillHub sync subgroup ---
 
+
 @click.group("sync")
 def skill_sync():
     """Sync skills with the SkillHub repo."""
@@ -204,7 +205,9 @@ def skill_validate(path: Path):
 
 @click.command("auto-install")
 @click.argument("description")
-@click.option("--template", "-t", default=None, help="Install from a built-in template instead of matching.")
+@click.option(
+    "--template", "-t", default=None, help="Install from a built-in template instead of matching."
+)
 @click.option("--dry-run", is_flag=True, help="Show what would be installed without doing it.")
 def skill_auto_install(description: str, template: str | None, dry_run: bool):
     """Auto-create and install a skill from a description or template."""

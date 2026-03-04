@@ -42,19 +42,22 @@ def notify(message: str, *, chat_id: str = "", parse_mode: str = "Markdown") -> 
 
     try:
         url = f"{_API_BASE}{token}/sendMessage"
-        payload = json.dumps({
-            "chat_id": target,
-            "text": message,
-            "parse_mode": parse_mode,
-        }).encode()
+        payload = json.dumps(
+            {
+                "chat_id": target,
+                "text": message,
+                "parse_mode": parse_mode,
+            }
+        ).encode()
         req = urllib.request.Request(
-            url, data=payload,
+            url,
+            data=payload,
             headers={"Content-Type": "application/json"},
         )
         with urllib.request.urlopen(req, timeout=5) as resp:
             data = json.loads(resp.read().decode())
             return data.get("ok", False)
-    except Exception:
+    except (urllib.error.URLError, OSError, ValueError):
         return False
 
 

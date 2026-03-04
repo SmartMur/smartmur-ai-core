@@ -145,9 +145,7 @@ class TestCommandResult:
         assert r.ok is False
 
     def test_not_ok_when_error_set(self):
-        r = CommandResult(
-            host="h", command="ls", stdout="", stderr="", exit_code=0, error="boom"
-        )
+        r = CommandResult(host="h", command="ls", stdout="", stderr="", exit_code=0, error="boom")
         assert r.ok is False
 
     def test_not_ok_when_both_bad(self):
@@ -400,9 +398,7 @@ class TestSSHExecutor:
         mock_pool = MagicMock(spec=ConnectionPool)
         mock_client = MagicMock()
         mock_pool.get_client.return_value = mock_client
-        mock_client.exec_command.return_value = self._make_exec_command(
-            "hello\n", "", 0
-        )
+        mock_client.exec_command.return_value = self._make_exec_command("hello\n", "", 0)
 
         executor = SSHExecutor(mock_pool, registry)
         results = executor.run("proxmox", "echo hello")
@@ -454,9 +450,7 @@ class TestSSHExecutor:
         mock_pool = MagicMock(spec=ConnectionPool)
         mock_client = MagicMock()
         mock_pool.get_client.return_value = mock_client
-        mock_client.exec_command.return_value = self._make_exec_command(
-            "", "not found", 127
-        )
+        mock_client.exec_command.return_value = self._make_exec_command("", "not found", 127)
 
         executor = SSHExecutor(mock_pool, registry)
         results = executor.run("proxmox", "nonexistent-cmd")
@@ -490,7 +484,13 @@ class TestHealthChecker:
     def test_check_all_returns_health_report(self, registry):
         mock_executor = MagicMock(spec=SSHExecutor)
         mock_executor.run.return_value = [
-            CommandResult(host="h", command="uptime", stdout="up 5 days, load average: 0.1, 0.2, 0.3", stderr="", exit_code=0)
+            CommandResult(
+                host="h",
+                command="uptime",
+                stdout="up 5 days, load average: 0.1, 0.2, 0.3",
+                stderr="",
+                exit_code=0,
+            )
         ]
 
         with patch.object(HealthChecker, "_ping", return_value=(True, 1.5)):
@@ -527,7 +527,9 @@ class TestHealthChecker:
     def test_ssh_failure_sets_ssh_not_ok(self, registry):
         mock_executor = MagicMock(spec=SSHExecutor)
         mock_executor.run.return_value = [
-            CommandResult(host="h", command="uptime", stdout="", stderr="", exit_code=-1, error="conn refused")
+            CommandResult(
+                host="h", command="uptime", stdout="", stderr="", exit_code=-1, error="conn refused"
+            )
         ]
 
         with patch.object(HealthChecker, "_ping", return_value=(True, 1.0)):
@@ -555,7 +557,11 @@ class TestHealthChecker:
         def run_side_effect(alias, cmd, timeout=30):
             call_count["n"] += 1
             if call_count["n"] == 2:
-                return [CommandResult(host=alias, command=cmd, stdout="", stderr="", exit_code=-1, error="fail")]
+                return [
+                    CommandResult(
+                        host=alias, command=cmd, stdout="", stderr="", exit_code=-1, error="fail"
+                    )
+                ]
             return [CommandResult(host=alias, command=cmd, stdout="up", stderr="", exit_code=0)]
 
         mock_executor.run.side_effect = run_side_effect
@@ -575,8 +581,21 @@ class TestHealthChecker:
         report = HealthReport(
             timestamp=1700000000.0,
             hosts=[
-                HostStatus(alias="proxmox", hostname="192.168.30.10", ping_ok=True, ssh_ok=True, uptime="up 5d", latency_ms=1.2),
-                HostStatus(alias="truenas", hostname="192.168.13.69", ping_ok=True, ssh_ok=False, error="timeout"),
+                HostStatus(
+                    alias="proxmox",
+                    hostname="192.168.30.10",
+                    ping_ok=True,
+                    ssh_ok=True,
+                    uptime="up 5d",
+                    latency_ms=1.2,
+                ),
+                HostStatus(
+                    alias="truenas",
+                    hostname="192.168.13.69",
+                    ping_ok=True,
+                    ssh_ok=False,
+                    error="timeout",
+                ),
             ],
         )
 
@@ -619,9 +638,11 @@ class TestHealthChecker:
         mock_executor = MagicMock(spec=SSHExecutor)
         mock_executor.run.return_value = [
             CommandResult(
-                host="proxmox", command="uptime",
+                host="proxmox",
+                command="uptime",
                 stdout=" 14:30:00 up 5 days, load average: 0.15, 0.20, 0.18",
-                stderr="", exit_code=0,
+                stderr="",
+                exit_code=0,
             )
         ]
 
@@ -648,11 +669,13 @@ class TestHomeAssistantClient:
     def test_get_state_returns_parsed(self, monkeypatch):
         client = HomeAssistantClient(url="http://ha.local:8123", token="test-token")
 
-        response_data = json.dumps({
-            "entity_id": "light.office",
-            "state": "on",
-            "attributes": {"brightness": 255},
-        }).encode()
+        response_data = json.dumps(
+            {
+                "entity_id": "light.office",
+                "state": "on",
+                "attributes": {"brightness": 255},
+            }
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data
@@ -799,10 +822,12 @@ class TestHomeAssistantClient:
     def test_get_states_returns_list(self, monkeypatch):
         client = HomeAssistantClient(url="http://ha.local:8123", token="tok")
 
-        response_data = json.dumps([
-            {"entity_id": "light.a", "state": "on"},
-            {"entity_id": "light.b", "state": "off"},
-        ]).encode()
+        response_data = json.dumps(
+            [
+                {"entity_id": "light.a", "state": "on"},
+                {"entity_id": "light.b", "state": "off"},
+            ]
+        ).encode()
 
         mock_resp = MagicMock()
         mock_resp.read.return_value = response_data

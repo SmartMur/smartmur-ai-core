@@ -11,6 +11,7 @@ from superpowers.qa_guardian import Finding, QAGuardian, QAReport
 # Finding dataclass
 # ---------------------------------------------------------------------------
 
+
 class TestFinding:
     def test_create_finding(self):
         f = Finding(category="security", severity="critical", check="test", message="msg")
@@ -20,14 +21,21 @@ class TestFinding:
         assert f.line == 0
 
     def test_finding_with_location(self):
-        f = Finding(category="quality", severity="warning", check="c", message="m",
-                    file="foo.py", line=42)
+        f = Finding(
+            category="quality", severity="warning", check="c", message="m", file="foo.py", line=42
+        )
         assert f.file == "foo.py"
         assert f.line == 42
 
     def test_finding_to_dict(self):
-        f = Finding(category="security", severity="critical", check="eval_exec",
-                    message="use of eval()", file="bad.py", line=10)
+        f = Finding(
+            category="security",
+            severity="critical",
+            check="eval_exec",
+            message="use of eval()",
+            file="bad.py",
+            line=10,
+        )
         d = f.to_dict()
         assert d["category"] == "security"
         assert d["file"] == "bad.py"
@@ -38,6 +46,7 @@ class TestFinding:
 # QAReport
 # ---------------------------------------------------------------------------
 
+
 class TestQAReport:
     def test_empty_report(self):
         r = QAReport()
@@ -47,21 +56,26 @@ class TestQAReport:
         assert r.info_count == 0
 
     def test_report_counts(self):
-        r = QAReport(findings=[
-            Finding("security", "critical", "a", "x"),
-            Finding("security", "critical", "b", "y"),
-            Finding("quality", "warning", "c", "z"),
-            Finding("efficiency", "info", "d", "w"),
-        ])
+        r = QAReport(
+            findings=[
+                Finding("security", "critical", "a", "x"),
+                Finding("security", "critical", "b", "y"),
+                Finding("quality", "warning", "c", "z"),
+                Finding("efficiency", "info", "d", "w"),
+            ]
+        )
         assert r.critical_count == 2
         assert r.warning_count == 1
         assert r.info_count == 1
         assert not r.is_clean
 
     def test_report_to_dict(self):
-        r = QAReport(checks_run=12, findings=[
-            Finding("security", "critical", "eval_exec", "found eval"),
-        ])
+        r = QAReport(
+            checks_run=12,
+            findings=[
+                Finding("security", "critical", "eval_exec", "found eval"),
+            ],
+        )
         d = r.to_dict()
         assert d["checks_run"] == 12
         assert d["summary"]["critical"] == 1
@@ -73,9 +87,12 @@ class TestQAReport:
         assert "All clear" in msg
 
     def test_telegram_summary_with_findings(self):
-        r = QAReport(checks_run=12, findings=[
-            Finding("security", "critical", "eval_exec", "eval() used", "bad.py", 5),
-        ])
+        r = QAReport(
+            checks_run=12,
+            findings=[
+                Finding("security", "critical", "eval_exec", "eval() used", "bad.py", 5),
+            ],
+        )
         msg = r.to_telegram_summary()
         assert "CRITICAL" in msg
         assert "eval_exec" in msg
@@ -84,6 +101,7 @@ class TestQAReport:
 # ---------------------------------------------------------------------------
 # QAGuardian — security checks
 # ---------------------------------------------------------------------------
+
 
 class TestSecurityChecks:
     def test_detect_shell_true(self, tmp_path):
@@ -125,19 +143,19 @@ class TestSecurityChecks:
         assert not g._findings
 
     def test_detect_eval(self, tmp_path):
-        (tmp_path / "bad.py").write_text('result = eval(user_input)\n')
+        (tmp_path / "bad.py").write_text("result = eval(user_input)\n")
         g = QAGuardian(tmp_path)
         g.check_eval_exec()
         assert any(f.check == "eval_exec" for f in g._findings)
 
     def test_detect_exec(self, tmp_path):
-        (tmp_path / "bad.py").write_text('exec(code_string)\n')
+        (tmp_path / "bad.py").write_text("exec(code_string)\n")
         g = QAGuardian(tmp_path)
         g.check_eval_exec()
         assert any(f.check == "eval_exec" for f in g._findings)
 
     def test_no_eval_in_comment(self, tmp_path):
-        (tmp_path / "ok.py").write_text('# eval(this) is dangerous\n')
+        (tmp_path / "ok.py").write_text("# eval(this) is dangerous\n")
         g = QAGuardian(tmp_path)
         g.check_eval_exec()
         assert not g._findings
@@ -146,6 +164,7 @@ class TestSecurityChecks:
 # ---------------------------------------------------------------------------
 # QAGuardian — quality checks
 # ---------------------------------------------------------------------------
+
 
 class TestQualityChecks:
     def test_detect_long_file(self, tmp_path):
@@ -195,6 +214,7 @@ class TestQualityChecks:
 # QAGuardian — test health checks
 # ---------------------------------------------------------------------------
 
+
 class TestTestHealth:
     def test_no_test_dir(self, tmp_path):
         g = QAGuardian(tmp_path)
@@ -211,9 +231,7 @@ class TestTestHealth:
     @patch("subprocess.run")
     def test_pytest_pass(self, mock_run, tmp_path):
         (tmp_path / "tests").mkdir()
-        mock_run.return_value = MagicMock(
-            stdout="826 passed\n", stderr="", returncode=0
-        )
+        mock_run.return_value = MagicMock(stdout="826 passed\n", stderr="", returncode=0)
         g = QAGuardian(tmp_path, baseline_tests=826)
         g.check_test_suite(run_tests=True, pytest_bin="pytest")
         assert any("826 passed" in f.message for f in g._findings)
@@ -221,9 +239,7 @@ class TestTestHealth:
     @patch("subprocess.run")
     def test_pytest_regression(self, mock_run, tmp_path):
         (tmp_path / "tests").mkdir()
-        mock_run.return_value = MagicMock(
-            stdout="800 passed, 5 failed\n", stderr="", returncode=1
-        )
+        mock_run.return_value = MagicMock(stdout="800 passed, 5 failed\n", stderr="", returncode=1)
         g = QAGuardian(tmp_path, baseline_tests=826)
         g.check_test_suite(run_tests=True, pytest_bin="pytest")
         assert any(f.severity == "warning" and "failed" in f.message for f in g._findings)
@@ -232,6 +248,7 @@ class TestTestHealth:
 # ---------------------------------------------------------------------------
 # QAGuardian — efficiency checks
 # ---------------------------------------------------------------------------
+
 
 class TestEfficiencyChecks:
     def test_detect_unused_import(self, tmp_path):
@@ -270,6 +287,7 @@ class TestEfficiencyChecks:
 # ---------------------------------------------------------------------------
 # QAGuardian — run_all integration
 # ---------------------------------------------------------------------------
+
 
 class TestRunAll:
     def test_run_all_returns_report(self, tmp_path):
@@ -312,6 +330,7 @@ class TestRunAll:
 # ---------------------------------------------------------------------------
 # QAGuardian — file filtering
 # ---------------------------------------------------------------------------
+
 
 class TestFileFiltering:
     def test_excludes_venv(self, tmp_path):

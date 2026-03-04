@@ -29,7 +29,9 @@ def _resolve_job_id(engine: CronEngine, partial_id: str) -> str | None:
     if len(matches) == 1:
         return matches[0].id
     if len(matches) > 1:
-        console.print(f"[yellow]Ambiguous ID '{partial_id}' matches {len(matches)} jobs. Be more specific.[/yellow]")
+        console.print(
+            f"[yellow]Ambiguous ID '{partial_id}' matches {len(matches)} jobs. Be more specific.[/yellow]"
+        )
         return None
     console.print(f"[red]No job found matching ID '{partial_id}'[/red]")
     return None
@@ -68,8 +70,10 @@ def cron_list():
         last_run = job.last_run[:16] if job.last_run else "-"
         status = job.last_status or "-"
         status_styled = (
-            f"[green]{status}[/green]" if status == "ok"
-            else f"[red]{status}[/red]" if status and status != "-"
+            f"[green]{status}[/green]"
+            if status == "ok"
+            else f"[red]{status}[/red]"
+            if status and status != "-"
             else status
         )
         cmd_preview = (job.command[:37] + "...") if len(job.command) > 40 else job.command
@@ -92,10 +96,18 @@ def cron_list():
 @click.argument("name")
 @click.argument("schedule")
 @click.argument("command")
-@click.option("--type", "job_type", type=click.Choice(["shell", "claude", "webhook", "skill"]), default="shell", help="Job type.")
+@click.option(
+    "--type",
+    "job_type",
+    type=click.Choice(["shell", "claude", "webhook", "skill"]),
+    default="shell",
+    help="Job type.",
+)
 @click.option("--output", "output_channel", default="file", help="Output channel (default: file).")
 @click.option("--disabled", is_flag=True, help="Create the job in disabled state.")
-def cron_add(name: str, schedule: str, command: str, job_type: str, output_channel: str, disabled: bool):
+def cron_add(
+    name: str, schedule: str, command: str, job_type: str, output_channel: str, disabled: bool
+):
     """Add a new scheduled job.
 
     Examples:
@@ -114,13 +126,17 @@ def cron_add(name: str, schedule: str, command: str, job_type: str, output_chann
             output_channel=output_channel,
             enabled=not disabled,
         )
-        console.print(f"[green]Added job[/green] [bold]{job.name}[/bold] (id: [dim]{job.id[:8]}[/dim])")
+        console.print(
+            f"[green]Added job[/green] [bold]{job.name}[/bold] (id: [dim]{job.id[:8]}[/dim])"
+        )
         console.print(f"  Schedule: {job.schedule}")
-        console.print(f"  Type:     {job.job_type.value if hasattr(job.job_type, 'value') else job.job_type}")
+        console.print(
+            f"  Type:     {job.job_type.value if hasattr(job.job_type, 'value') else job.job_type}"
+        )
         console.print(f"  Command:  {job.command}")
         if disabled:
             console.print("  [yellow]Created in disabled state[/yellow]")
-    except Exception as exc:
+    except (ValueError, KeyError, OSError, RuntimeError) as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
@@ -138,7 +154,7 @@ def cron_remove(job_id: str):
         job = engine.get_job(full_id)
         engine.remove_job(full_id)
         console.print(f"[red]Removed[/red] job [bold]{job.name}[/bold] ({full_id[:8]})")
-    except Exception as exc:
+    except (KeyError, OSError, RuntimeError) as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
@@ -156,7 +172,7 @@ def cron_enable(job_id: str):
         engine.enable_job(full_id)
         job = engine.get_job(full_id)
         console.print(f"[green]Enabled[/green] job [bold]{job.name}[/bold]")
-    except Exception as exc:
+    except (KeyError, OSError, RuntimeError) as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
@@ -174,7 +190,7 @@ def cron_disable(job_id: str):
         engine.disable_job(full_id)
         job = engine.get_job(full_id)
         console.print(f"[yellow]Disabled[/yellow] job [bold]{job.name}[/bold]")
-    except Exception as exc:
+    except (KeyError, OSError, RuntimeError) as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
@@ -208,11 +224,15 @@ def cron_logs(job_id: str, limit: int):
         mtime = datetime.fromtimestamp(log_file.stat().st_mtime)
         content = log_file.read_text(errors="replace")
         header = f"{log_file.name}  ({mtime.strftime('%Y-%m-%d %H:%M:%S')})"
-        console.print(Panel(
-            Syntax(content, "text", theme="monokai", word_wrap=True) if content.strip() else "[dim]<empty>[/dim]",
-            title=header,
-            border_style="blue",
-        ))
+        console.print(
+            Panel(
+                Syntax(content, "text", theme="monokai", word_wrap=True)
+                if content.strip()
+                else "[dim]<empty>[/dim]",
+                title=header,
+                border_style="blue",
+            )
+        )
 
 
 @cron_group.command("run")
@@ -226,7 +246,9 @@ def cron_run(job_id: str):
 
     job = engine.get_job(full_id)
     console.print(f"[bold]Running job:[/bold] {job.name} ({full_id[:8]})")
-    console.print(f"  Type:    {job.job_type.value if hasattr(job.job_type, 'value') else job.job_type}")
+    console.print(
+        f"  Type:    {job.job_type.value if hasattr(job.job_type, 'value') else job.job_type}"
+    )
     console.print(f"  Command: {job.command}\n")
 
     try:
@@ -245,7 +267,7 @@ def cron_run(job_id: str):
                         console.print(Panel(content, title="Output", border_style="green"))
         else:
             console.print("[green]Job triggered.[/green]")
-    except Exception as exc:
+    except (ValueError, KeyError, OSError, RuntimeError) as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)
 
@@ -284,8 +306,10 @@ def cron_status():
             last_run = job.last_run[:16] if job.last_run else "-"
             status = job.last_status or "-"
             status_styled = (
-                f"[green]{status}[/green]" if status == "ok"
-                else f"[red]{status}[/red]" if status and status != "-"
+                f"[green]{status}[/green]"
+                if status == "ok"
+                else f"[red]{status}[/red]"
+                if status and status != "-"
                 else status
             )
             fire_table.add_row(job.id[:8], job.name, job.schedule, last_run, status_styled)

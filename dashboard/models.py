@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 # --- Status ---
 
+
 class SubsystemStatus(BaseModel):
     name: str
     ok: bool
@@ -18,6 +19,7 @@ class AggregateStatus(BaseModel):
 
 
 # --- Cron ---
+
 
 class CronJobOut(BaseModel):
     id: str
@@ -50,6 +52,7 @@ class CronLogEntry(BaseModel):
 
 # --- Messaging ---
 
+
 class SendMessageRequest(BaseModel):
     channel: str
     target: str
@@ -78,6 +81,7 @@ class ProfileSendRequest(BaseModel):
 
 
 # --- SSH ---
+
 
 class SSHRunRequest(BaseModel):
     target: str
@@ -116,6 +120,7 @@ class SSHHealthOut(BaseModel):
 
 # --- Workflows ---
 
+
 class WorkflowOut(BaseModel):
     name: str
     description: str = ""
@@ -142,6 +147,7 @@ class StepResultOut(BaseModel):
 
 
 # --- Memory ---
+
 
 class MemoryEntryOut(BaseModel):
     id: int
@@ -172,6 +178,7 @@ class MemoryStatsOut(BaseModel):
 
 # --- Skills ---
 
+
 class SkillOut(BaseModel):
     name: str
     description: str
@@ -201,6 +208,7 @@ class SkillRunResult(BaseModel):
 
 # --- Audit ---
 
+
 class AuditEntry(BaseModel):
     ts: str = ""
     action: str = ""
@@ -210,12 +218,14 @@ class AuditEntry(BaseModel):
 
 # --- Vault ---
 
+
 class VaultStatus(BaseModel):
     initialized: bool
     key_count: int = 0
 
 
 # --- Watchers ---
+
 
 class WatchRuleOut(BaseModel):
     name: str
@@ -228,5 +238,93 @@ class WatchRuleOut(BaseModel):
 
 # --- Browser ---
 
+
 class BrowserProfileOut(BaseModel):
     name: str
+
+
+# --- GitHub Security ---
+
+
+class GitHubRepoOut(BaseModel):
+    name: str
+    default_branch: str = "main"
+    is_private: bool = False
+    is_fork: bool = False
+    protected: bool = False
+
+
+class GitHubProtectionOut(BaseModel):
+    repo: str
+    branch: str
+    enforce_admins: bool = False
+    require_reviews: bool = False
+    required_approvals: int = 0
+    dismiss_stale: bool = False
+    allow_force_push: bool = True
+    allow_deletions: bool = True
+
+
+class GitHubSecurityStatus(BaseModel):
+    authenticated: bool
+    auth_detail: str = ""
+    repo_count: int = 0
+    protected_count: int = 0
+    unprotected_repos: list[str] = []
+    timestamp: str = ""
+
+
+class GitHubAuditFinding(BaseModel):
+    severity: str  # critical, warning, info
+    repo: str
+    finding: str
+    detail: str = ""
+
+
+# --- Rsync ---
+
+
+class RsyncJobCreate(BaseModel):
+    name: str = ""
+    source_host: str = ""
+    source_path: str
+    source_user: str = "root"
+    dest_host: str = ""
+    dest_path: str
+    dest_user: str = "root"
+    ssh_key: str = ""
+    delete: bool = False
+    exclude_patterns: list[str] = []
+    bandwidth_limit_kbps: int = 0
+    dry_run: bool = False
+
+
+class RsyncJobOut(BaseModel):
+    id: str
+    name: str = ""
+    source_host: str = ""
+    source_path: str
+    source_user: str = "root"
+    dest_host: str = ""
+    dest_path: str
+    dest_user: str = "root"
+    options: dict = {}
+    ssh_key: str = ""
+    status: str = "pending"
+    progress: dict = {}
+    stats: dict = {}
+    output: str = ""
+    error: str = ""
+    pid: int | None = None
+    started_at: float | None = None
+    completed_at: float | None = None
+    created_at: float
+
+
+class RsyncProgressEvent(BaseModel):
+    current_file: str = ""
+    percent: int = 0
+    speed: str = ""
+    eta: str = ""
+    files_transferred: int = 0
+    bytes_transferred: int = 0

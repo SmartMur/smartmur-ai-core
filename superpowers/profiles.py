@@ -32,6 +32,7 @@ class ProfileManager:
         self._registry = registry
         if profiles_path is None:
             from superpowers.config import get_data_dir
+
             profiles_path = get_data_dir() / "profiles.yaml"
         self._path = profiles_path
         self._profiles: dict[str, NotificationProfile] = {}
@@ -51,9 +52,7 @@ class ProfileManager:
             profile = NotificationProfile(name=name)
             for t in targets:
                 if isinstance(t, dict) and "channel" in t and "target" in t:
-                    profile.targets.append(
-                        ProfileTarget(channel=t["channel"], target=t["target"])
-                    )
+                    profile.targets.append(ProfileTarget(channel=t["channel"], target=t["target"]))
             self._profiles[name] = profile
 
     def list_profiles(self) -> list[NotificationProfile]:
@@ -73,7 +72,12 @@ class ProfileManager:
                 ch = self._registry.get(t.channel)
                 results.append(ch.send(t.target, message))
             except ChannelError as exc:
-                results.append(SendResult(
-                    ok=False, channel=t.channel, target=t.target, error=str(exc),
-                ))
+                results.append(
+                    SendResult(
+                        ok=False,
+                        channel=t.channel,
+                        target=t.target,
+                        error=str(exc),
+                    )
+                )
         return results

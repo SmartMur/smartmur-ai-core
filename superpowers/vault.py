@@ -10,12 +10,20 @@ import tempfile
 from pathlib import Path
 
 _EXTRA_PATHS = [os.path.expanduser("~/.local/bin"), "/usr/local/bin"]
-AGE_BIN = shutil.which("age", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS])) or "age"
-AGE_KEYGEN_BIN = shutil.which("age-keygen", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS])) or "age-keygen"
+AGE_BIN = (
+    shutil.which("age", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS])) or "age"
+)
+AGE_KEYGEN_BIN = (
+    shutil.which("age-keygen", path=os.pathsep.join([os.environ.get("PATH", ""), *_EXTRA_PATHS]))
+    or "age-keygen"
+)
+
 
 def _default_vault_dir() -> Path:
     from superpowers.config import get_data_dir
+
     return get_data_dir()
+
 
 KEYCHAIN_SERVICE = "claude-superpowers-vault"
 KEYCHAIN_ACCOUNT = "age-identity"
@@ -44,7 +52,9 @@ class Vault:
 
     def _read_pubkey(self) -> str:
         if not self.identity_file.exists():
-            raise VaultError(f"Identity file not found: {self.identity_file}. Run `claw vault init`.")
+            raise VaultError(
+                f"Identity file not found: {self.identity_file}. Run `claw vault init`."
+            )
         text = self.identity_file.read_text()
         for line in text.splitlines():
             if line.startswith("# public key:"):
@@ -82,8 +92,10 @@ class Vault:
                 [
                     "security",
                     "delete-generic-password",
-                    "-s", KEYCHAIN_SERVICE,
-                    "-a", KEYCHAIN_ACCOUNT,
+                    "-s",
+                    KEYCHAIN_SERVICE,
+                    "-a",
+                    KEYCHAIN_ACCOUNT,
                 ],
                 capture_output=True,
             )
@@ -91,9 +103,12 @@ class Vault:
                 [
                     "security",
                     "add-generic-password",
-                    "-s", KEYCHAIN_SERVICE,
-                    "-a", KEYCHAIN_ACCOUNT,
-                    "-w", str(self.identity_file),
+                    "-s",
+                    KEYCHAIN_SERVICE,
+                    "-a",
+                    KEYCHAIN_ACCOUNT,
+                    "-w",
+                    str(self.identity_file),
                     "-U",
                 ],
                 capture_output=True,

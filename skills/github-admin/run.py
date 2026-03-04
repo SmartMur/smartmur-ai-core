@@ -47,8 +47,7 @@ def cmd_login() -> int:
     print("Starting GitHub device-flow authentication ...")
     print("A browser window will open (or a code + URL will be printed).\n")
     result = subprocess.run(
-        [GH_BIN, "auth", "login", "--hostname", "github.com",
-         "--git-protocol", "https", "--web"],
+        [GH_BIN, "auth", "login", "--hostname", "github.com", "--git-protocol", "https", "--web"],
         timeout=120,
     )
     return result.returncode
@@ -71,9 +70,7 @@ def cmd_repos(admin: GitHubAdmin) -> int:
     for r in repos:
         name = r.get("name", "?")
         branch_ref = r.get("defaultBranchRef")
-        branch = (
-            branch_ref.get("name", "?") if isinstance(branch_ref, dict) else "?"
-        )
+        branch = branch_ref.get("name", "?") if isinstance(branch_ref, dict) else "?"
         private = "yes" if r.get("isPrivate") else "no"
         fork = "yes" if r.get("isFork") else "no"
         print(f"{name:<40} {branch:<15} {private:<8} {fork}")
@@ -108,7 +105,7 @@ def cmd_protect(admin: GitHubAdmin) -> int:
             source="skill",
             metadata={"ok": ok_count, "failed": fail_count},
         )
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Telegram notify
@@ -120,7 +117,7 @@ def cmd_protect(admin: GitHubAdmin) -> int:
             telegram_notify.notify(f"[WARN] {summary}")
         else:
             telegram_notify.notify_done(summary)
-    except Exception:
+    except (OSError, ImportError, ValueError):
         pass
 
     return 0 if fail_count == 0 else 1
@@ -155,7 +152,7 @@ def cmd_audit(admin: GitHubAdmin) -> int:
                 "unprotected": unprotected_count,
             },
         )
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Telegram notify if unprotected repos found
@@ -165,7 +162,7 @@ def cmd_audit(admin: GitHubAdmin) -> int:
             telegram_notify.notify(
                 f"[AUDIT] {unprotected_count} unprotected repos: {', '.join(names)}"
             )
-    except Exception:
+    except (OSError, ImportError, ValueError):
         pass
 
     return 0 if unprotected_count == 0 else 1

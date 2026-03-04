@@ -94,6 +94,4 @@ def setup_telegram(token: str | None, webhook_url: str | None, chat_ids: str | N
         console.print("[yellow]Bot token not provided or invalid.[/yellow]")
 
     if result["config"].get("ALLOWED_CHAT_IDS"):
-        console.print(
-            f"  Allowed chats: [cyan]{result['config']['ALLOWED_CHAT_IDS']}[/cyan]"
-        )
+        console.print(f"  Allowed chats: [cyan]{result['config']['ALLOWED_CHAT_IDS']}[/cyan]")

@@ -20,12 +20,28 @@ ROLE_SKILL_TYPES: dict[Role, set[str]] = {
 
 # Keywords for auto-assigning roles to tasks
 PLANNER_KEYWORDS = {
-    "plan", "analyze", "design", "review", "decompose",
-    "suggest", "assess", "propose", "outline", "evaluate",
+    "plan",
+    "analyze",
+    "design",
+    "review",
+    "decompose",
+    "suggest",
+    "assess",
+    "propose",
+    "outline",
+    "evaluate",
 }
 VERIFIER_KEYWORDS = {
-    "verify", "test", "check", "validate", "audit",
-    "confirm", "assert", "inspect", "scan", "lint",
+    "verify",
+    "test",
+    "check",
+    "validate",
+    "audit",
+    "confirm",
+    "assert",
+    "inspect",
+    "scan",
+    "lint",
 }
 
 

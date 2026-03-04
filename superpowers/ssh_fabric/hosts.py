@@ -31,7 +31,7 @@ class HostRegistry:
         try:
             raw = self._path.read_text()
             data = yaml.safe_load(raw)
-        except Exception:
+        except (yaml.YAMLError, OSError, ValueError):
             return
 
         if not isinstance(data, dict):

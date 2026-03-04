@@ -7,6 +7,7 @@ from dataclasses import asdict
 from fastapi import APIRouter, HTTPException
 
 from dashboard.deps import get_workflow_engine, get_workflow_loader
+from superpowers.workflow.base import WorkflowError
 from dashboard.models import (
     StepResultOut,
     WorkflowDetail,
@@ -25,12 +26,14 @@ def list_workflows():
     for name in names:
         try:
             config = loader.load(name)
-            out.append(WorkflowOut(
-                name=config.name,
-                description=config.description,
-                step_count=len(config.steps),
-            ))
-        except Exception:
+            out.append(
+                WorkflowOut(
+                    name=config.name,
+                    description=config.description,
+                    step_count=len(config.steps),
+                )
+            )
+        except (WorkflowError, OSError, ValueError, KeyError):
             out.append(WorkflowOut(name=name, description="(failed to load)"))
     return out
 
@@ -40,7 +43,9 @@ def get_workflow(name: str):
     loader = get_workflow_loader()
     try:
         config = loader.load(name)
-    except Exception as exc:
+    except (WorkflowError, FileNotFoundError, ValueError, KeyError, OSError, Exception) as exc:  # noqa: BLE001
+        # WorkflowError is a direct Exception subclass; catch broadly
+        # to handle all loader failure modes
         raise HTTPException(status_code=404, detail=str(exc))
 
     return WorkflowDetail(
@@ -57,7 +62,9 @@ def validate_workflow(name: str):
     loader = get_workflow_loader()
     try:
         config = loader.load(name)
-    except Exception as exc:
+    except (WorkflowError, FileNotFoundError, ValueError, KeyError, OSError, Exception) as exc:  # noqa: BLE001
+        # WorkflowError is a direct Exception subclass; catch broadly
+        # to handle all loader failure modes
         raise HTTPException(status_code=404, detail=str(exc))
 
     errors = loader.validate(config)
@@ -70,7 +77,9 @@ def run_workflow(name: str, req: WorkflowRunRequest):
     engine = get_workflow_engine()
     try:
         config = loader.load(name)
-    except Exception as exc:
+    except (WorkflowError, FileNotFoundError, ValueError, KeyError, OSError, Exception) as exc:  # noqa: BLE001
+        # WorkflowError is a direct Exception subclass; catch broadly
+        # to handle all loader failure modes
         raise HTTPException(status_code=404, detail=str(exc))
 
     results = engine.run(config, dry_run=req.dry_run)

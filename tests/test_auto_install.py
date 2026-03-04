@@ -128,7 +128,9 @@ class TestCheckAndInstall:
         assert name == "docker-health"
 
     def test_scaffolds_generic_skill(self, skills_dir: Path, registry: SkillRegistry) -> None:
-        name = check_and_install("backup postgres database", skills_dir=skills_dir, registry=registry)
+        name = check_and_install(
+            "backup postgres database", skills_dir=skills_dir, registry=registry
+        )
         assert name == "backup-postgres-database"
         assert (skills_dir / "backup-postgres-database" / "skill.yaml").is_file()
         assert (skills_dir / "backup-postgres-database" / "run.sh").is_file()

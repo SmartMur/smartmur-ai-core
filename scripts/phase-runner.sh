@@ -97,7 +97,7 @@ G1: Build msg_gateway/middleware.py — fail-closed webhook middleware, reject u
 G2: Add rate limiting to dashboard/middleware.py and msg_gateway/middleware.py — per-IP and per-user limits using in-memory token bucket
 G3: Stricter auth defaults in superpowers/config.py — no insecure fallbacks, FORCE_HTTPS env var for production mode
 G4: Build msg_gateway/channels/base.py — ChannelAdapter base class with receive(), acknowledge(), startProcessingIndicator(), sendResponse(), supportsStreaming
-G5: Update docs/SECURITY.md with hardening checklist reflecting all new middleware
+G5: Update docs/reference/SECURITY.md with hardening checklist reflecting all new middleware
 
 Build tests in tests/test_security_hardening.py.
 Run tests with: PYTHONPATH=. .venv/bin/python -m pytest tests/test_security_hardening.py -v
@@ -111,7 +111,7 @@ Next: commit and push results"
 
 # Commit everything
 cd "$PROJECT_DIR"
-git add -A -- . ':!.claude/settings.local.json' ':!ACTION-PLAN.md'
+git add -A -- . ':!.claude/settings.local.json' ':!docs/reports/action-plan-defg.md'
 git commit -m "Phase D/E/F/G: job orchestration, setup wizard, model routing, security hardening
 
 Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>" 2>&1 || true

@@ -15,6 +15,7 @@ from msg_gateway.telegram.webhook import WebhookHandler
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_update_dict(
     text: str = "hello",
     chat_id: int = 100,
@@ -339,6 +340,7 @@ class TestMessageReaction:
 
         def mock_urlopen(req, **kw):
             import urllib.error
+
             raise urllib.error.URLError("network error")
 
         monkeypatch.setattr("urllib.request.urlopen", mock_urlopen)
@@ -436,10 +438,12 @@ class TestSetWebhookApi:
             captured["url"] = req.full_url
             captured["data"] = json.loads(req.data) if req.data else None
             mock_resp = MagicMock()
-            mock_resp.read.return_value = json.dumps({
-                "ok": True,
-                "result": {"file_id": "abc", "file_path": "photos/file_0.jpg"},
-            }).encode()
+            mock_resp.read.return_value = json.dumps(
+                {
+                    "ok": True,
+                    "result": {"file_id": "abc", "file_path": "photos/file_0.jpg"},
+                }
+            ).encode()
             mock_resp.__enter__ = lambda s: s
             mock_resp.__exit__ = MagicMock(return_value=False)
             return mock_resp

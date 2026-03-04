@@ -185,13 +185,16 @@ class TestEventMatching:
         return WatcherEngine(rules_path=rules_file)
 
     def test_glob_match(self, tmp_path):
-        engine = self._make_engine(tmp_path, {
-            "name": "test",
-            "path": str(tmp_path / "*.txt"),
-            "events": ["created"],
-            "action": "shell",
-            "command": "echo matched",
-        })
+        engine = self._make_engine(
+            tmp_path,
+            {
+                "name": "test",
+                "path": str(tmp_path / "*.txt"),
+                "events": ["created"],
+                "action": "shell",
+                "command": "echo matched",
+            },
+        )
         rule = engine.list_rules()[0]
 
         from watchdog.events import FileCreatedEvent
@@ -203,13 +206,16 @@ class TestEventMatching:
             mock.assert_called_once()
 
     def test_glob_no_match(self, tmp_path):
-        engine = self._make_engine(tmp_path, {
-            "name": "test",
-            "path": str(tmp_path / "*.txt"),
-            "events": ["created"],
-            "action": "shell",
-            "command": "echo matched",
-        })
+        engine = self._make_engine(
+            tmp_path,
+            {
+                "name": "test",
+                "path": str(tmp_path / "*.txt"),
+                "events": ["created"],
+                "action": "shell",
+                "command": "echo matched",
+            },
+        )
         rule = engine.list_rules()[0]
 
         from watchdog.events import FileCreatedEvent
@@ -227,13 +233,15 @@ class TestEventMatching:
 class TestActionDispatch:
     def _make_engine_with_rule(self, tmp_path, action, command):
         rules_file = tmp_path / "watchers.yaml"
-        rules = [{
-            "name": "test-action",
-            "path": str(tmp_path / "*"),
-            "events": ["created"],
-            "action": action,
-            "command": command,
-        }]
+        rules = [
+            {
+                "name": "test-action",
+                "path": str(tmp_path / "*"),
+                "events": ["created"],
+                "action": action,
+                "command": command,
+            }
+        ]
         rules_file.write_text(yaml.dump(rules))
         return WatcherEngine(rules_path=rules_file)
 

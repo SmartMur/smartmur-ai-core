@@ -30,8 +30,10 @@ def main():
     listener = InboundListener(settings=settings)
     listener.start()
 
-    logger.info("Bot is live — listening for messages (auth=%s)",
-                "configured" if settings.allowed_chat_ids else "OPEN")
+    logger.info(
+        "Bot is live — listening for messages (auth=%s)",
+        "configured" if settings.allowed_chat_ids else "OPEN",
+    )
     stop.wait()
     logger.info("Bot stopped")
 

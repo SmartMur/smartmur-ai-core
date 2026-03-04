@@ -13,6 +13,7 @@ class WorkflowLoader:
     def __init__(self, workflows_dir: Path | None = None):
         if workflows_dir is None:
             from superpowers.config import get_data_dir
+
             workflows_dir = get_data_dir() / "workflows"
         self._dir = workflows_dir
 

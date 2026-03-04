@@ -59,7 +59,8 @@ class ConcurrencyGate:
             if queued >= self._queue_overflow:
                 logger.warning(
                     "ConcurrencyGate: queue overflow for chat_id=%s (%d queued)",
-                    chat_id, queued,
+                    chat_id,
+                    queued,
                 )
                 return False
             self._chat_queued[chat_id] = queued + 1

@@ -20,6 +20,7 @@ Category = Literal["security", "quality", "test_health", "efficiency"]
 @dataclass
 class Finding:
     """A single QA finding."""
+
     category: Category
     severity: Severity
     check: str
@@ -34,6 +35,7 @@ class Finding:
 @dataclass
 class QAReport:
     """Results from a full QA run."""
+
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     findings: list[Finding] = field(default_factory=list)
     checks_run: int = 0
@@ -77,7 +79,9 @@ class QAReport:
                 f"_Duration: {self.duration_seconds:.1f}s_"
             )
         lines = ["*QA Guardian Report*"]
-        lines.append(f"Critical: {self.critical_count} | Warning: {self.warning_count} | Info: {self.info_count}")
+        lines.append(
+            f"Critical: {self.critical_count} | Warning: {self.warning_count} | Info: {self.info_count}"
+        )
         # Show up to 5 critical/warning findings
         important = [f for f in self.findings if f.severity in ("critical", "warning")]
         for finding in important[:5]:
@@ -94,20 +98,23 @@ class QAGuardian:
 
     # Patterns that look like hardcoded secrets
     SECRET_PATTERNS = [
-        re.compile(r'''(?:password|passwd|secret|token|api_key|apikey)\s*=\s*["'][^"']{8,}["']''', re.IGNORECASE),
+        re.compile(
+            r"""(?:password|passwd|secret|token|api_key|apikey)\s*=\s*["'][^"']{8,}["']""",
+            re.IGNORECASE,
+        ),
     ]
 
     # Patterns for shell=True usage
-    SHELL_TRUE_PATTERN = re.compile(r'\bshell\s*=\s*True\b')
+    SHELL_TRUE_PATTERN = re.compile(r"\bshell\s*=\s*True\b")
 
     # Patterns for bare except
-    BARE_EXCEPT_PATTERN = re.compile(r'^\s*except\s*:', re.MULTILINE)
+    BARE_EXCEPT_PATTERN = re.compile(r"^\s*except\s*:", re.MULTILINE)
 
     # Patterns for eval/exec
-    EVAL_EXEC_PATTERN = re.compile(r'\b(?:eval|exec)\s*\(')
+    EVAL_EXEC_PATTERN = re.compile(r"\b(?:eval|exec)\s*\(")
 
     # TODO/FIXME pattern
-    TODO_PATTERN = re.compile(r'#\s*(?:TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)
+    TODO_PATTERN = re.compile(r"#\s*(?:TODO|FIXME|HACK|XXX)\b", re.IGNORECASE)
 
     def __init__(self, project_dir: Path | str, *, baseline_tests: int = 826):
         self.project_dir = Path(project_dir)
@@ -119,17 +126,32 @@ class QAGuardian:
         files = []
         for p in self.project_dir.rglob("*.py"):
             parts = p.relative_to(self.project_dir).parts
-            if any(skip in parts for skip in (".venv", "venv", "__pycache__", ".git", "node_modules")):
+            if any(
+                skip in parts for skip in (".venv", "venv", "__pycache__", ".git", "node_modules")
+            ):
                 continue
             files.append(p)
         return sorted(files)
 
-    def _add(self, category: Category, severity: Severity, check: str, message: str,
-             file: str = "", line: int = 0) -> None:
-        self._findings.append(Finding(
-            category=category, severity=severity, check=check,
-            message=message, file=file, line=line,
-        ))
+    def _add(
+        self,
+        category: Category,
+        severity: Severity,
+        check: str,
+        message: str,
+        file: str = "",
+        line: int = 0,
+    ) -> None:
+        self._findings.append(
+            Finding(
+                category=category,
+                severity=severity,
+                check=check,
+                message=message,
+                file=file,
+                line=line,
+            )
+        )
 
     # --- Security checks ---
 
@@ -143,8 +165,14 @@ class QAGuardian:
             for i, line in enumerate(content.splitlines(), 1):
                 if self.SHELL_TRUE_PATTERN.search(line):
                     rel = str(path.relative_to(self.project_dir))
-                    self._add("security", "warning", "shell_true",
-                              "subprocess with shell=True", file=rel, line=i)
+                    self._add(
+                        "security",
+                        "warning",
+                        "shell_true",
+                        "subprocess with shell=True",
+                        file=rel,
+                        line=i,
+                    )
 
     def check_bare_except(self) -> None:
         """Flag bare 'except:' clauses."""
@@ -156,8 +184,14 @@ class QAGuardian:
             for i, line in enumerate(content.splitlines(), 1):
                 if self.BARE_EXCEPT_PATTERN.match(line):
                     rel = str(path.relative_to(self.project_dir))
-                    self._add("security", "warning", "bare_except",
-                              "bare except clause (catches all exceptions)", file=rel, line=i)
+                    self._add(
+                        "security",
+                        "warning",
+                        "bare_except",
+                        "bare except clause (catches all exceptions)",
+                        file=rel,
+                        line=i,
+                    )
 
     def check_hardcoded_secrets(self) -> None:
         """Flag potential hardcoded secrets/passwords/tokens."""
@@ -174,8 +208,14 @@ class QAGuardian:
                 for pat in self.SECRET_PATTERNS:
                     if pat.search(line):
                         rel = str(path.relative_to(self.project_dir))
-                        self._add("security", "critical", "hardcoded_secret",
-                                  "possible hardcoded secret", file=rel, line=i)
+                        self._add(
+                            "security",
+                            "critical",
+                            "hardcoded_secret",
+                            "possible hardcoded secret",
+                            file=rel,
+                            line=i,
+                        )
                         break  # One finding per line
 
     def check_eval_exec(self) -> None:
@@ -191,8 +231,14 @@ class QAGuardian:
                     continue
                 if self.EVAL_EXEC_PATTERN.search(line):
                     rel = str(path.relative_to(self.project_dir))
-                    self._add("security", "critical", "eval_exec",
-                              "use of eval() or exec()", file=rel, line=i)
+                    self._add(
+                        "security",
+                        "critical",
+                        "eval_exec",
+                        "use of eval() or exec()",
+                        file=rel,
+                        line=i,
+                    )
 
     # --- Quality checks ---
 
@@ -205,8 +251,13 @@ class QAGuardian:
                 continue
             if line_count > max_lines:
                 rel = str(path.relative_to(self.project_dir))
-                self._add("quality", "warning", "long_file",
-                          f"file has {line_count} lines (max {max_lines})", file=rel)
+                self._add(
+                    "quality",
+                    "warning",
+                    "long_file",
+                    f"file has {line_count} lines (max {max_lines})",
+                    file=rel,
+                )
 
     def check_test_coverage_gaps(self) -> None:
         """Flag source modules in superpowers/ that lack a corresponding test file."""
@@ -222,9 +273,13 @@ class QAGuardian:
                 continue
             expected_test = f"test_{src_file.name}"
             if expected_test not in existing_tests:
-                self._add("quality", "info", "test_coverage_gap",
-                          f"no test file for superpowers/{src_file.name}",
-                          file=f"superpowers/{src_file.name}")
+                self._add(
+                    "quality",
+                    "info",
+                    "test_coverage_gap",
+                    f"no test file for superpowers/{src_file.name}",
+                    file=f"superpowers/{src_file.name}",
+                )
 
     def check_duplicate_function_names(self) -> None:
         """Flag files with duplicate top-level function/method definitions."""
@@ -245,9 +300,14 @@ class QAGuardian:
             rel = str(path.relative_to(self.project_dir))
             for name, linenos in func_names.items():
                 if len(linenos) > 1:
-                    self._add("quality", "warning", "duplicate_function",
-                              f"function '{name}' defined {len(linenos)} times (lines {', '.join(map(str, linenos))})",
-                              file=rel, line=linenos[0])
+                    self._add(
+                        "quality",
+                        "warning",
+                        "duplicate_function",
+                        f"function '{name}' defined {len(linenos)} times (lines {', '.join(map(str, linenos))})",
+                        file=rel,
+                        line=linenos[0],
+                    )
 
     def check_todo_count(self) -> None:
         """Report TODO/FIXME count as info (not a problem, just tracking)."""
@@ -259,8 +319,9 @@ class QAGuardian:
                 continue
             total += len(self.TODO_PATTERN.findall(content))
         if total > 0:
-            self._add("quality", "info", "todo_count",
-                      f"{total} TODO/FIXME comments across project")
+            self._add(
+                "quality", "info", "todo_count", f"{total} TODO/FIXME comments across project"
+            )
 
     # --- Test health ---
 
@@ -271,14 +332,17 @@ class QAGuardian:
         """
         test_dir = self.project_dir / "tests"
         if not test_dir.is_dir():
-            self._add("test_health", "critical", "test_suite",
-                      "tests/ directory not found")
+            self._add("test_health", "critical", "test_suite", "tests/ directory not found")
             return
 
         if not run_tests:
             test_files = list(test_dir.glob("test_*.py"))
-            self._add("test_health", "info", "test_suite",
-                      f"{len(test_files)} test files found (live run disabled)")
+            self._add(
+                "test_health",
+                "info",
+                "test_suite",
+                f"{len(test_files)} test files found (live run disabled)",
+            )
             return
 
         # Actually run pytest
@@ -287,36 +351,54 @@ class QAGuardian:
 
         try:
             result = subprocess.run(
-                [pytest_bin, str(test_dir),
-                 "--ignore=" + str(test_dir / "test_telegram_concurrency.py"),
-                 "--tb=no", "-q", "--no-header"],
-                capture_output=True, text=True, timeout=300,
+                [
+                    pytest_bin,
+                    str(test_dir),
+                    "--ignore=" + str(test_dir / "test_telegram_concurrency.py"),
+                    "--tb=no",
+                    "-q",
+                    "--no-header",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=300,
                 cwd=str(self.project_dir),
                 env={**__import__("os").environ, "PYTHONPATH": str(self.project_dir)},
             )
         except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
-            self._add("test_health", "critical", "test_suite",
-                      f"pytest execution failed: {exc}")
+            self._add("test_health", "critical", "test_suite", f"pytest execution failed: {exc}")
             return
 
         # Parse pytest summary line: "826 passed, 7 failed"
         output = result.stdout + result.stderr
         passed = 0
         failed = 0
-        for match in re.finditer(r'(\d+)\s+passed', output):
+        for match in re.finditer(r"(\d+)\s+passed", output):
             passed = int(match.group(1))
-        for match in re.finditer(r'(\d+)\s+failed', output):
+        for match in re.finditer(r"(\d+)\s+failed", output):
             failed = int(match.group(1))
 
         if failed > 0:
-            self._add("test_health", "warning", "test_suite",
-                      f"pytest: {passed} passed, {failed} failed (baseline: {self.baseline_tests})")
+            self._add(
+                "test_health",
+                "warning",
+                "test_suite",
+                f"pytest: {passed} passed, {failed} failed (baseline: {self.baseline_tests})",
+            )
         elif passed < self.baseline_tests:
-            self._add("test_health", "warning", "test_suite",
-                      f"test count dropped: {passed} vs baseline {self.baseline_tests}")
+            self._add(
+                "test_health",
+                "warning",
+                "test_suite",
+                f"test count dropped: {passed} vs baseline {self.baseline_tests}",
+            )
         else:
-            self._add("test_health", "info", "test_suite",
-                      f"pytest: {passed} passed, {failed} failed (baseline: {self.baseline_tests})")
+            self._add(
+                "test_health",
+                "info",
+                "test_suite",
+                f"pytest: {passed} passed, {failed} failed (baseline: {self.baseline_tests})",
+            )
 
     # --- Efficiency checks ---
 
@@ -361,8 +443,14 @@ class QAGuardian:
                 if name.startswith("_"):
                     continue
                 if name not in used_names:
-                    self._add("efficiency", "info", "unused_import",
-                              f"'{name}' imported but not used", file=rel, line=lineno)
+                    self._add(
+                        "efficiency",
+                        "info",
+                        "unused_import",
+                        f"'{name}' imported but not used",
+                        file=rel,
+                        line=lineno,
+                    )
 
     def check_empty_files(self) -> None:
         """Flag Python files that are empty or only have docstrings/comments."""
@@ -373,18 +461,30 @@ class QAGuardian:
                 continue
             if not content:
                 rel = str(path.relative_to(self.project_dir))
-                self._add("efficiency", "info", "empty_file",
-                          "file is empty", file=rel)
+                self._add("efficiency", "info", "empty_file", "file is empty", file=rel)
                 continue
             # Check if file has only comments/docstrings (no real code)
-            lines = [line.strip() for line in content.splitlines()
-                     if line.strip() and not line.strip().startswith("#")]
+            lines = [
+                line.strip()
+                for line in content.splitlines()
+                if line.strip() and not line.strip().startswith("#")
+            ]
             # If all non-comment lines are just docstring markers
-            code_lines = [line for line in lines if not (line.startswith('"""') or line.startswith("'''") or line.startswith('"') or line.startswith("'"))]
+            code_lines = [
+                line
+                for line in lines
+                if not (
+                    line.startswith('"""')
+                    or line.startswith("'''")
+                    or line.startswith('"')
+                    or line.startswith("'")
+                )
+            ]
             if len(code_lines) == 0 and path.name != "__init__.py":
                 rel = str(path.relative_to(self.project_dir))
-                self._add("efficiency", "info", "stub_file",
-                          "file has no executable code", file=rel)
+                self._add(
+                    "efficiency", "info", "stub_file", "file has no executable code", file=rel
+                )
 
     def check_dead_modules(self) -> None:
         """Flag modules in superpowers/ not imported by anything else."""
@@ -418,15 +518,20 @@ class QAGuardian:
 
         for mod_name, is_used in import_mentions.items():
             if not is_used:
-                self._add("efficiency", "info", "dead_module",
-                          f"superpowers/{mod_name}.py may not be imported anywhere",
-                          file=f"superpowers/{mod_name}.py")
+                self._add(
+                    "efficiency",
+                    "info",
+                    "dead_module",
+                    f"superpowers/{mod_name}.py may not be imported anywhere",
+                    file=f"superpowers/{mod_name}.py",
+                )
 
     # --- Run all checks ---
 
     def run_all(self, *, run_tests: bool = False) -> QAReport:
         """Execute all checks and return a QAReport."""
         import time
+
         start = time.monotonic()
         self._findings = []
 
@@ -448,7 +553,7 @@ class QAGuardian:
         for check_fn in checks:
             try:
                 check_fn()
-            except Exception:
+            except (OSError, ValueError, RuntimeError, SyntaxError, subprocess.SubprocessError):
                 pass  # Individual check failures don't abort the run
 
         elapsed = time.monotonic() - start

@@ -36,7 +36,7 @@ class ConnectionPool:
             # Stale or dead — close and reconnect
             try:
                 client.close()
-            except Exception:
+            except OSError:
                 pass
             del self._clients[alias]
 
@@ -76,14 +76,10 @@ class ConnectionPool:
 
             elif host.auth == AuthMethod.password:
                 if not self._vault:
-                    raise SSHError(
-                        f"Vault required for password auth on {host.alias}"
-                    )
+                    raise SSHError(f"Vault required for password auth on {host.alias}")
                 password = self._vault.get(f"ssh:{host.alias}:password")
                 if not password:
-                    raise SSHError(
-                        f"No password in vault for ssh:{host.alias}:password"
-                    )
+                    raise SSHError(f"No password in vault for ssh:{host.alias}:password")
                 client.connect(
                     hostname=host.hostname,
                     port=host.port,
@@ -120,7 +116,7 @@ class ConnectionPool:
             client, _ = self._clients.pop(alias)
             try:
                 client.close()
-            except Exception:
+            except OSError:
                 pass
 
     def close_all(self) -> None:

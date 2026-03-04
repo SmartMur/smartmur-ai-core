@@ -156,7 +156,8 @@ class Message:
         raw_photos = data.get("photo")
         if raw_photos and isinstance(raw_photos, list):
             photo_list = [
-                PhotoSize.from_dict(p) for p in raw_photos
+                PhotoSize.from_dict(p)
+                for p in raw_photos
                 if p and PhotoSize.from_dict(p) is not None
             ]
         return cls(

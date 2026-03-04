@@ -14,6 +14,7 @@ from msg_gateway.telegram.api import TelegramApi
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _mock_urlopen_ok(response_body: dict) -> MagicMock:
     """Return a MagicMock that behaves like urllib.request.urlopen context manager."""
     encoded = json.dumps(response_body).encode()

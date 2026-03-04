@@ -4,14 +4,78 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
+import os
+import sqlite3
 import subprocess
 from collections.abc import AsyncGenerator
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from dashboard.deps import get_conversations_db
+
+logger = logging.getLogger(__name__)
+
+# --- System prompt & memory injection ---
+
+_SYSTEM_PROMPT_TEMPLATE = """\
+You are Claw, Ray's personal AI assistant running on his home server.
+You are chatting with Ray through the Claw Dashboard web UI.
+
+Key facts about Ray and this environment:
+- Owner: Ray
+- Project: Claude Code Superpowers — a local-first automation platform
+- Tech stack: Python, Docker, Redis, FastAPI, Alpine.js
+- Server: Docker host at 192.168.30.117 (dev-deb, Debian x86_64)
+{memories}
+Personality: Concise, technical, helpful. No unnecessary fluff.
+If Ray asks about himself, his setup, or this project — you know the answer from the facts above.
+If Ray asks you to do something on the server, explain what commands or skills would accomplish it."""
+
+
+def _load_memories() -> str:
+    """Load facts from the memory DB for context injection."""
+    mem_path = Path(os.environ.get(
+        "SUPERPOWERS_DIR", os.path.expanduser("~/.claude-superpowers")
+    )) / "memory.db"
+    if not mem_path.exists():
+        return ""
+    try:
+        conn = sqlite3.connect(str(mem_path))
+        rows = conn.execute(
+            "SELECT category, key, value FROM memories ORDER BY access_count DESC LIMIT 20"
+        ).fetchall()
+        conn.close()
+        if not rows:
+            return ""
+        lines = [f"- [{cat}] {key}: {val}" for cat, key, val in rows]
+        return "\nMemories:\n" + "\n".join(lines) + "\n"
+    except (sqlite3.Error, OSError, ValueError) as exc:
+        logger.warning("Failed to load memories: %s", exc)
+        return ""
+
+
+def _build_system_prompt() -> str:
+    return _SYSTEM_PROMPT_TEMPLATE.format(memories=_load_memories())
+
+
+def _build_conversation_context(messages: list[dict], max_turns: int = 10) -> str:
+    """Format recent conversation history for context."""
+    recent = messages[-(max_turns * 2):]  # last N turns (user+assistant pairs)
+    if not recent:
+        return ""
+    lines = []
+    for msg in recent:
+        role = "Ray" if msg.get("role") == "user" else "Claw"
+        lines.append(f"{role}: {msg['content']}")
+    return (
+        "\n<conversation_history>\n"
+        + "\n".join(lines)
+        + "\n</conversation_history>\n\n"
+    )
 
 router = APIRouter()
 
@@ -85,9 +149,9 @@ def send_message(req: ChatMessage):
     if conv is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
-    # Generate a simple response (no actual LLM call in the API endpoint;
-    # real streaming goes through /stream)
-    response_text = _generate_response(req.message)
+    # Build context from conversation history
+    history = conv.get("messages", [])[:-1]  # exclude the message we just added
+    response_text = _generate_response(req.message, history)
     db.add_message(cid, "assistant", response_text)
 
     return {
@@ -106,6 +170,10 @@ async def stream_chat(message: str, conversation_id: str = ""):
         conv = db.create()
         cid = conv["id"]
 
+    # Get existing history before adding new message
+    conv = db.get(cid)
+    history = conv["messages"] if conv else []
+
     # Store user message
     db.add_message(cid, "user", message)
 
@@ -113,8 +181,8 @@ async def stream_chat(message: str, conversation_id: str = ""):
         # Send conversation ID first
         yield f"data: {json.dumps({'type': 'meta', 'conversation_id': cid})}\n\n"
 
-        # Generate response chunks
-        full_response = _generate_response(message)
+        # Generate response with full context
+        full_response = _generate_response(message, history)
         words = full_response.split()
         accumulated = []
 
@@ -141,22 +209,31 @@ async def stream_chat(message: str, conversation_id: str = ""):
     )
 
 
-def _generate_response(message: str) -> str:
-    """Generate a response to a chat message.
+def _generate_response(message: str, history: list[dict] | None = None) -> str:
+    """Generate a response using the LLM provider with system prompt and history."""
+    from superpowers.llm_provider import get_default_provider
 
-    Tries to use 'claude' CLI if available, otherwise returns a simple echo.
-    """
+    system_prompt = _build_system_prompt()
+    context = _build_conversation_context(history or [])
+
+    # Build the full prompt: conversation history + current message
+    if context:
+        full_prompt = f"{context}Ray: {message}"
+    else:
+        full_prompt = message
+
     try:
-        result = subprocess.run(
-            ["claude", "-p", message],
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        pass
+        provider = get_default_provider(role="chat")
+        result = provider.invoke(full_prompt, system_prompt=system_prompt)
+        if result.strip():
+            return result.strip()
+    except FileNotFoundError:
+        logger.error("LLM provider not available — check configuration")
+    except (RuntimeError, subprocess.TimeoutExpired) as exc:
+        logger.warning("LLM provider error: %s", exc)
+        return "Response timed out — try a shorter question."
 
-    # Fallback: echo-style response
-    return f"Received: {message}\n\n(Claude CLI not available. Install it for AI-powered responses.)"
+    return (
+        f"Received: {message}\n\n"
+        "(LLM provider not available. Check configuration.)"
+    )

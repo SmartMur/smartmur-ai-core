@@ -27,7 +27,6 @@ from superpowers.llm_provider import (
     register_provider,
 )
 
-
 # ======================================================================
 # F1: Config loading — CHAT_MODEL / JOB_MODEL
 # ======================================================================
@@ -279,6 +278,19 @@ class TestClaudeProvider:
         assert "claude-3-sonnet" in cmd
 
     @patch("superpowers.llm_provider.subprocess.run")
+    def test_invoke_with_system_prompt(self, mock_run):
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="response",
+            stderr="",
+        )
+        p = ClaudeProvider()
+        p.invoke("test", system_prompt="You are helpful.")
+        cmd = mock_run.call_args[0][0]
+        assert "--system-prompt" in cmd
+        assert "You are helpful." in cmd
+
+    @patch("superpowers.llm_provider.subprocess.run")
     def test_invoke_failure_raises(self, mock_run):
         mock_run.return_value = MagicMock(
             returncode=1,
@@ -384,7 +396,7 @@ class TestProviderFactory:
             def name(self):
                 return "dummy"
 
-            def invoke(self, prompt, *, model=None):
+            def invoke(self, prompt, *, model=None, system_prompt=None):
                 return "dummy response"
 
             def available(self):
@@ -397,11 +409,13 @@ class TestProviderFactory:
 
     def test_default_provider_chat(self):
         with patch.dict(os.environ, {"CHAT_MODEL": "claude"}, clear=False):
+            os.environ.pop("OPENAI_API_KEY", None)
             p = get_default_provider(role="chat")
         assert isinstance(p, ClaudeProvider)
 
     def test_default_provider_job(self):
         with patch.dict(os.environ, {"JOB_MODEL": "ollama"}, clear=False):
+            os.environ.pop("OPENAI_API_KEY", None)
             p = get_default_provider(role="job")
         assert isinstance(p, GenericProvider)
         assert p.name == "ollama"
@@ -410,11 +424,13 @@ class TestProviderFactory:
         """Without env vars, defaults to claude."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("CHAT_MODEL", None)
+            os.environ.pop("OPENAI_API_KEY", None)
             p = get_default_provider(role="chat")
         assert isinstance(p, ClaudeProvider)
 
     def test_default_provider_job_fallback(self):
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("JOB_MODEL", None)
+            os.environ.pop("OPENAI_API_KEY", None)
             p = get_default_provider(role="job")
         assert isinstance(p, ClaudeProvider)

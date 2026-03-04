@@ -28,7 +28,7 @@ def main() -> int:
     try:
         report_path = guardian.save_report(report)
         print(f"Report saved to {report_path}")
-    except Exception as exc:
+    except (OSError, ValueError) as exc:
         print(f"Warning: could not save report: {exc}", file=sys.stderr)
 
     # Audit log
@@ -40,7 +40,7 @@ def main() -> int:
             source="skill",
             metadata=report.to_dict()["summary"],
         )
-    except Exception:
+    except (OSError, ValueError):
         pass  # Audit failures are non-fatal
 
     # Print summary
@@ -67,7 +67,7 @@ def main() -> int:
             telegram_notify.notify_done("QA Guardian — all clear")
         else:
             telegram_notify.notify(report.to_telegram_summary())
-    except Exception:
+    except (OSError, ImportError, ValueError):
         pass  # Notification failures are non-fatal
 
     # Exit code: 0=clean, 1=findings, 2=error

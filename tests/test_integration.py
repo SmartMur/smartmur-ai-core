@@ -87,6 +87,7 @@ class TestSkillCronPipeline:
             # Patch _run_skill so it uses our local registry instead of the global default
             def _run_skill_local(job):
                 from superpowers.skill_loader import SkillLoader
+
                 skill = registry.get(job.command)
                 loader = SkillLoader()
                 result = loader.run(skill, job.args or None)
@@ -324,8 +325,15 @@ class TestMCPToolRegistration:
 
         mcp = FastMCP("integration-test")
         registrars = [
-            reg_channels, reg_ssh, reg_memory, reg_browser,
-            reg_workflow, reg_cron, reg_skills, reg_audit, reg_vault,
+            reg_channels,
+            reg_ssh,
+            reg_memory,
+            reg_browser,
+            reg_workflow,
+            reg_cron,
+            reg_skills,
+            reg_audit,
+            reg_vault,
         ]
         for reg_fn in registrars:
             reg_fn(mcp)
@@ -335,6 +343,7 @@ class TestMCPToolRegistration:
 
         # Verify the main mcp_server module wires everything together
         from superpowers import mcp_server
+
         assert mcp_server.mcp is not None
         main_tools = list(mcp_server.mcp._tool_manager._tools.keys())
         assert len(main_tools) >= 9  # at least one tool per module

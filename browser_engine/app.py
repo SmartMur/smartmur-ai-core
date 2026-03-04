@@ -24,6 +24,7 @@ PROFILES_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Models ---
 
+
 class NavigateRequest(BaseModel):
     url: str
     profile: str = "default"
@@ -103,6 +104,7 @@ class EngineStatus(BaseModel):
 
 # --- Session management ---
 
+
 def _get_or_create_session(profile: str) -> dict[str, Any]:
     """Get an existing browser session or create a new one."""
     if profile in _sessions:
@@ -148,15 +150,16 @@ def _close_session(profile: str) -> None:
     session = _sessions.pop(profile)
     try:
         session["context"].close()
-    except Exception:
+    except (OSError, RuntimeError):
         pass
     try:
         session["playwright"].stop()
-    except Exception:
+    except (OSError, RuntimeError):
         pass
 
 
 # --- Health / Status ---
+
 
 @app.get("/health")
 def health():
@@ -165,24 +168,32 @@ def health():
 
 @app.get("/status", response_model=EngineStatus)
 def engine_status():
-    profiles = sorted(d.name for d in PROFILES_DIR.iterdir() if d.is_dir()) if PROFILES_DIR.exists() else []
+    profiles = (
+        sorted(d.name for d in PROFILES_DIR.iterdir() if d.is_dir())
+        if PROFILES_DIR.exists()
+        else []
+    )
     sessions = []
     for name, sess in _sessions.items():
         try:
             page = sess["page"]
-            sessions.append(SessionInfo(
-                profile=name,
-                current_url=page.url,
-                current_title=page.title(),
-                created_at=sess["created_at"],
-            ))
-        except Exception:
-            sessions.append(SessionInfo(
-                profile=name,
-                current_url="unknown",
-                current_title="unknown",
-                created_at=sess.get("created_at", 0),
-            ))
+            sessions.append(
+                SessionInfo(
+                    profile=name,
+                    current_url=page.url,
+                    current_title=page.title(),
+                    created_at=sess["created_at"],
+                )
+            )
+        except (OSError, RuntimeError, KeyError):
+            sessions.append(
+                SessionInfo(
+                    profile=name,
+                    current_url="unknown",
+                    current_title="unknown",
+                    created_at=sess.get("created_at", 0),
+                )
+            )
     return EngineStatus(
         status="running",
         uptime_seconds=time.time() - _start_time,
@@ -194,11 +205,16 @@ def engine_status():
 
 @app.get("/profiles")
 def list_profiles():
-    profiles = sorted(d.name for d in PROFILES_DIR.iterdir() if d.is_dir()) if PROFILES_DIR.exists() else []
+    profiles = (
+        sorted(d.name for d in PROFILES_DIR.iterdir() if d.is_dir())
+        if PROFILES_DIR.exists()
+        else []
+    )
     return {"profiles": profiles}
 
 
 # --- Navigation ---
+
 
 @app.post("/navigate", response_model=NavigateResponse)
 def navigate(req: NavigateRequest):
@@ -214,7 +230,7 @@ def navigate(req: NavigateRequest):
         )
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return NavigateResponse(
             url=req.url,
             title="",
@@ -224,6 +240,7 @@ def navigate(req: NavigateRequest):
 
 
 # --- Screenshot ---
+
 
 @app.post("/screenshot", response_model=ScreenshotResponse)
 def screenshot(req: ScreenshotRequest):
@@ -256,7 +273,7 @@ def screenshot(req: ScreenshotRequest):
         )
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return ScreenshotResponse(
             url=req.url or "unknown",
             title="",
@@ -267,6 +284,7 @@ def screenshot(req: ScreenshotRequest):
 
 
 # --- Text extraction ---
+
 
 @app.post("/extract", response_model=ExtractResponse)
 def extract_text(req: ExtractRequest):
@@ -281,11 +299,12 @@ def extract_text(req: ExtractRequest):
         return ExtractResponse(url=page.url, text=text, ok=True)
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return ExtractResponse(url=req.url or "unknown", text="", ok=False, error=str(exc))
 
 
 # --- Table extraction ---
+
 
 @app.post("/extract-table")
 def extract_table(req: TableExtractRequest):
@@ -309,11 +328,12 @@ def extract_table(req: TableExtractRequest):
         return {"url": page.url, "rows": rows, "ok": True}
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return {"url": req.url or "unknown", "rows": [], "ok": False, "error": str(exc)}
 
 
 # --- Form fill ---
+
 
 @app.post("/fill-form")
 def fill_form(req: FormFillRequest):
@@ -325,11 +345,12 @@ def fill_form(req: FormFillRequest):
         return {"ok": True}
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return {"ok": False, "error": str(exc)}
 
 
 # --- Click ---
+
 
 @app.post("/click")
 def click(req: ClickRequest):
@@ -339,16 +360,17 @@ def click(req: ClickRequest):
         page.click(req.selector)
         try:
             page.wait_for_load_state("domcontentloaded", timeout=5000)
-        except Exception:
+        except (TimeoutError, RuntimeError):
             pass
         return {"url": page.url, "title": page.title(), "ok": True}
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return {"ok": False, "error": str(exc)}
 
 
 # --- JS eval ---
+
 
 @app.post("/evaluate")
 def evaluate(req: EvalRequest):
@@ -359,11 +381,12 @@ def evaluate(req: EvalRequest):
         return {"result": str(result), "ok": True}
     except HTTPException:
         raise
-    except Exception as exc:
+    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
         return {"ok": False, "error": str(exc)}
 
 
 # --- Session management endpoints ---
+
 
 @app.delete("/sessions/{profile}")
 def close_session(profile: str):

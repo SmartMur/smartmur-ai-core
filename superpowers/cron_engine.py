@@ -114,6 +114,7 @@ class CronEngine:
     ):
         if data_dir is None:
             from superpowers.config import get_data_dir
+
             data_dir = get_data_dir() / "cron"
         self._data_dir = Path(data_dir)
 
@@ -136,9 +137,7 @@ class CronEngine:
 
         self._scheduler = BackgroundScheduler(
             jobstores={
-                "default": SQLAlchemyJobStore(
-                    url=f"sqlite:///{self._db_path}"
-                ),
+                "default": SQLAlchemyJobStore(url=f"sqlite:///{self._db_path}"),
             },
         )
 
@@ -252,6 +251,7 @@ class CronEngine:
         """
         if data_dir is None:
             from superpowers.config import get_data_dir
+
             data_dir = get_data_dir() / "cron"
         pid_file = data_dir / CronEngine.PID_FILENAME
 
@@ -305,7 +305,7 @@ class CronEngine:
                 output, exit_code = self._run_webhook(job)
             elif job.job_type == JobType.skill:
                 output, exit_code = self._run_skill(job)
-        except Exception as exc:
+        except (subprocess.SubprocessError, OSError, RuntimeError, KeyError, ValueError) as exc:
             output = f"Exception: {exc}"
             exit_code = 1
 
@@ -329,15 +329,14 @@ class CronEngine:
         return result.stdout + result.stderr, result.returncode
 
     def _run_claude(self, job: Job) -> tuple[str, int]:
-        cmd = ["claude", "-p", job.command, "--output-format", "text"]
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=600,
-            env=self._job_env(job),
-        )
-        return result.stdout + result.stderr, result.returncode
+        from superpowers.llm_provider import get_default_provider
+
+        provider = get_default_provider(role="job")
+        try:
+            output = provider.invoke(job.command)
+            return output, 0
+        except (RuntimeError, FileNotFoundError) as exc:
+            return str(exc), 1
 
     def _run_webhook(self, job: Job) -> tuple[str, int]:
         import urllib.error
@@ -375,12 +374,7 @@ class CronEngine:
 
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         log_file = job_output_dir / f"{ts}.log"
-        log_file.write_text(
-            f"exit_code: {exit_code}\n"
-            f"timestamp: {ts}\n"
-            f"---\n"
-            f"{output}\n"
-        )
+        log_file.write_text(f"exit_code: {exit_code}\ntimestamp: {ts}\n---\n{output}\n")
         job.last_output_file = str(log_file)
 
         if job.output_channel != "file":
@@ -472,7 +466,7 @@ class CronEngine:
     def _unregister_from_scheduler(self, job_id: str) -> None:
         try:
             self._scheduler.remove_job(job_id)
-        except Exception:
+        except (KeyError, OSError):
             pass
 
     def _get_or_raise(self, job_id: str) -> Job:

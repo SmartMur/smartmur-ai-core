@@ -95,10 +95,19 @@ class FakeMemoryStore:
         return self._entries[:limit]
 
     def stats(self):
-        return {"total": len(self._entries), "by_category": {"fact": 1}, "oldest": "2026-01-01", "newest": "2026-01-01"}
+        return {
+            "total": len(self._entries),
+            "by_category": {"fact": 1},
+            "oldest": "2026-01-01",
+            "newest": "2026-01-01",
+        }
 
     def search(self, query, category=None, limit=20):
-        return [e for e in self._entries if query.lower() in e.key.lower() or query.lower() in e.value.lower()]
+        return [
+            e
+            for e in self._entries
+            if query.lower() in e.key.lower() or query.lower() in e.value.lower()
+        ]
 
     def remember(self, key, value, category="fact", tags=None, project=""):
         entry = FakeMemoryEntry(id=len(self._entries) + 1, key=key, value=value)
@@ -181,13 +190,17 @@ class FakeWorkflowLoader:
         if name not in ("deploy", "backup"):
             raise Exception(f"Not found: {name}")
         from superpowers.workflow.base import StepConfig, StepType, WorkflowConfig
+
         return WorkflowConfig(
             name=name,
             description=f"The {name} workflow",
-            steps=[StepConfig(
-                name="step1", type=StepType.shell,
-                command="echo hi",
-            )],
+            steps=[
+                StepConfig(
+                    name="step1",
+                    type=StepType.shell,
+                    command="echo hi",
+                )
+            ],
         )
 
     def validate(self, config):
@@ -197,7 +210,14 @@ class FakeWorkflowLoader:
 class FakeWorkflowEngine:
     def run(self, config, dry_run=False):
         from superpowers.workflow.base import StepResult, StepStatus
-        return [StepResult(step_name="step1", status=StepStatus.passed, output="dry-run: ok" if dry_run else "ok")]
+
+        return [
+            StepResult(
+                step_name="step1",
+                status=StepStatus.passed,
+                output="dry-run: ok" if dry_run else "ok",
+            )
+        ]
 
 
 @dataclass
@@ -223,10 +243,19 @@ class FakeSkillRegistry:
 
 class FakeAuditLog:
     def tail(self, n=20):
-        return [{"ts": "2026-01-01T00:00:00", "action": "test", "detail": "detail", "source": "dashboard"}]
+        return [
+            {
+                "ts": "2026-01-01T00:00:00",
+                "action": "test",
+                "detail": "detail",
+                "source": "dashboard",
+            }
+        ]
 
     def search(self, query, limit=50):
-        return [{"ts": "2026-01-01T00:00:00", "action": "test", "detail": query, "source": "dashboard"}]
+        return [
+            {"ts": "2026-01-01T00:00:00", "action": "test", "detail": query, "source": "dashboard"}
+        ]
 
 
 @dataclass
@@ -260,25 +289,57 @@ class FakeChannelRegistry:
     def get(self, name):
         if name not in ("slack", "telegram"):
             from superpowers.channels.base import ChannelError
+
             raise ChannelError(f"Channel not configured: {name}")
-        return type("Ch", (), {
-            "send": lambda self, target, message: type("SR", (), {
-                "ok": True, "channel": name, "target": target, "message": message, "error": ""
-            })()
-        })()
+        return type(
+            "Ch",
+            (),
+            {
+                "send": lambda self, target, message: type(
+                    "SR",
+                    (),
+                    {
+                        "ok": True,
+                        "channel": name,
+                        "target": target,
+                        "message": message,
+                        "error": "",
+                    },
+                )(),
+                "test_connection": lambda self: type(
+                    "SR",
+                    (),
+                    {
+                        "ok": True,
+                        "channel": name,
+                        "target": "",
+                        "message": "connected",
+                        "error": "",
+                    },
+                )(),
+            },
+        )()
 
 
 class FakeProfileManager:
     def list_profiles(self):
-        return [type("NP", (), {
-            "name": "critical",
-            "targets": [type("PT", (), {"channel": "slack", "target": "#alerts"})()],
-        })()]
+        return [
+            type(
+                "NP",
+                (),
+                {
+                    "name": "critical",
+                    "targets": [type("PT", (), {"channel": "slack", "target": "#alerts"})()],
+                },
+            )()
+        ]
 
     def send(self, name, message):
         if name != "critical":
             raise KeyError(f"Profile not found: {name}")
-        return [type("SR", (), {"ok": True, "channel": "slack", "target": "#alerts", "error": ""})()]
+        return [
+            type("SR", (), {"ok": True, "channel": "slack", "target": "#alerts", "error": ""})()
+        ]
 
 
 class FakeVault:
@@ -377,7 +438,19 @@ class TestStatus:
     def test_status_contains_all_subsystems(self, client):
         resp = client.get("/api/status")
         data = resp.json()
-        expected = {"cron", "channels", "ssh", "workflows", "memory", "skills", "vault", "watchers", "audit", "browser"}
+        expected = {
+            "cron",
+            "channels",
+            "ssh",
+            "workflows",
+            "memory",
+            "skills",
+            "vault",
+            "watchers",
+            "audit",
+            "browser",
+            "github",
+        }
         actual = {s["name"] for s in data["subsystems"]}
         assert expected == actual
 
@@ -411,11 +484,14 @@ class TestCron:
         assert resp.status_code == 404
 
     def test_create_job(self, client):
-        resp = client.post("/api/cron/jobs", json={
-            "name": "new-job",
-            "schedule": "every 1h",
-            "command": "ls",
-        })
+        resp = client.post(
+            "/api/cron/jobs",
+            json={
+                "name": "new-job",
+                "schedule": "every 1h",
+                "command": "ls",
+            },
+        )
         assert resp.status_code == 201
         assert resp.json()["name"] == "new-job"
 
@@ -477,20 +553,26 @@ class TestMessaging:
         assert slack["configured"] is True
 
     def test_send_message(self, client):
-        resp = client.post("/api/msg/send", json={
-            "channel": "slack",
-            "target": "#general",
-            "message": "hello",
-        })
+        resp = client.post(
+            "/api/msg/send",
+            json={
+                "channel": "slack",
+                "target": "#general",
+                "message": "hello",
+            },
+        )
         assert resp.status_code == 200
         assert resp.json()["ok"] is True
 
     def test_send_unconfigured_channel(self, client):
-        resp = client.post("/api/msg/send", json={
-            "channel": "discord",
-            "target": "#general",
-            "message": "hello",
-        })
+        resp = client.post(
+            "/api/msg/send",
+            json={
+                "channel": "discord",
+                "target": "#general",
+                "message": "hello",
+            },
+        )
         assert resp.status_code == 400
 
     def test_test_channel(self, client):
@@ -537,10 +619,13 @@ class TestSSH:
         assert "all" in groups
 
     def test_run_command(self, client):
-        resp = client.post("/api/ssh/run", json={
-            "target": "pve1",
-            "command": "uptime",
-        })
+        resp = client.post(
+            "/api/ssh/run",
+            json={
+                "target": "pve1",
+                "command": "uptime",
+            },
+        )
         assert resp.status_code == 200
         results = resp.json()
         assert len(results) == 1
@@ -619,11 +704,14 @@ class TestMemory:
         assert resp.status_code == 200
 
     def test_create_memory(self, client):
-        resp = client.post("/api/memory", json={
-            "key": "ssh-host",
-            "value": "192.168.1.1",
-            "category": "fact",
-        })
+        resp = client.post(
+            "/api/memory",
+            json={
+                "key": "ssh-host",
+                "value": "192.168.1.1",
+                "category": "fact",
+            },
+        )
         assert resp.status_code == 201
         assert resp.json()["key"] == "ssh-host"
 

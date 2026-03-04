@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def main() -> int:
 
     try:
         state, diagnosis = monitor.run_check()
-    except Exception as exc:
+    except (subprocess.SubprocessError, OSError, ValueError) as exc:
         print(f"ERROR: Monitor failed: {exc}", file=sys.stderr)
         telegram_notify.notify_error("Cloudflared Monitor", str(exc))
         return 2
@@ -36,7 +37,7 @@ def main() -> int:
             source="skill",
             metadata=diagnosis.to_dict(),
         )
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Print status
@@ -70,7 +71,7 @@ def main() -> int:
             )
         elif diagnosis.status == "degraded":
             telegram_notify.notify(diagnosis.to_telegram_summary())
-    except Exception:
+    except (OSError, ImportError, ValueError):
         pass
 
     # Exit code

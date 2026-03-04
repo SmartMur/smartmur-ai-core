@@ -31,6 +31,7 @@ HEALTH_PATHS: set[str] = {"/health", "/api/health"}
 # Webhook Signature Validation
 # ===========================================================================
 
+
 def _verify_telegram(request: Request, body: bytes) -> bool:
     """Validate Telegram webhook via X-Telegram-Bot-Api-Secret-Token header.
 
@@ -70,9 +71,9 @@ def _verify_slack(request: Request, body: bytes) -> bool:
         return False
 
     basestring = f"v0:{timestamp}:{body.decode('utf-8', errors='replace')}"
-    computed = "v0=" + hmac.new(
-        signing_secret.encode(), basestring.encode(), hashlib.sha256
-    ).hexdigest()
+    computed = (
+        "v0=" + hmac.new(signing_secret.encode(), basestring.encode(), hashlib.sha256).hexdigest()
+    )
     return hmac.compare_digest(computed, signature)
 
 
@@ -93,8 +94,9 @@ def _verify_discord(request: Request, body: bytes) -> bool:
         return False
 
     try:
-        from nacl.signing import VerifyKey
         from nacl.exceptions import BadSignatureError
+        from nacl.signing import VerifyKey
+
         verify_key = VerifyKey(bytes.fromhex(public_key_hex))
         verify_key.verify(
             timestamp.encode() + body,
@@ -168,6 +170,7 @@ class WebhookSignatureMiddleware(BaseHTTPMiddleware):
 # ===========================================================================
 # Token Bucket Rate Limiter
 # ===========================================================================
+
 
 @dataclass
 class _TokenBucket:

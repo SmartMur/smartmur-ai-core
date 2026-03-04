@@ -53,6 +53,7 @@ class TelegramPoller:
 
         # Shared state
         self._chat_modes: dict[str, str] = {}  # chat_id -> "chat" or "skill"
+        self._chat_models: dict[str, str] = {}  # chat_id -> "claude" or "openai"
 
         # Components
         self._api = TelegramApi(bot_token)
@@ -71,6 +72,7 @@ class TelegramPoller:
             api=self._api,
             session=self._session,
             chat_modes=self._chat_modes,
+            chat_models=self._chat_models,
         )
         self._callbacks = CallbackHandler(
             api=self._api,
@@ -102,12 +104,15 @@ class TelegramPoller:
         self._running = True
         # Register command menu on startup
         self._commands.register_menu()
-        logger.info("Telegram poller started (auth: %s)", "configured" if self._auth.is_configured else "OPEN")
+        logger.info(
+            "Telegram poller started (auth: %s)",
+            "configured" if self._auth.is_configured else "OPEN",
+        )
 
         while self._running:
             try:
                 self._poll()
-            except Exception as exc:
+            except (urllib.error.URLError, OSError, ValueError, KeyError) as exc:
                 logger.error("Telegram poll error: %s", exc)
                 time.sleep(5)
 
@@ -161,7 +166,8 @@ class TelegramPoller:
         if voice:
             logger.info("Voice message from %s — transcribing", chat_id)
             threading.Thread(
-                target=self._handle_voice, args=(voice, chat_id),
+                target=self._handle_voice,
+                args=(voice, chat_id),
                 daemon=True,
             ).start()
             return
@@ -170,7 +176,8 @@ class TelegramPoller:
         if msg.has_attachment:
             logger.info("Attachment from %s — processing", chat_id)
             threading.Thread(
-                target=self._handle_attachment, args=(msg, chat_id),
+                target=self._handle_attachment,
+                args=(msg, chat_id),
                 daemon=True,
             ).start()
             return
@@ -207,7 +214,9 @@ class TelegramPoller:
             self._api.send_message(chat_id, "[Voice transcription not available]")
             return
 
-        file_id = getattr(voice, "file_id", "") or (voice.get("file_id", "") if isinstance(voice, dict) else "")
+        file_id = getattr(voice, "file_id", "") or (
+            voice.get("file_id", "") if isinstance(voice, dict) else ""
+        )
         if not file_id:
             return
 
@@ -236,7 +245,7 @@ class TelegramPoller:
 
             # Route the extracted content as a conversation message
             self._route_conversation(extracted, chat_id)
-        except Exception as exc:
+        except (OSError, ValueError, KeyError, RuntimeError) as exc:
             logger.error("Attachment handling error for %s: %s", chat_id, exc)
             self._api.send_message(chat_id, f"[Attachment error: {exc}]")
 
@@ -280,37 +289,46 @@ class TelegramPoller:
                 self._session.add(chat_id, "assistant", reply)
                 for chunk in smart_chunk(reply):
                     self._api.send_message(chat_id, chunk)
-        except Exception as exc:
+        except (RuntimeError, OSError, ValueError, subprocess.SubprocessError) as exc:
             logger.error("Conversation error for %s: %s", chat_id, exc)
             self._api.send_message(chat_id, f"[Error: {exc}]")
         finally:
             self._concurrency.release(chat_id)
 
     def _chat_mode(self, text: str, chat_id: str) -> str:
-        """Process text in chat mode — send to Claude CLI with history context."""
+        """Process text in chat mode — send to LLM provider with history context."""
+        from superpowers.llm_provider import get_default_provider, get_provider
+
         logger.info("Chat mode for %s — building prompt", chat_id)
         context = self._session.format_context(chat_id)
         prompt = text
         if context:
             prompt = f"Previous conversation:\n{context}\n\nCurrent message: {text}"
 
-        logger.info("Calling Claude CLI for %s (prompt length=%d)", chat_id, len(prompt))
+        # Per-chat model override (from /model command)
+        model_override = self._chat_models.get(chat_id)
+        if model_override:
+            provider = get_provider(model_override)
+            logger.info("Using per-chat model '%s' for %s", model_override, chat_id)
+        else:
+            provider = get_default_provider(role="chat")
+
+        logger.info(
+            "Calling LLM provider '%s' for %s (prompt length=%d)",
+            provider.name, chat_id, len(prompt),
+        )
         try:
-            env = {
-                k: v for k, v in os.environ.items()
-                if k != "CLAUDECODE" and not (k == "ANTHROPIC_API_KEY" and not v)
-            }
-            result = subprocess.run(
-                ["claude", "-p", prompt, "--output-format", "text"],
-                capture_output=True, text=True, timeout=300, env=env,
+            reply = provider.invoke(prompt).strip()
+            if not reply:
+                reply = "[no response]"
+            logger.info(
+                "LLM replied for %s (%d chars)", chat_id, len(reply)
             )
-            reply = (result.stdout or result.stderr or "[no response]").strip()
-            logger.info("Claude replied for %s (%d chars, rc=%d)", chat_id, len(reply), result.returncode)
             return reply
-        except subprocess.TimeoutExpired:
+        except (RuntimeError, subprocess.TimeoutExpired):
             return "[Response timed out — try a shorter question]"
         except FileNotFoundError:
-            return "[Claude CLI not found]"
+            return "[LLM provider not found]"
 
     def _skill_mode(self, text: str, chat_id: str) -> str:
         """Process text in skill mode — route to intake pipeline."""
@@ -325,5 +343,5 @@ class TelegramPoller:
             ok = sum(1 for t in tasks if t.get("status") == "ok")
             failed = sum(1 for t in tasks if t.get("status") == "failed")
             return f"Intake complete: {ok} ok, {failed} failed, {len(tasks)} total"
-        except Exception as exc:
+        except (ImportError, RuntimeError, OSError, KeyError, ValueError) as exc:
             return f"Intake error: {exc}"

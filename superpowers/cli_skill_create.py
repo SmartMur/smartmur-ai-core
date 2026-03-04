@@ -12,7 +12,9 @@ console = Console()
 
 @click.command("create")
 @click.option("--name", "-n", prompt="Skill name (kebab-case)", help="Name for the new skill")
-@click.option("--description", "-d", prompt="Description", help="Short description of what the skill does")
+@click.option(
+    "--description", "-d", prompt="Description", help="Short description of what the skill does"
+)
 @click.option(
     "--type",
     "script_type",
@@ -62,4 +64,6 @@ def skill_create(
         console.print("  [yellow]No slash_command skills to sync[/]")
 
     console.print()
-    console.print(f"[bold green]Done.[/] Edit [cyan]{skill_dir / ('run.py' if script_type == 'python' else 'run.sh')}[/] to implement your skill.")
+    console.print(
+        f"[bold green]Done.[/] Edit [cyan]{skill_dir / ('run.py' if script_type == 'python' else 'run.sh')}[/] to implement your skill."
+    )

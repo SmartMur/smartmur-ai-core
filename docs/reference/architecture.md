@@ -24,7 +24,13 @@ claude-superpowers/
 │   ├── skill_creator.py      # Skill scaffolding templates
 │   ├── cron_engine.py        # APScheduler setup, schedule parsing, job dispatch
 │   ├── cron_runner.py        # Job execution: subprocess, claude, HTTP, skill
-│   └── launchd.py            # Service management (systemd/launchd)
+│   ├── launchd.py            # Service management (systemd/launchd)
+│   ├── job_runner.py         # Git-branch job orchestration
+│   ├── setup_wizard.py       # Interactive setup wizard
+│   ├── llm_provider.py       # LLM model routing abstraction
+│   ├── template_manager.py   # Skill/workflow template management
+│   ├── container_watchdog.py # Docker container health monitoring
+│   └── voice_transcriber.py  # Audio transcription support
 ├── skills/                   # Skill directories (each has skill.yaml)
 │   ├── _template/            # Copy-paste starter skill
 │   ├── heartbeat/            # Infrastructure health check
@@ -32,7 +38,9 @@ claude-superpowers/
 │   ├── deploy/               # Local deployment pipeline
 │   ├── infra-fixer/          # Docker infrastructure monitor
 │   ├── qa-guardian/          # Code quality scanner
-│   └── ...                   # 12 skills total
+│   ├── container-watchdog/   # Docker container health watcher
+│   ├── ops-report/           # Operational reporting
+│   └── ...                   # 14 skills total
 ├── msg_gateway/              # FastAPI messaging gateway + Telegram bot
 ├── dashboard/                # FastAPI web dashboard (Alpine.js + htmx)
 ├── workflows/                # YAML workflow definitions
@@ -122,7 +130,7 @@ claude-superpowers/
 
 | Component        | Technology                        |
 |------------------|-----------------------------------|
-| Language         | Python 3.12+ (targets 3.14)       |
+| Language         | Python 3.12+ (3.12 or 3.13 recommended) |
 | CLI Framework    | Click 8.x                         |
 | Terminal Output  | Rich 13.x                         |
 | Encryption       | age (CLI) via subprocess           |

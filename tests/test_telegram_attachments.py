@@ -31,18 +31,38 @@ def _make_photo_message(
     caption: str = "",
     message_id: int = 1,
 ) -> Message:
-    return Message.from_dict({
-        "message_id": message_id,
-        "chat": {"id": chat_id, "type": "private"},
-        "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-        "caption": caption,
-        "photo": [
-            {"file_id": "small_id", "file_unique_id": "s1", "width": 90, "height": 90, "file_size": 1000},
-            {"file_id": "medium_id", "file_unique_id": "m1", "width": 320, "height": 320, "file_size": 5000},
-            {"file_id": "large_id", "file_unique_id": "l1", "width": 800, "height": 800, "file_size": 50000},
-        ],
-        "date": 1700000000,
-    })
+    return Message.from_dict(
+        {
+            "message_id": message_id,
+            "chat": {"id": chat_id, "type": "private"},
+            "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+            "caption": caption,
+            "photo": [
+                {
+                    "file_id": "small_id",
+                    "file_unique_id": "s1",
+                    "width": 90,
+                    "height": 90,
+                    "file_size": 1000,
+                },
+                {
+                    "file_id": "medium_id",
+                    "file_unique_id": "m1",
+                    "width": 320,
+                    "height": 320,
+                    "file_size": 5000,
+                },
+                {
+                    "file_id": "large_id",
+                    "file_unique_id": "l1",
+                    "width": 800,
+                    "height": 800,
+                    "file_size": 50000,
+                },
+            ],
+            "date": 1700000000,
+        }
+    )
 
 
 def _make_document_message(
@@ -51,20 +71,22 @@ def _make_document_message(
     chat_id: int = 100,
     caption: str = "",
 ) -> Message:
-    return Message.from_dict({
-        "message_id": 1,
-        "chat": {"id": chat_id, "type": "private"},
-        "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-        "caption": caption,
-        "document": {
-            "file_id": "doc_file_id",
-            "file_unique_id": "doc_u1",
-            "file_name": file_name,
-            "mime_type": mime_type,
-            "file_size": 1024,
-        },
-        "date": 1700000000,
-    })
+    return Message.from_dict(
+        {
+            "message_id": 1,
+            "chat": {"id": chat_id, "type": "private"},
+            "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+            "caption": caption,
+            "document": {
+                "file_id": "doc_file_id",
+                "file_unique_id": "doc_u1",
+                "file_name": file_name,
+                "mime_type": mime_type,
+                "file_size": 1024,
+            },
+            "date": 1700000000,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -90,12 +112,14 @@ class TestPhotoMessageParsing:
         assert msg.has_attachment is True
 
     def test_text_message_no_attachment(self):
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 100, "type": "private"},
-            "text": "hello",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 100, "type": "private"},
+                "text": "hello",
+                "date": 1700000000,
+            }
+        )
         assert msg.has_attachment is False
 
     def test_photo_message_with_caption(self):
@@ -352,12 +376,14 @@ class TestNoAttachment:
     def test_process_text_only_message(self):
         api = _make_api()
         handler = AttachmentHandler(api=api)
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 100, "type": "private"},
-            "text": "just text",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 100, "type": "private"},
+                "text": "just text",
+                "date": 1700000000,
+            }
+        )
         result = handler.process_message(msg)
         assert result is None
 
@@ -373,13 +399,15 @@ class TestChatVerification:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 100, "type": "private"},
-            "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 100, "type": "private"},
+                "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         result = verifier.handle_start(msg)
         assert result is True
@@ -391,13 +419,15 @@ class TestChatVerification:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob", "username": "bob123"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob", "username": "bob123"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         result = verifier.handle_start(msg)
         assert result is False
@@ -411,13 +441,15 @@ class TestChatVerification:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob", "username": "bob123"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob", "username": "bob123"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         verifier.handle_start(msg)
         pending = verifier.get_pending()
@@ -431,13 +463,15 @@ class TestChatVerification:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth, admin_chat_id="100")
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         verifier.handle_start(msg)
         # Two calls: one to user (pending), one to admin (notification)
@@ -452,13 +486,15 @@ class TestChatVerification:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth, admin_chat_id="")
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         verifier.handle_start(msg)
         # Only user notification, no admin notification
@@ -477,13 +513,15 @@ class TestAccessApproval:
         verifier = ChatVerification(api=api, auth=auth)
 
         # First, create a pending request
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
         verifier.handle_start(msg)
         assert not auth.is_allowed("999")
 
@@ -509,13 +547,15 @@ class TestAccessApproval:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
         verifier.handle_start(msg)
         assert len(verifier.get_pending()) == 1
 
@@ -528,13 +568,15 @@ class TestAccessApproval:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
         verifier.handle_start(msg)
         api.send_message.reset_mock()
 
@@ -556,11 +598,13 @@ class TestAccessApproval:
         auth = AuthGate(allowed_ids=["100"])
         verifier = ChatVerification(api=api, auth=auth)
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
 
         result = verifier.handle_start(msg)
         assert result is False
@@ -573,13 +617,21 @@ class TestAccessApproval:
 
 class TestAccessRequest:
     def test_from_message(self):
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob", "last_name": "Smith", "username": "bsmith"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {
+                    "id": 55,
+                    "is_bot": False,
+                    "first_name": "Bob",
+                    "last_name": "Smith",
+                    "username": "bsmith",
+                },
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
         req = AccessRequest.from_message(msg)
         assert req.chat_id == "999"
         assert req.user_id == 55
@@ -609,13 +661,15 @@ class TestAccessRequest:
 
         assert verifier.pending_requests == {}
 
-        msg = Message.from_dict({
-            "message_id": 1,
-            "chat": {"id": 999, "type": "private"},
-            "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
-            "text": "/start",
-            "date": 1700000000,
-        })
+        msg = Message.from_dict(
+            {
+                "message_id": 1,
+                "chat": {"id": 999, "type": "private"},
+                "from": {"id": 55, "is_bot": False, "first_name": "Bob"},
+                "text": "/start",
+                "date": 1700000000,
+            }
+        )
         verifier.handle_start(msg)
 
         pending = verifier.pending_requests
@@ -643,16 +697,18 @@ class TestPollerVerification:
         poller._api = mock_api
         poller._verification._api = mock_api
 
-        update = Update.from_dict({
-            "update_id": 1,
-            "message": {
-                "message_id": 1,
-                "chat": {"id": 999, "type": "private"},
-                "from": {"id": 55, "is_bot": False, "first_name": "Unknown"},
-                "text": "/start",
-                "date": 1700000000,
-            },
-        })
+        update = Update.from_dict(
+            {
+                "update_id": 1,
+                "message": {
+                    "message_id": 1,
+                    "chat": {"id": 999, "type": "private"},
+                    "from": {"id": 55, "is_bot": False, "first_name": "Unknown"},
+                    "text": "/start",
+                    "date": 1700000000,
+                },
+            }
+        )
         poller._handle_update(update)
 
         # Should send a pending message, not silently ignore
@@ -671,16 +727,18 @@ class TestPollerVerification:
         )
         poller._api = MagicMock(spec=TelegramApi)
 
-        update = Update.from_dict({
-            "update_id": 1,
-            "message": {
-                "message_id": 1,
-                "chat": {"id": 999, "type": "private"},
-                "from": {"id": 55, "is_bot": False, "first_name": "Unknown"},
-                "text": "hello",
-                "date": 1700000000,
-            },
-        })
+        update = Update.from_dict(
+            {
+                "update_id": 1,
+                "message": {
+                    "message_id": 1,
+                    "chat": {"id": 999, "type": "private"},
+                    "from": {"id": 55, "is_bot": False, "first_name": "Unknown"},
+                    "text": "hello",
+                    "date": 1700000000,
+                },
+            }
+        )
         poller._handle_update(update)
 
         # No messages sent to unauthorized user for regular text
@@ -707,18 +765,26 @@ class TestPollerAttachment:
         poller._api.set_message_reaction = MagicMock()
         poller._handle_attachment = MagicMock()
 
-        update = Update.from_dict({
-            "update_id": 1,
-            "message": {
-                "message_id": 1,
-                "chat": {"id": 100, "type": "private"},
-                "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-                "photo": [
-                    {"file_id": "abc", "file_unique_id": "u1", "width": 800, "height": 600, "file_size": 50000},
-                ],
-                "date": 1700000000,
-            },
-        })
+        update = Update.from_dict(
+            {
+                "update_id": 1,
+                "message": {
+                    "message_id": 1,
+                    "chat": {"id": 100, "type": "private"},
+                    "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+                    "photo": [
+                        {
+                            "file_id": "abc",
+                            "file_unique_id": "u1",
+                            "width": 800,
+                            "height": 600,
+                            "file_size": 50000,
+                        },
+                    ],
+                    "date": 1700000000,
+                },
+            }
+        )
         poller._handle_update(update)
 
         # Reaction should be sent
@@ -743,22 +809,24 @@ class TestPollerAttachment:
         # Mock _handle_attachment directly
         poller._handle_attachment = MagicMock()
 
-        update = Update.from_dict({
-            "update_id": 1,
-            "message": {
-                "message_id": 1,
-                "chat": {"id": 100, "type": "private"},
-                "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
-                "document": {
-                    "file_id": "doc123",
-                    "file_unique_id": "du1",
-                    "file_name": "test.txt",
-                    "mime_type": "text/plain",
-                    "file_size": 1024,
+        update = Update.from_dict(
+            {
+                "update_id": 1,
+                "message": {
+                    "message_id": 1,
+                    "chat": {"id": 100, "type": "private"},
+                    "from": {"id": 42, "is_bot": False, "first_name": "Alice"},
+                    "document": {
+                        "file_id": "doc123",
+                        "file_unique_id": "du1",
+                        "file_name": "test.txt",
+                        "mime_type": "text/plain",
+                        "file_size": 1024,
+                    },
+                    "date": 1700000000,
                 },
-                "date": 1700000000,
-            },
-        })
+            }
+        )
         poller._handle_update(update)
 
         poller._api.set_message_reaction.assert_called_once()

@@ -10,10 +10,11 @@ Wraps the ``gh`` CLI for common GitHub admin operations:
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
-GH_BIN = "/home/ray/.local/bin/gh"
+GH_BIN = shutil.which("gh") or "/home/ray/.local/bin/gh"
 
 
 class GitHubAdmin:
@@ -44,13 +45,18 @@ class GitHubAdmin:
             ``(True, output)`` when authenticated, ``(False, output)``
             otherwise.
         """
-        result = subprocess.run(
-            [self.gh, "auth", "status"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        return result.returncode == 0, (result.stdout + result.stderr).strip()
+        if not shutil.which(self.gh) and not Path(self.gh).exists():
+            return False, "gh CLI not found"
+        try:
+            result = subprocess.run(
+                [self.gh, "auth", "status"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.returncode == 0, (result.stdout + result.stderr).strip()
+        except FileNotFoundError:
+            return False, "gh CLI not found"
 
     # ------------------------------------------------------------------
     # Repository listing
@@ -120,9 +126,7 @@ class GitHubAdmin:
     # Branch protection — write
     # ------------------------------------------------------------------
 
-    def enable_branch_protection(
-        self, repo: str, branch: str
-    ) -> tuple[bool, str]:
+    def enable_branch_protection(self, repo: str, branch: str) -> tuple[bool, str]:
         """Enable branch protection with sensible defaults.
 
         Defaults applied:
@@ -202,23 +206,17 @@ class GitHubAdmin:
             result: list[dict] = []
             for r in api_repos:
                 branch_ref = r.get("defaultBranchRef")
-                branch = (
-                    branch_ref.get("name", "main")
-                    if isinstance(branch_ref, dict)
-                    else "main"
-                )
+                branch = branch_ref.get("name", "main") if isinstance(branch_ref, dict) else "main"
                 result.append({"repo": r["name"], "branch": branch})
             return result if result else list(self._KNOWN_REPOS)
-        except Exception:
+        except (RuntimeError, subprocess.SubprocessError, OSError, json.JSONDecodeError, KeyError, TypeError):
             return list(self._KNOWN_REPOS)
 
     # ------------------------------------------------------------------
     # Bulk operations
     # ------------------------------------------------------------------
 
-    def protect_all_repos(
-        self, repos: list[dict] | None = None
-    ) -> list[dict]:
+    def protect_all_repos(self, repos: list[dict] | None = None) -> list[dict]:
         """Enable branch protection on every repo.
 
         Parameters

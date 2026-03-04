@@ -39,7 +39,7 @@ class CallbackHandler:
         if handler:
             try:
                 handler(query, value)
-            except Exception as exc:
+            except (RuntimeError, KeyError, ValueError, OSError, ImportError) as exc:
                 logger.error("Callback handler error for %s: %s", query.data, exc)
                 self._api.answer_callback_query(query.id, f"Error: {exc}", show_alert=True)
         else:
@@ -54,6 +54,7 @@ class CallbackHandler:
         try:
             from superpowers.skill_loader import SkillLoader
             from superpowers.skill_registry import SkillRegistry
+
             registry = SkillRegistry()
             loader = SkillLoader()
             skill = registry.get(skill_name)
@@ -61,7 +62,7 @@ class CallbackHandler:
             output = (result.stdout + result.stderr).strip()[:3000]
             status = "completed" if result.returncode == 0 else "failed"
             self._api.send_message(chat_id, f"Skill {skill_name} {status}:\n\n{output}")
-        except Exception as exc:
+        except (ImportError, KeyError, RuntimeError, OSError) as exc:
             self._api.send_message(chat_id, f"Skill execution error: {exc}")
 
     def _handle_mode(self, query: CallbackQuery, mode: str) -> None:

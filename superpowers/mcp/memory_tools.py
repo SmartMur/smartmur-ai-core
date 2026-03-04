@@ -33,7 +33,7 @@ def register(mcp: FastMCP) -> None:
                 f"Stored memory [{entry.category.value}] {entry.key} = {entry.value}"
                 f" (id={entry.id}, tags={entry.tags}, project={entry.project!r})"
             )
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error storing memory: {exc}"
 
     @mcp.tool()
@@ -56,7 +56,7 @@ def register(mcp: FastMCP) -> None:
                 f"  project={entry.project!r}  accessed={entry.access_count}x  "
                 f"created={entry.created_at}  last_access={entry.accessed_at}"
             )
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error recalling memory: {exc}"
 
     @mcp.tool()
@@ -84,7 +84,7 @@ def register(mcp: FastMCP) -> None:
                 tag_str = f" [{', '.join(e.tags)}]" if e.tags else ""
                 lines.append(f"  [{e.category.value}] {e.key} = {e.value}{tag_str}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error searching memories: {exc}"
 
     @mcp.tool()
@@ -98,7 +98,7 @@ def register(mcp: FastMCP) -> None:
             if deleted:
                 return f"Deleted memory: {key!r}"
             return f"No memory found with key {key!r}"
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error deleting memory: {exc}"
 
     @mcp.tool()
@@ -119,14 +119,17 @@ def register(mcp: FastMCP) -> None:
             )
             if not entries:
                 return "No memories stored."
-            lines = [f"{'ID':>4}  {'Category':<22}  {'Key':<30}  {'Value'}", f"{'─'*4}  {'─'*22}  {'─'*30}  {'─'*40}"]
+            lines = [
+                f"{'ID':>4}  {'Category':<22}  {'Key':<30}  {'Value'}",
+                f"{'─' * 4}  {'─' * 22}  {'─' * 30}  {'─' * 40}",
+            ]
             for e in entries:
                 cat = e.category.value
                 val = e.value if len(e.value) <= 60 else e.value[:57] + "..."
                 lines.append(f"{e.id:>4}  {cat:<22}  {e.key:<30}  {val}")
             lines.append(f"\nTotal: {len(entries)} memor{'y' if len(entries) == 1 else 'ies'}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error listing memories: {exc}"
 
     @mcp.tool()
@@ -150,5 +153,5 @@ def register(mcp: FastMCP) -> None:
             if s["newest"]:
                 lines.append(f"  Newest entry: {s['newest']}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (OSError, ValueError, KeyError) as exc:
             return f"Error getting stats: {exc}"

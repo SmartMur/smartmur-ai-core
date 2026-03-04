@@ -44,9 +44,7 @@ class TestGitPull:
 
     def test_git_pull_uses_ff_only(self):
         """Ensure we never do a merge pull — ff-only is mandatory."""
-        fake = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout="ok", stderr=""
-        )
+        fake = subprocess.CompletedProcess(args=[], returncode=0, stdout="ok", stderr="")
         with patch.object(deploy_mod, "_run_cmd", return_value=fake) as mock:
             deploy_mod.step_git_pull()
             args = mock.call_args[0][0]
@@ -72,9 +70,7 @@ class TestDockerBuild:
             assert "failed to build" in detail
 
     def test_docker_build_command_uses_no_cache(self):
-        fake = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout="ok", stderr=""
-        )
+        fake = subprocess.CompletedProcess(args=[], returncode=0, stdout="ok", stderr="")
         with patch.object(deploy_mod, "_run_cmd", return_value=fake) as mock:
             deploy_mod.step_docker_build()
             args = mock.call_args[0][0]
@@ -111,17 +107,13 @@ class TestHealthCheck:
         mock_resp.__exit__ = MagicMock(return_value=False)
 
         with patch("urllib.request.urlopen", return_value=mock_resp):
-            ok, body = deploy_mod.step_health_check(
-                url="http://localhost:8200/health", retries=1
-            )
+            ok, body = deploy_mod.step_health_check(url="http://localhost:8200/health", retries=1)
             assert ok is True
             assert "ok" in body
 
     def test_health_check_failure_after_retries(self):
         with patch("urllib.request.urlopen", side_effect=ConnectionError("refused")):
-            ok, detail = deploy_mod.step_health_check(
-                url="http://localhost:9999/health", retries=1
-            )
+            ok, detail = deploy_mod.step_health_check(url="http://localhost:9999/health", retries=1)
             assert ok is False
             assert "failed" in detail
 
@@ -136,9 +128,7 @@ class TestHealthCheck:
 
         with patch("urllib.request.urlopen", side_effect=failing_urlopen):
             with patch("time.sleep"):
-                ok, _ = deploy_mod.step_health_check(
-                    url="http://localhost:9999/health", retries=3
-                )
+                ok, _ = deploy_mod.step_health_check(url="http://localhost:9999/health", retries=3)
                 assert ok is False
                 assert call_count == 3
 

@@ -52,8 +52,16 @@ def run_skill(name: str, req: SkillRunRequest):
         raise HTTPException(status_code=404, detail="Skill not found")
 
     from superpowers.skill_loader import SkillLoader
+
     loader = SkillLoader()
-    result = loader.run(skill, req.args or None)
+    try:
+        result = loader.run(skill, req.args or None)
+    except (RuntimeError, OSError, KeyError, ValueError) as exc:
+        return SkillRunResult(
+            stdout="",
+            stderr=str(exc),
+            exit_code=-1,
+        )
     return SkillRunResult(
         stdout=result.stdout,
         stderr=result.stderr,

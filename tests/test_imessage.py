@@ -44,7 +44,9 @@ class TestIMessageChannel:
     def test_send_osascript_error(self, mock_run, mock_sys):
         mock_sys.platform = "darwin"
         mock_run.side_effect = subprocess.CalledProcessError(
-            1, "osascript", stderr="Messages got an error: buddy not found",
+            1,
+            "osascript",
+            stderr="Messages got an error: buddy not found",
         )
         ch = IMessageChannel()
         result = ch.send("+15551234567", "hello")
@@ -94,7 +96,9 @@ class TestIMessageChannel:
     def test_test_connection_running(self, mock_run, mock_sys):
         mock_sys.platform = "darwin"
         mock_run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout="true\n",
+            args=[],
+            returncode=0,
+            stdout="true\n",
         )
         ch = IMessageChannel()
         result = ch.test_connection()
@@ -106,7 +110,9 @@ class TestIMessageChannel:
     def test_test_connection_not_running(self, mock_run, mock_sys):
         mock_sys.platform = "darwin"
         mock_run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout="false\n",
+            args=[],
+            returncode=0,
+            stdout="false\n",
         )
         ch = IMessageChannel()
         result = ch.test_connection()
@@ -118,7 +124,9 @@ class TestIMessageChannel:
     def test_test_connection_error(self, mock_run, mock_sys):
         mock_sys.platform = "darwin"
         mock_run.side_effect = subprocess.CalledProcessError(
-            1, "osascript", stderr="not allowed",
+            1,
+            "osascript",
+            stderr="not allowed",
         )
         ch = IMessageChannel()
         result = ch.test_connection()

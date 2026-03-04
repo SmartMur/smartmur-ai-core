@@ -29,23 +29,32 @@ class WorkflowEngine:
 
         for step in config.steps:
             if failed and step.on_failure != "continue":
-                results.append(StepResult(
-                    step_name=step.name, status=StepStatus.skipped,
-                ))
+                results.append(
+                    StepResult(
+                        step_name=step.name,
+                        status=StepStatus.skipped,
+                    )
+                )
                 continue
 
             if step.condition and not self._check_condition(step.condition, results):
-                results.append(StepResult(
-                    step_name=step.name, status=StepStatus.skipped,
-                    output="condition not met",
-                ))
+                results.append(
+                    StepResult(
+                        step_name=step.name,
+                        status=StepStatus.skipped,
+                        output="condition not met",
+                    )
+                )
                 continue
 
             if dry_run and step.type == StepType.approval_gate:
-                results.append(StepResult(
-                    step_name=step.name, status=StepStatus.passed,
-                    output="dry-run: gate auto-approved",
-                ))
+                results.append(
+                    StepResult(
+                        step_name=step.name,
+                        status=StepStatus.passed,
+                        output="dry-run: gate auto-approved",
+                    )
+                )
                 continue
 
             result = self._execute_step(step, dry_run)
@@ -67,7 +76,8 @@ class WorkflowEngine:
     def _execute_step(self, step: StepConfig, dry_run: bool = False) -> StepResult:
         if dry_run:
             return StepResult(
-                step_name=step.name, status=StepStatus.passed,
+                step_name=step.name,
+                status=StepStatus.passed,
                 output=f"dry-run: would execute {step.type.value}: {step.command}",
             )
 
@@ -85,12 +95,15 @@ class WorkflowEngine:
                 output, ok = self._run_approval(step)
             else:
                 return StepResult(
-                    step_name=step.name, status=StepStatus.failed,
+                    step_name=step.name,
+                    status=StepStatus.failed,
                     error=f"Unknown step type: {step.type}",
                 )
-        except Exception as exc:
+        except (subprocess.SubprocessError, OSError, RuntimeError, ValueError, KeyError,
+                urllib.error.URLError) as exc:
             return StepResult(
-                step_name=step.name, status=StepStatus.failed,
+                step_name=step.name,
+                status=StepStatus.failed,
                 error=str(exc),
                 duration_ms=int((time.monotonic() - start) * 1000),
             )
@@ -106,17 +119,23 @@ class WorkflowEngine:
     def _run_shell(self, step: StepConfig) -> tuple[str, bool]:
         env = {**os.environ, **{f"WF_{k.upper()}": str(v) for k, v in step.args.items()}}
         result = subprocess.run(
-            shlex.split(step.command), capture_output=True,
-            text=True, timeout=step.timeout, env=env,
+            shlex.split(step.command),
+            capture_output=True,
+            text=True,
+            timeout=step.timeout,
+            env=env,
         )
         return result.stdout + result.stderr, result.returncode == 0
 
     def _run_claude(self, step: StepConfig) -> tuple[str, bool]:
-        result = subprocess.run(
-            ["claude", "-p", step.command, "--output-format", "text"],
-            capture_output=True, text=True, timeout=step.timeout,
-        )
-        return result.stdout + result.stderr, result.returncode == 0
+        from superpowers.llm_provider import get_default_provider
+
+        provider = get_default_provider(role="job")
+        try:
+            output = provider.invoke(step.command)
+            return output, True
+        except (RuntimeError, FileNotFoundError) as exc:
+            return str(exc), False
 
     def _run_skill(self, step: StepConfig) -> tuple[str, bool]:
         from superpowers.skill_loader import SkillLoader
@@ -135,7 +154,10 @@ class WorkflowEngine:
         data = json.dumps(body).encode() if body else None
 
         req = urllib.request.Request(
-            step.command, data=data, headers=headers, method=method,
+            step.command,
+            data=data,
+            headers=headers,
+            method=method,
         )
         try:
             with urllib.request.urlopen(req, timeout=step.timeout) as resp:
@@ -168,13 +190,15 @@ class WorkflowEngine:
     def _run_rollback(self, rollback_steps: list[StepConfig], results: list[StepResult]) -> None:
         for step in rollback_steps:
             result = self._execute_step(step)
-            results.append(StepResult(
-                step_name=f"rollback:{result.step_name}",
-                status=result.status,
-                output=result.output,
-                error=result.error,
-                duration_ms=result.duration_ms,
-            ))
+            results.append(
+                StepResult(
+                    step_name=f"rollback:{result.step_name}",
+                    status=result.status,
+                    output=result.output,
+                    error=result.error,
+                    duration_ms=result.duration_ms,
+                )
+            )
 
     def _notify(self, config: WorkflowConfig, results: list[StepResult]) -> None:
         try:
@@ -190,5 +214,5 @@ class WorkflowEngine:
             registry = ChannelRegistry(settings)
             pm = ProfileManager(registry)
             pm.send(config.notify_profile, summary)
-        except Exception:
+        except (ImportError, KeyError, OSError, ValueError):
             pass

@@ -45,10 +45,7 @@ def health():
     all_channels = ["slack", "telegram", "discord", "email"]
     return HealthResponse(
         status="ok",
-        channels=[
-            ChannelStatus(name=ch, configured=ch in available)
-            for ch in all_channels
-        ],
+        channels=[ChannelStatus(name=ch, configured=ch in available) for ch in all_channels],
     )
 
 
@@ -100,7 +97,7 @@ async def telegram_webhook(request: Request):
     # Parse the update JSON
     try:
         data = await request.json()
-    except Exception:
+    except (ValueError, TypeError, UnicodeDecodeError):
         raise HTTPException(status_code=400, detail="Invalid JSON body")
 
     # Process the update

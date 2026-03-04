@@ -16,6 +16,7 @@ from superpowers.cloudflared_monitor import (
 # ContainerState
 # ---------------------------------------------------------------------------
 
+
 class TestContainerState:
     def test_default_state(self):
         s = ContainerState()
@@ -33,6 +34,7 @@ class TestContainerState:
 # ---------------------------------------------------------------------------
 # DiagnosticResult
 # ---------------------------------------------------------------------------
+
 
 class TestDiagnosticResult:
     def test_default(self):
@@ -70,6 +72,7 @@ class TestDiagnosticResult:
 # Error patterns
 # ---------------------------------------------------------------------------
 
+
 class TestErrorPatterns:
     def test_invalid_token_pattern(self):
         assert ERROR_PATTERNS["invalid_token"].search("Error: invalid token provided")
@@ -91,6 +94,7 @@ class TestErrorPatterns:
 # CloudflaredMonitor — token check
 # ---------------------------------------------------------------------------
 
+
 class TestTokenCheck:
     def test_valid_token(self, tmp_path):
         env_file = tmp_path / ".env"
@@ -102,7 +106,7 @@ class TestTokenCheck:
 
     def test_placeholder_token(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN=your_tunnel_token_here\n')
+        env_file.write_text("TUNNEL_TOKEN=your_tunnel_token_here\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert not valid
@@ -116,14 +120,14 @@ class TestTokenCheck:
 
     def test_empty_token(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN=\n')
+        env_file.write_text("TUNNEL_TOKEN=\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert not valid
 
     def test_short_token(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN=abc123\n')
+        env_file.write_text("TUNNEL_TOKEN=abc123\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert not valid
@@ -131,7 +135,7 @@ class TestTokenCheck:
 
     def test_no_token_var(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('OTHER_VAR=something\n')
+        env_file.write_text("OTHER_VAR=something\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert not valid
@@ -148,6 +152,7 @@ class TestTokenCheck:
 # ---------------------------------------------------------------------------
 # CloudflaredMonitor — diagnose
 # ---------------------------------------------------------------------------
+
 
 class TestDiagnose:
     def test_not_found(self):
@@ -181,7 +186,7 @@ class TestDiagnose:
 
     def test_bad_token_diagnosis(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN=your_tunnel_token_here\n')
+        env_file.write_text("TUNNEL_TOKEN=your_tunnel_token_here\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         state = ContainerState(running=False, status="exited", exit_code=255)
         diag = m.diagnose(state)
@@ -193,7 +198,8 @@ class TestDiagnose:
         env_file.write_text('TUNNEL_TOKEN="eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9"\n')
         m = CloudflaredMonitor(compose_dir=tmp_path)
         state = ContainerState(
-            running=True, status="running",
+            running=True,
+            status="running",
             error_log="Error: DNS resolution failed for tunnel endpoint",
         )
         diag = m.diagnose(state)
@@ -203,6 +209,7 @@ class TestDiagnose:
 # ---------------------------------------------------------------------------
 # CloudflaredMonitor — apply_fixes
 # ---------------------------------------------------------------------------
+
 
 class TestApplyFixes:
     @patch.object(CloudflaredMonitor, "_run_cmd")
@@ -237,6 +244,7 @@ class TestApplyFixes:
 # ---------------------------------------------------------------------------
 # CloudflaredMonitor — save_status
 # ---------------------------------------------------------------------------
+
 
 class TestSaveStatus:
     @patch("superpowers.cloudflared_monitor.get_data_dir")

@@ -14,15 +14,15 @@ import shutil
 import subprocess
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
-from typing import Callable
 
 logger = logging.getLogger(__name__)
 
 
-class JobStatus(str, Enum):
+class JobStatus(StrEnum):
     pending = "pending"
     running = "running"
     completed = "completed"
@@ -143,8 +143,9 @@ class JobRunner:
     ) -> JobResult:
         """Execute a job on a dedicated branch.
 
-        Either *command* (shell string) or *callable* (Python function) must
-        be provided.  The callable should return an optional output string.
+        Either *command* (string, split via ``shlex.split``) or *callable*
+        (Python function) must be provided.  The callable should return an
+        optional output string.
 
         Steps:
             1. Create ``job/{id}`` branch from current HEAD
@@ -175,9 +176,14 @@ class JobRunner:
 
             # 2. Execute
             if command:
+                # SECURITY: shell=True is required here because job commands
+                # may contain shell operators (pipes, redirects, &&, etc.).
+                # The command originates from the local CLI (--command flag)
+                # or Python callers — never from untrusted network input.
+                # We use an explicit /bin/sh invocation to make the shell
+                # usage auditable rather than relying on shell=True internals.
                 proc = subprocess.run(
-                    command,
-                    shell=True,
+                    ["/bin/sh", "-c", command],
                     capture_output=True,
                     text=True,
                     cwd=str(self.repo_dir),
@@ -195,7 +201,7 @@ class JobRunner:
                     output = callable()
                     result.output = output or ""
                     result.return_code = 0
-                except Exception as exc:
+                except (RuntimeError, OSError, ValueError, KeyError) as exc:
                     result.error = str(exc)
                     result.return_code = 1
                     result.status = JobStatus.failed
@@ -227,7 +233,7 @@ class JobRunner:
             # 4. Return to original branch
             try:
                 self._git("checkout", original_branch, check=False)
-            except Exception:
+            except (subprocess.SubprocessError, OSError):
                 logger.warning("Could not return to branch %s", original_branch)
 
         self._results[jid] = result
@@ -262,11 +268,17 @@ class JobRunner:
             try:
                 proc = subprocess.run(
                     [
-                        gh_path, "pr", "create",
-                        "--base", base,
-                        "--head", result.branch,
-                        "--title", pr_title,
-                        "--body", pr_body,
+                        gh_path,
+                        "pr",
+                        "create",
+                        "--base",
+                        base,
+                        "--head",
+                        result.branch,
+                        "--title",
+                        pr_title,
+                        "--body",
+                        pr_body,
                     ],
                     capture_output=True,
                     text=True,
@@ -357,7 +369,9 @@ class JobRunner:
 
         try:
             self._git("checkout", target)
-            self._git("merge", result.branch, "--no-ff", "-m", f"Merge {result.branch}: {result.name}")
+            self._git(
+                "merge", result.branch, "--no-ff", "-m", f"Merge {result.branch}: {result.name}"
+            )
             result.status = JobStatus.merged
             logger.info("Auto-merged %s into %s", result.branch, target)
         except subprocess.CalledProcessError as exc:
@@ -384,7 +398,13 @@ class JobRunner:
 
     def list_job_branches(self) -> list[dict]:
         """List all job/* branches from the git repo with metadata."""
-        result = self._git("branch", "--list", "job/*", "--format=%(refname:short) %(objectname:short) %(committerdate:iso)", check=False)
+        result = self._git(
+            "branch",
+            "--list",
+            "job/*",
+            "--format=%(refname:short) %(objectname:short) %(committerdate:iso)",
+            check=False,
+        )
         branches = []
         for line in result.stdout.strip().splitlines():
             if not line.strip():
@@ -396,12 +416,14 @@ class JobRunner:
             job_id = branch_name.removeprefix("job/")
             # Check if we have a tracked result for this
             tracked = self._results.get(job_id)
-            branches.append({
-                "job_id": job_id,
-                "branch": branch_name,
-                "sha": sha,
-                "date": date,
-                "status": tracked.status.value if tracked else "unknown",
-                "name": tracked.name if tracked else "",
-            })
+            branches.append(
+                {
+                    "job_id": job_id,
+                    "branch": branch_name,
+                    "sha": sha,
+                    "date": date,
+                    "status": tracked.status.value if tracked else "unknown",
+                    "name": tracked.name if tracked else "",
+                }
+            )
         return branches

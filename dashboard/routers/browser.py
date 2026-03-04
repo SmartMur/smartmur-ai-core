@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-from typing import Any
 
 import httpx
 from fastapi import APIRouter, HTTPException
@@ -75,7 +74,7 @@ def browser_status():
                 sessions=data.get("sessions", []),
                 profiles=data.get("profiles", []),
             )
-    except Exception as exc:
+    except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
         return BrowserEngineStatus(
             engine_online=False,
             status="offline",
@@ -92,13 +91,14 @@ def list_profiles():
             resp.raise_for_status()
             data = resp.json()
             return [BrowserProfileOut(name=name) for name in data.get("profiles", [])]
-    except Exception:
+    except (httpx.HTTPError, OSError, ValueError, KeyError):
         # Fallback to local profile manager
         try:
             from dashboard.deps import get_browser_profiles
+
             pm = get_browser_profiles()
             return [BrowserProfileOut(name=name) for name in pm.list_profiles()]
-        except Exception:
+        except (ImportError, OSError, RuntimeError):
             return []
 
 
@@ -107,14 +107,17 @@ def navigate(req: NavigateRequest):
     """Navigate to a URL via the browser engine."""
     try:
         with httpx.Client(timeout=30.0) as client:
-            resp = client.post(_engine_url("/navigate"), json={
-                "url": req.url,
-                "profile": req.profile,
-            })
+            resp = client.post(
+                _engine_url("/navigate"),
+                json={
+                    "url": req.url,
+                    "profile": req.profile,
+                },
+            )
             resp.raise_for_status()
             data = resp.json()
             return NavigateResponse(**data)
-    except Exception as exc:
+    except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
         return NavigateResponse(url=req.url, ok=False, error=str(exc))
 
 
@@ -123,16 +126,19 @@ def screenshot(req: ScreenshotRequest):
     """Take a screenshot via the browser engine."""
     try:
         with httpx.Client(timeout=30.0) as client:
-            resp = client.post(_engine_url("/screenshot"), json={
-                "url": req.url,
-                "profile": req.profile,
-                "full_page": req.full_page,
-                "selector": req.selector,
-            })
+            resp = client.post(
+                _engine_url("/screenshot"),
+                json={
+                    "url": req.url,
+                    "profile": req.profile,
+                    "full_page": req.full_page,
+                    "selector": req.selector,
+                },
+            )
             resp.raise_for_status()
             data = resp.json()
             return ScreenshotResponse(**data)
-    except Exception as exc:
+    except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
         return ScreenshotResponse(ok=False, error=str(exc))
 
 
@@ -144,7 +150,7 @@ def close_session(profile: str):
             resp = client.delete(_engine_url(f"/sessions/{profile}"))
             resp.raise_for_status()
             return resp.json()
-    except Exception as exc:
+    except (httpx.HTTPError, OSError) as exc:
         raise HTTPException(status_code=502, detail=f"Browser engine error: {exc}")
 
 
@@ -156,5 +162,5 @@ def close_all_sessions():
             resp = client.delete(_engine_url("/sessions"))
             resp.raise_for_status()
             return resp.json()
-    except Exception as exc:
+    except (httpx.HTTPError, OSError) as exc:
         raise HTTPException(status_code=502, detail=f"Browser engine error: {exc}")

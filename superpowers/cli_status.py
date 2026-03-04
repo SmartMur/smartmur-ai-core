@@ -25,7 +25,7 @@ def status_dashboard():
         total = len(jobs)
         enabled = sum(1 for j in jobs if j.enabled)
         sections.append(f"[cyan]Cron:[/cyan] {total} jobs ({enabled} enabled)")
-    except Exception:
+    except (ImportError, OSError, RuntimeError):
         sections.append("[cyan]Cron:[/cyan] [dim]unavailable[/dim]")
 
     # --- Channels ---
@@ -40,7 +40,7 @@ def status_dashboard():
             sections.append(f"[cyan]Channels:[/cyan] {', '.join(available)}")
         else:
             sections.append("[cyan]Channels:[/cyan] [dim]none configured[/dim]")
-    except Exception:
+    except (ImportError, OSError, RuntimeError, KeyError, ValueError):
         sections.append("[cyan]Channels:[/cyan] [dim]unavailable[/dim]")
 
     # --- Watchers ---
@@ -51,7 +51,7 @@ def status_dashboard():
         rules = we.list_rules()
         enabled_rules = sum(1 for r in rules if r.enabled)
         sections.append(f"[cyan]Watchers:[/cyan] {len(rules)} rules ({enabled_rules} enabled)")
-    except Exception:
+    except (ImportError, OSError, RuntimeError):
         sections.append("[cyan]Watchers:[/cyan] [dim]unavailable[/dim]")
 
     # --- Skills ---
@@ -61,7 +61,7 @@ def status_dashboard():
         sr = SkillRegistry()
         skills = sr.list()
         sections.append(f"[cyan]Skills:[/cyan] {len(skills)} installed")
-    except Exception:
+    except (ImportError, OSError, RuntimeError):
         sections.append("[cyan]Skills:[/cyan] [dim]unavailable[/dim]")
 
     # --- Vault ---
@@ -72,7 +72,7 @@ def status_dashboard():
             sections.append("[cyan]Vault:[/cyan] [green]initialized[/green]")
         else:
             sections.append("[cyan]Vault:[/cyan] [dim]not initialized[/dim]")
-    except Exception:
+    except (OSError, RuntimeError):
         sections.append("[cyan]Vault:[/cyan] [dim]unavailable[/dim]")
 
     # --- Memory ---
@@ -82,7 +82,7 @@ def status_dashboard():
             sections.append("[cyan]Memory:[/cyan] [green]active[/green]")
         else:
             sections.append("[cyan]Memory:[/cyan] [dim]not initialized[/dim]")
-    except Exception:
+    except (OSError, RuntimeError):
         sections.append("[cyan]Memory:[/cyan] [dim]unavailable[/dim]")
 
     # --- Audit ---
@@ -101,7 +101,7 @@ def status_dashboard():
             sections.append("[cyan]Audit (last 5):[/cyan]\n" + "\n".join(audit_lines))
         else:
             sections.append("[cyan]Audit:[/cyan] [dim]no entries[/dim]")
-    except Exception:
+    except (ImportError, OSError, RuntimeError):
         sections.append("[cyan]Audit:[/cyan] [dim]unavailable[/dim]")
 
     panel = Panel(

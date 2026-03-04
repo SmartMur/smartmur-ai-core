@@ -15,7 +15,7 @@ def register(mcp: FastMCP) -> None:
             if not keys:
                 return "Vault is empty — no keys stored."
             return f"{len(keys)} key(s) in vault:\n" + "\n".join(f"  - {k}" for k in keys)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Error listing vault keys: {exc}"
 
     @mcp.tool()
@@ -39,5 +39,5 @@ def register(mcp: FastMCP) -> None:
                 f"  Vault: {vault.vault_path}\n"
                 f"  Keys stored: {len(keys)}"
             )
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Vault error: {exc}"

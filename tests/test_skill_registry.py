@@ -16,17 +16,19 @@ def tmp_skills(tmp_path):
     skill_dir = tmp_path / "test-skill"
     skill_dir.mkdir()
     (skill_dir / "skill.yaml").write_text(
-        yaml.dump({
-            "name": "test-skill",
-            "version": "0.1.0",
-            "description": "A test skill",
-            "author": "tester",
-            "script": "run.sh",
-            "slash_command": True,
-            "triggers": [],
-            "dependencies": [],
-            "permissions": [],
-        })
+        yaml.dump(
+            {
+                "name": "test-skill",
+                "version": "0.1.0",
+                "description": "A test skill",
+                "author": "tester",
+                "script": "run.sh",
+                "slash_command": True,
+                "triggers": [],
+                "dependencies": [],
+                "permissions": [],
+            }
+        )
     )
     script = skill_dir / "run.sh"
     script.write_text("#!/usr/bin/env bash\necho hello\n")
@@ -59,17 +61,19 @@ class TestDiscover:
         skill_dir = tmp_path / "template-skill"
         skill_dir.mkdir()
         (skill_dir / "skill.yaml").write_text(
-            yaml.dump({
-                "name": "template-skill",
-                "version": "0.1.0",
-                "description": "A template skill - copy this to create new skills",
-                "author": "DreDay",
-                "script": "run.sh",
-                "slash_command": True,
-                "triggers": [],
-                "dependencies": [],
-                "permissions": [],
-            })
+            yaml.dump(
+                {
+                    "name": "template-skill",
+                    "version": "0.1.0",
+                    "description": "A template skill - copy this to create new skills",
+                    "author": "DreDay",
+                    "script": "run.sh",
+                    "slash_command": True,
+                    "triggers": [],
+                    "dependencies": [],
+                    "permissions": [],
+                }
+            )
         )
         script = skill_dir / "run.sh"
         script.write_text("#!/usr/bin/env bash\necho hello\n")
@@ -83,7 +87,15 @@ class TestDiscover:
         nested = tmp_skills / "test-skill" / "sub" / "nested"
         nested.mkdir(parents=True)
         (nested / "skill.yaml").write_text(
-            yaml.dump({"name": "nested", "version": "1.0", "description": "x", "author": "x", "script": "run.sh"})
+            yaml.dump(
+                {
+                    "name": "nested",
+                    "version": "1.0",
+                    "description": "x",
+                    "author": "x",
+                    "script": "run.sh",
+                }
+            )
         )
         reg = SkillRegistry(skills_dir=tmp_skills)
         skills = reg.discover()
@@ -117,7 +129,15 @@ class TestValidate:
         s = tmp_path / "no-script"
         s.mkdir()
         (s / "skill.yaml").write_text(
-            yaml.dump({"name": "no-script", "version": "1", "description": "x", "author": "x", "script": "gone.sh"})
+            yaml.dump(
+                {
+                    "name": "no-script",
+                    "version": "1",
+                    "description": "x",
+                    "author": "x",
+                    "script": "gone.sh",
+                }
+            )
         )
         reg = SkillRegistry(skills_dir=tmp_path)
         errors = reg.validate(s)
@@ -142,14 +162,16 @@ class TestSyncSlashCommands:
         skill_dir = tmp_path / "no-slash"
         skill_dir.mkdir()
         (skill_dir / "skill.yaml").write_text(
-            yaml.dump({
-                "name": "no-slash",
-                "version": "1",
-                "description": "x",
-                "author": "x",
-                "script": "run.sh",
-                "slash_command": False,
-            })
+            yaml.dump(
+                {
+                    "name": "no-slash",
+                    "version": "1",
+                    "description": "x",
+                    "author": "x",
+                    "script": "run.sh",
+                    "slash_command": False,
+                }
+            )
         )
         (skill_dir / "run.sh").write_text("#!/bin/bash\necho hi\n")
 

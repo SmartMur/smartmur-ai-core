@@ -23,7 +23,9 @@ class DiscordChannel(Channel):
         url = f"{_API_BASE}{path}"
         data = json.dumps(payload).encode() if payload else None
         req = urllib.request.Request(
-            url, data=data, method=method,
+            url,
+            data=data,
+            method=method,
             headers={
                 "Authorization": f"Bot {self._token}",
                 "Content-Type": "application/json",
@@ -34,31 +36,70 @@ class DiscordChannel(Channel):
 
     def send(self, target: str, message: str) -> SendResult:
         try:
-            result = self._request("POST", f"/channels/{target}/messages", {
-                "content": message,
-            })
+            result = self._request(
+                "POST",
+                f"/channels/{target}/messages",
+                {
+                    "content": message,
+                },
+            )
             return SendResult(
-                ok=True, channel="discord", target=target,
+                ok=True,
+                channel="discord",
+                target=target,
                 message=f"id={result.get('id', '?')}",
             )
         except urllib.error.HTTPError as exc:
             body = exc.read().decode() if exc.fp else str(exc)
             return SendResult(
-                ok=False, channel="discord", target=target, error=body,
+                ok=False,
+                channel="discord",
+                target=target,
+                error=body,
             )
         except (urllib.error.URLError, json.JSONDecodeError) as exc:
             return SendResult(
-                ok=False, channel="discord", target=target, error=str(exc),
+                ok=False,
+                channel="discord",
+                target=target,
+                error=str(exc),
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            return SendResult(
+                ok=False,
+                channel="discord",
+                target=target,
+                error=f"Unexpected error: {exc}",
             )
 
     def test_connection(self) -> SendResult:
         try:
             result = self._request("GET", "/users/@me")
             return SendResult(
-                ok=True, channel="discord", target="",
+                ok=True,
+                channel="discord",
+                target="",
                 message=f"bot={result.get('username', '?')}#{result.get('discriminator', '0')}",
+            )
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode() if exc.fp else str(exc)
+            return SendResult(
+                ok=False,
+                channel="discord",
+                target="",
+                error=body,
             )
         except (urllib.error.URLError, json.JSONDecodeError) as exc:
             return SendResult(
-                ok=False, channel="discord", target="", error=str(exc),
+                ok=False,
+                channel="discord",
+                target="",
+                error=str(exc),
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            return SendResult(
+                ok=False,
+                channel="discord",
+                target="",
+                error=f"Unexpected error: {exc}",
             )

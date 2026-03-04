@@ -14,6 +14,7 @@ from superpowers.memory.store import MemoryStore
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def store(tmp_path):
     return MemoryStore(db_path=tmp_path / "test_memory.db")
@@ -30,6 +31,7 @@ def populated_store(store):
 # ---------------------------------------------------------------------------
 # MemoryEntry dataclass
 # ---------------------------------------------------------------------------
+
 
 class TestMemoryEntry:
     def test_create_basic(self):
@@ -67,6 +69,7 @@ class TestMemoryEntry:
 # ---------------------------------------------------------------------------
 # MemoryStore — remember
 # ---------------------------------------------------------------------------
+
 
 class TestRemember:
     def test_basic_remember(self, store):
@@ -126,6 +129,7 @@ class TestRemember:
 # MemoryStore — recall
 # ---------------------------------------------------------------------------
 
+
 class TestRecall:
     def test_recall_existing(self, store):
         store.remember("k", "v")
@@ -163,6 +167,7 @@ class TestRecall:
 # ---------------------------------------------------------------------------
 # MemoryStore — search
 # ---------------------------------------------------------------------------
+
 
 class TestSearch:
     def test_search_by_key(self, populated_store):
@@ -204,6 +209,7 @@ class TestSearch:
 # MemoryStore — forget
 # ---------------------------------------------------------------------------
 
+
 class TestForget:
     def test_forget_existing(self, store):
         store.remember("k", "v")
@@ -230,6 +236,7 @@ class TestForget:
 # ---------------------------------------------------------------------------
 # MemoryStore — list_memories
 # ---------------------------------------------------------------------------
+
 
 class TestListMemories:
     def test_list_empty(self, store):
@@ -260,6 +267,7 @@ class TestListMemories:
 # MemoryStore — stats
 # ---------------------------------------------------------------------------
 
+
 class TestStats:
     def test_stats_empty(self, store):
         s = store.stats()
@@ -281,6 +289,7 @@ class TestStats:
 # ---------------------------------------------------------------------------
 # MemoryStore — decay
 # ---------------------------------------------------------------------------
+
 
 class TestDecay:
     def test_decay_removes_old_entries(self, store):
@@ -317,6 +326,7 @@ class TestDecay:
 # ---------------------------------------------------------------------------
 # ContextBuilder
 # ---------------------------------------------------------------------------
+
 
 class TestContextBuilder:
     def test_empty_store(self, store):
@@ -362,6 +372,7 @@ class TestContextBuilder:
 # ---------------------------------------------------------------------------
 # MemoryStore — DB initialization
 # ---------------------------------------------------------------------------
+
 
 class TestDBInit:
     def test_creates_db_file(self, tmp_path):

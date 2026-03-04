@@ -6,11 +6,10 @@ and Telegram bot setup. Supports both interactive and non-interactive modes.
 
 from __future__ import annotations
 
-import os
-import platform
 import shutil
 import subprocess
 import sys
+import urllib.error
 from pathlib import Path
 from typing import Any
 
@@ -160,9 +159,7 @@ class SetupWizard:
         """Prompt user for a config value with a default."""
         display_default = default if default else "(empty)"
         try:
-            answer = console.input(
-                f"  [cyan]{key}[/cyan] [{display_default}]: "
-            ).strip()
+            answer = console.input(f"  [cyan]{key}[/cyan] [{display_default}]: ").strip()
         except (EOFError, KeyboardInterrupt):
             answer = ""
         return answer if answer else default
@@ -189,7 +186,7 @@ class SetupWizard:
             )
             v.init()
             return True
-        except Exception:
+        except (ImportError, OSError, RuntimeError, ValueError):
             return False
 
     # ------------------------------------------------------------------
@@ -224,11 +221,7 @@ class SetupWizard:
         token = (
             bot_token
             or self.values.get("TELEGRAM_BOT_TOKEN")
-            or (
-                ""
-                if self.non_interactive
-                else self._prompt_value("TELEGRAM_BOT_TOKEN", "")
-            )
+            or ("" if self.non_interactive else self._prompt_value("TELEGRAM_BOT_TOKEN", ""))
         )
 
         if not token:
@@ -244,11 +237,7 @@ class SetupWizard:
         wh_url = (
             webhook_url
             or self.values.get("TELEGRAM_WEBHOOK_URL")
-            or (
-                ""
-                if self.non_interactive
-                else self._prompt_value("TELEGRAM_WEBHOOK_URL", "")
-            )
+            or ("" if self.non_interactive else self._prompt_value("TELEGRAM_WEBHOOK_URL", ""))
         )
 
         if wh_url and result["valid"]:
@@ -258,11 +247,7 @@ class SetupWizard:
         chat_ids = (
             allowed_chat_ids
             or self.values.get("ALLOWED_CHAT_IDS")
-            or (
-                ""
-                if self.non_interactive
-                else self._prompt_value("ALLOWED_CHAT_IDS", "")
-            )
+            or ("" if self.non_interactive else self._prompt_value("ALLOWED_CHAT_IDS", ""))
         )
 
         result["config"] = {
@@ -281,8 +266,8 @@ class SetupWizard:
         Returns the bot info dict on success, None on failure.
         """
         try:
-            import urllib.request
             import json
+            import urllib.request
 
             url = f"https://api.telegram.org/bot{token}/getMe"
             req = urllib.request.Request(url, method="GET")
@@ -290,7 +275,7 @@ class SetupWizard:
                 data = json.loads(resp.read().decode())
                 if data.get("ok"):
                     return data.get("result")
-        except Exception:
+        except (urllib.error.URLError, OSError, ValueError, KeyError):
             pass
         return None
 
@@ -301,9 +286,9 @@ class SetupWizard:
         Returns True on success.
         """
         try:
-            import urllib.request
-            import urllib.parse
             import json
+            import urllib.parse
+            import urllib.request
 
             params = urllib.parse.urlencode({"url": webhook_url})
             url = f"https://api.telegram.org/bot{token}/setWebhook?{params}"
@@ -311,7 +296,7 @@ class SetupWizard:
             with urllib.request.urlopen(req, timeout=10) as resp:
                 data = json.loads(resp.read().decode())
                 return bool(data.get("ok"))
-        except Exception:
+        except (urllib.error.URLError, OSError, ValueError, KeyError):
             return False
 
     @staticmethod
@@ -362,8 +347,7 @@ class SetupWizard:
 
         if missing_required:
             console.print(
-                f"[yellow]Warning:[/yellow] Missing required tools: "
-                f"{', '.join(missing_required)}"
+                f"[yellow]Warning:[/yellow] Missing required tools: {', '.join(missing_required)}"
             )
 
         # Step 2: Data directories
@@ -398,9 +382,7 @@ class SetupWizard:
             if ok:
                 console.print("  [green]Vault initialized[/green]")
             else:
-                console.print(
-                    "  [yellow]Skipped:[/yellow] age-keygen not available"
-                )
+                console.print("  [yellow]Skipped:[/yellow] age-keygen not available")
             summary["vault_initialized"] = ok
 
         # Step 5: Telegram (optional)

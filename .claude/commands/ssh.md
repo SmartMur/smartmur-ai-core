@@ -48,7 +48,7 @@ claw ssh ha list --filter switch
 ## Configuration
 
 - Hosts file: `~/.claude-superpowers/hosts.yaml`
-- Example: `~/Projects/claude-superpowers/examples/hosts.yaml`
+- Example: `~/claude-superpowers/examples/hosts.yaml`
 - Home Assistant: set `HOME_ASSISTANT_URL` and `HOME_ASSISTANT_TOKEN` in `.env`
 
 ```

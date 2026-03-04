@@ -10,7 +10,7 @@ import difflib
 import hashlib
 import json
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -88,9 +88,7 @@ class TemplateManager:
     def _save_manifest(self, manifest: dict[str, dict[str, str]]) -> None:
         """Persist the template manifest to disk."""
         self.manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        self.manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True) + "\n"
-        )
+        self.manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
 
     # ------------------------------------------------------------------
     # Core operations
@@ -128,7 +126,7 @@ class TemplateManager:
                 "shipped_hash": src_hash,
                 "installed_hash": dest_hash,
                 "dest": str(dest),
-                "installed_at": datetime.now(timezone.utc).isoformat(),
+                "installed_at": datetime.now(UTC).isoformat(),
             }
             installed.append(name)
 
@@ -159,11 +157,13 @@ class TemplateManager:
                 else:
                     status = "modified"
 
-            result.append({
-                "name": name,
-                "dest": str(dest),
-                "status": status,
-            })
+            result.append(
+                {
+                    "name": name,
+                    "dest": str(dest),
+                    "status": status,
+                }
+            )
 
         return result
 
@@ -241,7 +241,7 @@ class TemplateManager:
             "shipped_hash": src_hash,
             "installed_hash": src_hash,
             "dest": str(dest),
-            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "installed_at": datetime.now(UTC).isoformat(),
         }
         self._save_manifest(manifest)
         return True
@@ -280,7 +280,7 @@ class TemplateManager:
 
             if entry and current_hash != entry.get("shipped_hash"):
                 # User has modified this file — backup first
-                timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+                timestamp = datetime.now(UTC).strftime("%Y%m%d%H%M%S")
                 backup = dest.with_suffix(f"{dest.suffix}.{timestamp}.bak")
                 shutil.copy2(dest, backup)
                 _safe_copy(src, dest)
@@ -295,7 +295,7 @@ class TemplateManager:
                 "shipped_hash": src_hash,
                 "installed_hash": src_hash,
                 "dest": str(dest),
-                "installed_at": datetime.now(timezone.utc).isoformat(),
+                "installed_at": datetime.now(UTC).isoformat(),
             }
 
         self._save_manifest(manifest)

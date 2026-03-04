@@ -43,6 +43,7 @@ class CredentialRotationChecker:
     def __init__(self, policies_path: Path | None = None):
         if policies_path is None:
             from superpowers.config import get_data_dir
+
             policies_path = get_data_dir() / "rotation_policies.yaml"
         self._path = policies_path
         self._policies: dict[str, RotationPolicy] = {}
@@ -118,7 +119,9 @@ class CredentialRotationChecker:
             status=status,
         )
 
-    def check_all(self, vault_keys: list[str], now: datetime | None = None) -> list[CredentialAlert]:
+    def check_all(
+        self, vault_keys: list[str], now: datetime | None = None
+    ) -> list[CredentialAlert]:
         """Check all vault keys against rotation policies."""
         if now is None:
             now = datetime.now(UTC)
@@ -163,19 +166,21 @@ def run_rotation_check(
     lines = ["Credential Rotation Alert", "=" * 30]
     for a in actionable:
         age_str = f"{a.age_days}d" if a.age_days >= 0 else "unknown"
-        lines.append(f"  [{a.status.value.upper()}] {a.key} — age: {age_str}, max: {a.max_age_days}d")
+        lines.append(
+            f"  [{a.status.value.upper()}] {a.key} — age: {age_str}, max: {a.max_age_days}d"
+        )
     message = "\n".join(lines)
 
     if profile_manager is None:
         try:
             registry = ChannelRegistry(settings)
             profile_manager = ProfileManager(registry)
-        except Exception:
+        except (ImportError, OSError, ValueError, RuntimeError):
             return alerts
 
     try:
         profile_manager.send(profile, message)
-    except (KeyError, Exception):
+    except (KeyError, OSError, RuntimeError, ValueError):
         pass
 
     return alerts

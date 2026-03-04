@@ -3,22 +3,19 @@ set -euo pipefail
 
 # Docker container monitor — health, status, and resource usage
 
-ISSUES=0
+source "$(dirname "$0")/../lib.sh"
 
-if ! command -v docker &>/dev/null; then
-    printf "\033[31m[!] docker command not found.\033[0m\n"
-    exit 1
-fi
+check_command docker "docker command not found."
 
 if ! docker info &>/dev/null 2>&1; then
-    printf "\033[31m[!] Docker daemon is not running.\033[0m\n"
+    error "[!] Docker daemon is not running."
     exit 1
 fi
 
+status_init "All containers healthy." "One or more containers have issues."
+
 # --- Container Status ---
-printf "\n"
-printf "%-28s %-15s %-20s %-10s\n" "CONTAINER" "STATE" "IMAGE" "STATUS"
-printf "%-28s %-15s %-20s %-10s\n" "---------" "-----" "-----" "------"
+table_header "CONTAINER:28" "STATE:15" "IMAGE:20" "STATUS:10"
 
 while IFS=$'\t' read -r name state status image; do
     [ -z "$name" ] && continue
@@ -27,35 +24,27 @@ while IFS=$'\t' read -r name state status image; do
         # Check for health status
         health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$name" 2>/dev/null || echo "none")
         if [[ "$health" == "unhealthy" ]]; then
-            color="\033[31m"
-            flag="UNHEALTHY"
-            ISSUES=1
+            flag="UNHEALTHY"; status_fail
         elif [[ "$health" == "healthy" ]]; then
-            color="\033[32m"
-            flag="HEALTHY"
+            flag="HEALTHY"; status_pass
         else
-            color="\033[32m"
-            flag="RUNNING"
+            flag="RUNNING"; status_pass
         fi
     elif [[ "$status" == *"Restarting"* ]]; then
-        color="\033[31m"
-        flag="RESTARTING"
-        ISSUES=1
+        flag="RESTARTING"; status_fail
     else
-        color="\033[33m"
-        flag="$state"
-        ISSUES=1
+        flag="$state"; status_fail
     fi
 
     # Truncate image name for display
     short_image=$(echo "$image" | sed 's/^.*\///' | cut -c1-18)
-    printf "%-28s %-15s %-20s ${color}%-10s\033[0m\n" "$name" "$state" "$short_image" "$flag"
+    table_row_status 28 "$name" 15 "$state" 20 "$short_image" 10 "$flag"
 done < <(docker ps -a --format '{{.Names}}\t{{.State}}\t{{.Status}}\t{{.Image}}' 2>/dev/null)
 
 CONTAINER_COUNT=$(docker ps -q 2>/dev/null | wc -l | tr -d ' ')
 
 if [ "$CONTAINER_COUNT" -eq 0 ]; then
-    printf "\033[90m  No containers running.\033[0m\n"
+    dim "  No containers running."
 else
     # --- Resource Usage ---
     printf "\n"
@@ -68,12 +57,12 @@ else
     done < <(docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}' 2>/dev/null | sed 's| / |\t|')
 fi
 
+# Override summary to include count
 printf "\n"
-
-if [ "$ISSUES" -eq 1 ]; then
-    printf "\033[31m[!] One or more containers have issues.\033[0m\n"
+if status_has_failures; then
+    error "[!] One or more containers have issues."
     exit 1
 else
-    printf "\033[32m[OK] All %s containers healthy.\033[0m\n" "$CONTAINER_COUNT"
+    success "[OK] All ${CONTAINER_COUNT} containers healthy."
     exit 0
 fi

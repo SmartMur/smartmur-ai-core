@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Python 3.12+** (3.14 recommended)
+- **Python 3.12+** (3.12 or 3.13 recommended)
 - **Debian/Ubuntu package manager** (`apt`)
 - **age** encryption tool
 
@@ -144,15 +144,15 @@ All 8 core phases are complete. Explore additional subsystems:
 
 | Subsystem | Command | Documentation |
 |-----------|---------|---------------|
-| Cron scheduling | `claw cron list` | [docs/cron.md](cron.md) |
-| Multi-channel messaging | `claw msg channels` | [docs/messaging.md](messaging.md) |
-| SSH remote execution | `claw ssh hosts` | [docs/ssh.md](ssh.md) |
-| Browser automation | `claw browse open <url>` | [docs/browser.md](browser.md) |
-| Workflow orchestration | `claw workflow list` | [docs/workflows.md](workflows.md) |
-| Persistent memory | `claw memory list` | [docs/memory.md](memory.md) |
-| File watchers | `claw watcher list` | [docs/watchers.md](watchers.md) |
-| Web dashboard | `claw dashboard` | [docs/dashboard.md](dashboard.md) |
-| MCP server | Configure in Claude Code settings | [docs/mcp-server.md](mcp-server.md) |
+| Cron scheduling | `claw cron list` | [docs/reference/cron.md](../reference/cron.md) |
+| Multi-channel messaging | `claw msg channels` | [docs/reference/messaging.md](../reference/messaging.md) |
+| SSH remote execution | `claw ssh hosts` | [docs/reference/ssh.md](../reference/ssh.md) |
+| Browser automation | `claw browse open <url>` | [docs/reference/browser.md](../reference/browser.md) |
+| Workflow orchestration | `claw workflow list` | [docs/reference/workflows.md](../reference/workflows.md) |
+| Persistent memory | `claw memory list` | [docs/reference/memory.md](../reference/memory.md) |
+| File watchers | `claw watcher list` | [docs/reference/watchers.md](../reference/watchers.md) |
+| Web dashboard | `claw dashboard` | [docs/reference/dashboard.md](../reference/dashboard.md) |
+| MCP server | Configure in Claude Code settings | [docs/reference/mcp-server.md](../reference/mcp-server.md) |
 
 ## Troubleshooting
 

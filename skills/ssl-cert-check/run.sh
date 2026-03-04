@@ -3,8 +3,11 @@ set -euo pipefail
 
 # SSL certificate expiry checker
 
+source "$(dirname "$0")/../lib.sh"
+
 WARN_DAYS=30
-WARNINGS=0
+
+status_init "All certificates valid for 30+ days." "One or more certificates need attention."
 
 # Default domains if none provided
 if [ $# -eq 0 ]; then
@@ -13,9 +16,7 @@ else
     DOMAINS=("$@")
 fi
 
-printf "\n"
-printf "%-30s %-12s %-24s %s\n" "DOMAIN" "DAYS LEFT" "EXPIRY DATE" "STATUS"
-printf "%-30s %-12s %-24s %s\n" "------" "---------" "-----------" "------"
+table_header "DOMAIN:30" "DAYS LEFT:12" "EXPIRY DATE:24" "STATUS:10"
 
 for domain in "${DOMAINS[@]}"; do
     # Get certificate expiry date
@@ -24,8 +25,8 @@ for domain in "${DOMAINS[@]}"; do
         | sed 's/notAfter=//' || echo "")
 
     if [ -z "$EXPIRY" ]; then
-        printf "%-30s %-12s %-24s \033[31m%-10s\033[0m\n" "$domain" "N/A" "CONNECT FAILED" "ERROR"
-        WARNINGS=1
+        table_row_status 30 "$domain" 12 "N/A" 24 "CONNECT FAILED" 10 "ERROR"
+        status_fail
         continue
     fi
 
@@ -35,34 +36,21 @@ for domain in "${DOMAINS[@]}"; do
     NOW_TS=$(date +%s)
 
     if [ "$EXPIRY_TS" -eq 0 ]; then
-        printf "%-30s %-12s %-24s \033[33m%-10s\033[0m\n" "$domain" "?" "$EXPIRY" "PARSE ERR"
+        table_row_status 30 "$domain" 12 "?" 24 "$EXPIRY" 10 "UNKNOWN"
         continue
     fi
 
     DAYS_LEFT=$(( (EXPIRY_TS - NOW_TS) / 86400 ))
 
     if [ "$DAYS_LEFT" -lt 0 ]; then
-        color="\033[31m"
-        status="EXPIRED"
-        WARNINGS=1
+        status="EXPIRED"; status_fail
     elif [ "$DAYS_LEFT" -le "$WARN_DAYS" ]; then
-        color="\033[33m"
-        status="WARNING"
-        WARNINGS=1
+        status="WARNING"; status_fail
     else
-        color="\033[32m"
-        status="OK"
+        status="OK"; status_pass
     fi
 
-    printf "%-30s %-12s %-24s ${color}%-10s\033[0m\n" "$domain" "${DAYS_LEFT}d" "$EXPIRY" "$status"
+    table_row_status 30 "$domain" 12 "${DAYS_LEFT}d" 24 "$EXPIRY" 10 "$status"
 done
 
-printf "\n"
-
-if [ "$WARNINGS" -eq 1 ]; then
-    printf "\033[33m[!] One or more certificates need attention.\033[0m\n"
-    exit 1
-else
-    printf "\033[32m[OK] All certificates valid for 30+ days.\033[0m\n"
-    exit 0
-fi
+status_summary

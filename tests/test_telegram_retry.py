@@ -21,6 +21,7 @@ from superpowers.channels.telegram import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_ok_response(data: dict) -> MagicMock:
     """Return a mock that behaves like a urlopen context manager response."""
     raw = json.dumps(data).encode()
@@ -34,7 +35,9 @@ def _make_ok_response(data: dict) -> MagicMock:
 def _make_http_error(code: int, *, retry_after: str | None = None) -> urllib.error.HTTPError:
     """Build an HTTPError with optional Retry-After header."""
     headers = MagicMock()
-    headers.get = MagicMock(side_effect=lambda key, default=None: retry_after if key == "Retry-After" else default)
+    headers.get = MagicMock(
+        side_effect=lambda key, default=None: retry_after if key == "Retry-After" else default
+    )
     err = urllib.error.HTTPError(
         url="https://api.telegram.org/bot123:ABC/sendMessage",
         code=code,
@@ -211,9 +214,9 @@ class TestApiGivesUpAfterMaxRetries:
     def test_raises_after_exhausting_retries_url_error(self, mock_urlopen, mock_sleep):
         ch = TelegramChannel(bot_token="123:ABC")
 
-        mock_urlopen.side_effect = [
-            urllib.error.URLError("Connection refused")
-        ] * (_MAX_RETRIES + 1)
+        mock_urlopen.side_effect = [urllib.error.URLError("Connection refused")] * (
+            _MAX_RETRIES + 1
+        )
 
         with pytest.raises(urllib.error.URLError):
             ch._api("sendMessage", {"chat_id": "1", "text": "hi"})
@@ -316,12 +319,14 @@ class TestDiscoverChatIdRetries:
     def test_retries_on_url_error_then_succeeds(self, mock_urlopen, mock_sleep):
         from superpowers.cli_intake import _discover_telegram_chat_id
 
-        ok_data = json.dumps({
-            "ok": True,
-            "result": [
-                {"message": {"chat": {"id": 999}, "text": "/start"}},
-            ],
-        }).encode()
+        ok_data = json.dumps(
+            {
+                "ok": True,
+                "result": [
+                    {"message": {"chat": {"id": 999}, "text": "/start"}},
+                ],
+            }
+        ).encode()
 
         ok_resp = MagicMock()
         ok_resp.read.return_value = ok_data

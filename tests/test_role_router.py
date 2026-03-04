@@ -15,6 +15,7 @@ from superpowers.role_router import (
 
 # --- Role enum ---
 
+
 class TestRoleEnum:
     def test_role_values(self):
         assert Role.planner.value == "planner"
@@ -31,6 +32,7 @@ class TestRoleEnum:
 
 # --- ROLE_SKILL_TYPES mapping ---
 
+
 class TestRoleSkillTypes:
     def test_planner_types(self):
         assert ROLE_SKILL_TYPES[Role.planner] == {"planning", "analysis"}
@@ -43,6 +45,7 @@ class TestRoleSkillTypes:
 
 
 # --- RoleRouter.assign_role ---
+
 
 class TestAssignRole:
     def setup_method(self):
@@ -114,7 +117,9 @@ class TestAssignRole:
     def test_all_verifier_keywords_recognized(self):
         for keyword in VERIFIER_KEYWORDS:
             assignment = self.router.assign_role(0, f"please {keyword} the result")
-            assert assignment.role == Role.verifier, f"keyword '{keyword}' not recognized as verifier"
+            assert assignment.role == Role.verifier, (
+                f"keyword '{keyword}' not recognized as verifier"
+            )
 
     def test_default_to_executor(self):
         assignment = self.router.assign_role(1, "deploy to production")
@@ -142,6 +147,7 @@ class TestAssignRole:
 
 
 # --- RoleRouter.assign_roles ---
+
 
 class TestAssignRoles:
     def setup_method(self):
@@ -173,6 +179,7 @@ class TestAssignRoles:
 
 
 # --- RoleRouter.can_execute ---
+
 
 class TestCanExecute:
     def setup_method(self):
@@ -215,6 +222,7 @@ class TestCanExecute:
 
 
 # --- RoleRouter.filter_skills ---
+
 
 class TestFilterSkills:
     def setup_method(self):
@@ -262,6 +270,7 @@ class TestFilterSkills:
 
 # --- RoleAssignment dataclass ---
 
+
 class TestRoleAssignment:
     def test_default_reason(self):
         ra = RoleAssignment(task_id=1, role=Role.planner)
@@ -276,6 +285,7 @@ class TestRoleAssignment:
 
 # --- RoleRouter allowed_roles ---
 
+
 class TestAllowedRoles:
     def test_default_all_roles(self):
         router = RoleRouter()
@@ -287,6 +297,7 @@ class TestAllowedRoles:
 
 
 # --- IntakeTask.assigned_role field ---
+
 
 class TestIntakeTaskAssignedRole:
     def test_default_assigned_role(self):
@@ -312,6 +323,7 @@ class TestIntakeTaskAssignedRole:
 
 
 # --- run_intake with role parameter ---
+
 
 class TestRunIntakeWithRole:
     def test_run_intake_assigns_roles(self, tmp_path, monkeypatch):
@@ -427,6 +439,7 @@ class TestRunIntakeWithRole:
         monkeypatch.setattr(intake, "SESSION_FILE", session_file)
 
         install_calls = []
+
         def tracking_install(*args, **kwargs):
             install_calls.append(args)
             return "heartbeat"
@@ -448,6 +461,7 @@ class TestRunIntakeWithRole:
 
 
 # --- Skill.skill_type field ---
+
 
 class TestSkillType:
     def test_skill_default_skill_type(self):
@@ -490,14 +504,18 @@ class TestSkillType:
         script.write_text("#!/bin/bash\necho hello")
 
         manifest = skill_dir / "skill.yaml"
-        manifest.write_text(yaml.dump({
-            "name": "my-skill",
-            "description": "A test skill",
-            "version": "1.0",
-            "author": "tester",
-            "script": "run.sh",
-            "skill_type": "validation",
-        }))
+        manifest.write_text(
+            yaml.dump(
+                {
+                    "name": "my-skill",
+                    "description": "A test skill",
+                    "version": "1.0",
+                    "author": "tester",
+                    "script": "run.sh",
+                    "skill_type": "validation",
+                }
+            )
+        )
 
         skill = _parse_skill_yaml(manifest)
         assert skill.skill_type == "validation"
@@ -513,13 +531,17 @@ class TestSkillType:
         script.write_text("#!/bin/bash\necho hello")
 
         manifest = skill_dir / "skill.yaml"
-        manifest.write_text(yaml.dump({
-            "name": "my-skill",
-            "description": "A test skill",
-            "version": "1.0",
-            "author": "tester",
-            "script": "run.sh",
-        }))
+        manifest.write_text(
+            yaml.dump(
+                {
+                    "name": "my-skill",
+                    "description": "A test skill",
+                    "version": "1.0",
+                    "author": "tester",
+                    "script": "run.sh",
+                }
+            )
+        )
 
         skill = _parse_skill_yaml(manifest)
         assert skill.skill_type == ""

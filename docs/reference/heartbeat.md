@@ -40,7 +40,7 @@ Type `/heartbeat` in a Claude Code session.
 ### Direct execution
 
 ```bash
-cd ~/Projects/claude-superpowers
+cd /home/ray/claude-superpowers
 ./skills/heartbeat/run.sh
 ```
 

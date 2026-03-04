@@ -228,7 +228,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 engine = BrowserEngine(profiles_dir=tmp_path)
                 engine.start()
 
@@ -243,7 +249,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     assert engine._page is mock_page
 
@@ -253,7 +265,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     result = engine.goto("https://example.com")
 
@@ -267,7 +285,13 @@ class TestBrowserEngine:
         mock_page.goto.side_effect = Exception("net::ERR_CONNECTION_REFUSED")
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     result = engine.goto("https://bad.com")
 
@@ -281,7 +305,13 @@ class TestBrowserEngine:
         mock_page.goto.return_value = mock_response
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     result = engine.goto("https://example.com/404")
 
@@ -291,7 +321,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     path = engine.screenshot()
 
@@ -304,7 +340,13 @@ class TestBrowserEngine:
         output = str(tmp_path / "shot.png")
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     path = engine.screenshot(output)
 
@@ -317,7 +359,13 @@ class TestBrowserEngine:
         mock_page.locator.return_value.first = mock_locator
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     path = engine.screenshot_element("#main")
 
@@ -332,7 +380,13 @@ class TestBrowserEngine:
         output = str(tmp_path / "elem.png")
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     path = engine.screenshot_element("#main", path=output)
 
@@ -344,7 +398,13 @@ class TestBrowserEngine:
         mock_page.locator.return_value.first.inner_text.return_value = "Hello World"
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     text = engine.extract_text("h1")
 
@@ -356,7 +416,13 @@ class TestBrowserEngine:
         mock_page.locator.return_value.first.inner_text.return_value = "page body"
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     engine.extract_text()
 
@@ -373,17 +439,23 @@ class TestBrowserEngine:
         # Row 0: headers
         header_cells = MagicMock()
         header_cells.count.return_value = 2
-        header_cells.nth.side_effect = lambda j: MagicMock(inner_text=MagicMock(return_value=["Name", "Age"][j]))
+        header_cells.nth.side_effect = lambda j: MagicMock(
+            inner_text=MagicMock(return_value=["Name", "Age"][j])
+        )
 
         # Row 1
         row1_cells = MagicMock()
         row1_cells.count.return_value = 2
-        row1_cells.nth.side_effect = lambda j: MagicMock(inner_text=MagicMock(return_value=["Alice", "30"][j]))
+        row1_cells.nth.side_effect = lambda j: MagicMock(
+            inner_text=MagicMock(return_value=["Alice", "30"][j])
+        )
 
         # Row 2
         row2_cells = MagicMock()
         row2_cells.count.return_value = 2
-        row2_cells.nth.side_effect = lambda j: MagicMock(inner_text=MagicMock(return_value=["Bob", "25"][j]))
+        row2_cells.nth.side_effect = lambda j: MagicMock(
+            inner_text=MagicMock(return_value=["Bob", "25"][j])
+        )
 
         mock_rows = [MagicMock(), MagicMock(), MagicMock()]
         mock_rows[0].locator.return_value = header_cells
@@ -396,7 +468,13 @@ class TestBrowserEngine:
         mock_page.locator.return_value.first = mock_table
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     rows = engine.extract_table("table.data")
 
@@ -414,7 +492,13 @@ class TestBrowserEngine:
         mock_page.locator.return_value.first = mock_table
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     rows = engine.extract_table()
 
@@ -425,7 +509,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     engine.fill_form({"#user": "admin", "#pass": "secret"})
 
@@ -437,7 +527,13 @@ class TestBrowserEngine:
         mock_sync, mock_pw, mock_ctx, mock_page = _mock_playwright()
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     engine.click("#submit")
 
@@ -449,7 +545,13 @@ class TestBrowserEngine:
         mock_page.wait_for_load_state.side_effect = Exception("timeout")
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     engine.click("#btn")  # should not raise
 
@@ -460,7 +562,13 @@ class TestBrowserEngine:
         mock_page.evaluate.return_value = 42
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     result = engine.evaluate("document.querySelectorAll('a').length")
 
@@ -472,7 +580,13 @@ class TestBrowserEngine:
         mock_page.evaluate.return_value = "Example Domain"
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     result = engine.evaluate("document.title")
 
@@ -483,7 +597,13 @@ class TestBrowserEngine:
         mock_page.url = "https://example.com/page"
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     assert engine.current_url == "https://example.com/page"
 
@@ -492,7 +612,13 @@ class TestBrowserEngine:
         mock_page.title.return_value = "My Page"
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 with BrowserEngine(profiles_dir=tmp_path) as engine:
                     assert engine.current_title == "My Page"
 
@@ -519,7 +645,13 @@ class TestBrowserEngine:
         )
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 engine = BrowserEngine(config=config, profiles_dir=tmp_path)
                 engine.start()
 
@@ -544,7 +676,13 @@ class TestBrowserEngine:
         mock_ctx.new_page.return_value = new_page
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 engine = BrowserEngine(profiles_dir=tmp_path)
                 engine.start()
 
@@ -559,7 +697,13 @@ class TestBrowserEngine:
         mock_pw.stop.side_effect = Exception("already stopped")
 
         with patch("superpowers.browser.engine.sync_playwright", mock_sync, create=True):
-            with patch.dict("sys.modules", {"playwright": MagicMock(), "playwright.sync_api": MagicMock(sync_playwright=mock_sync)}):
+            with patch.dict(
+                "sys.modules",
+                {
+                    "playwright": MagicMock(),
+                    "playwright.sync_api": MagicMock(sync_playwright=mock_sync),
+                },
+            ):
                 engine = BrowserEngine(profiles_dir=tmp_path)
                 engine.start()
                 engine.stop()  # Should not raise

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def main() -> int:
 
     try:
         report = fixer.run_check(auto_fix=auto_fix)
-    except Exception as exc:
+    except (subprocess.SubprocessError, OSError, ValueError) as exc:
         print(f"ERROR: Infra check failed: {exc}", file=sys.stderr)
         telegram_notify.notify_error("Infra Fixer", str(exc))
         return 2
@@ -31,7 +32,7 @@ def main() -> int:
     try:
         report_path = fixer.save_report(report)
         print(f"Report saved to {report_path}")
-    except Exception as exc:
+    except (OSError, ValueError) as exc:
         print(f"Warning: could not save report: {exc}", file=sys.stderr)
 
     # Audit log
@@ -43,7 +44,7 @@ def main() -> int:
             source="skill",
             metadata=report.to_dict()["summary"],
         )
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Print summary
@@ -74,7 +75,7 @@ def main() -> int:
             telegram_notify.notify_error("Infra Fixer", report.to_telegram_summary())
         else:
             telegram_notify.notify(report.to_telegram_summary())
-    except Exception:
+    except (OSError, ImportError, ValueError):
         pass
 
     return 0 if report.status == "healthy" else 1

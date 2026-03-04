@@ -35,7 +35,7 @@ def _discover_telegram_chat_id(bot_token: str) -> str:
         except (urllib.error.URLError, json.JSONDecodeError):
             if attempt >= 2:
                 return ""
-            time.sleep(1.0 * (2 ** attempt))
+            time.sleep(1.0 * (2**attempt))
     else:
         return ""
 
@@ -56,16 +56,23 @@ def _send_telegram_update(message: str, chat_id: str = "") -> tuple[bool, str]:
     if not settings.telegram_bot_token:
         return False, "telegram token not configured"
 
-    target = chat_id or settings.telegram_default_chat_id or _discover_telegram_chat_id(settings.telegram_bot_token)
+    target = (
+        chat_id
+        or settings.telegram_default_chat_id
+        or _discover_telegram_chat_id(settings.telegram_bot_token)
+    )
     if not target:
         _queue_telegram_update(message)
-        return False, "telegram chat_id unavailable; update queued (set TELEGRAM_DEFAULT_CHAT_ID or message bot once)"
+        return (
+            False,
+            "telegram chat_id unavailable; update queued (set TELEGRAM_DEFAULT_CHAT_ID or message bot once)",
+        )
 
     reg = ChannelRegistry(settings)
     try:
         ch = reg.get("telegram")
         result = ch.send(target, message)
-    except Exception as exc:
+    except (KeyError, ValueError, OSError, RuntimeError) as exc:
         return False, f"telegram send exception: {exc}"
 
     if result.ok:
@@ -136,21 +143,34 @@ def intake_clear():
 @click.argument("request_text")
 @click.option("--execute", is_flag=True, help="Execute mapped skills in parallel.")
 @click.option("--max-workers", default=4, show_default=True, type=int)
-@click.option("--notify-telegram/--no-notify-telegram", default=True, show_default=True, help="Send start/finish updates to Telegram.")
+@click.option(
+    "--notify-telegram/--no-notify-telegram",
+    default=True,
+    show_default=True,
+    help="Send start/finish updates to Telegram.",
+)
 @click.option("--telegram-chat", default="", help="Override Telegram chat_id for progress updates.")
-@click.option("--role", type=click.Choice(["planner", "executor", "verifier", "all"], case_sensitive=False), default="all", show_default=True, help="Only run tasks assigned to this role.")
-def intake_run(request_text: str, execute: bool, max_workers: int, notify_telegram: bool, telegram_chat: str, role: str):
+@click.option(
+    "--role",
+    type=click.Choice(["planner", "executor", "verifier", "all"], case_sensitive=False),
+    default="all",
+    show_default=True,
+    help="Only run tasks assigned to this role.",
+)
+def intake_run(
+    request_text: str,
+    execute: bool,
+    max_workers: int,
+    notify_telegram: bool,
+    telegram_chat: str,
+    role: str,
+):
     """Run intake pipeline: clear -> plan -> dispatch (-> execute optional)."""
     telemetry = IntakeTelemetry()
 
     if notify_telegram:
         ok, detail = _send_telegram_update(
-            (
-                "Intake started\n"
-                f"execute={execute}\n"
-                f"role={role}\n"
-                f"request={request_text[:300]}"
-            ),
+            (f"Intake started\nexecute={execute}\nrole={role}\nrequest={request_text[:300]}"),
             chat_id=telegram_chat,
         )
         telemetry.notification_sent("telegram", "start", ok)
@@ -159,7 +179,9 @@ def intake_run(request_text: str, execute: bool, max_workers: int, notify_telegr
         else:
             console.print(f"[yellow]Telegram skipped:[/yellow] {detail}")
 
-    payload = run_intake(request_text, execute=execute, max_workers=max_workers, telemetry=telemetry, role=role)
+    payload = run_intake(
+        request_text, execute=execute, max_workers=max_workers, telemetry=telemetry, role=role
+    )
 
     table = Table(title="Request Intake")
     table.add_column("#", style="dim", width=3)
@@ -236,9 +258,15 @@ def intake_show():
 def intake_flush_telegram(telegram_chat: str):
     """Flush queued Telegram updates once a chat_id is known."""
     settings = Settings.load()
-    target = telegram_chat or settings.telegram_default_chat_id or _discover_telegram_chat_id(settings.telegram_bot_token)
+    target = (
+        telegram_chat
+        or settings.telegram_default_chat_id
+        or _discover_telegram_chat_id(settings.telegram_bot_token)
+    )
     if not target:
-        console.print("[yellow]No Telegram chat_id available.[/yellow] Message the bot once or set TELEGRAM_DEFAULT_CHAT_ID.")
+        console.print(
+            "[yellow]No Telegram chat_id available.[/yellow] Message the bot once or set TELEGRAM_DEFAULT_CHAT_ID."
+        )
         raise SystemExit(1)
 
     sent = _flush_pending_telegram_updates(target)

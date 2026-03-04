@@ -96,7 +96,7 @@ def _execute_one(
         task.status = "ok" if result.returncode == 0 else "failed"
         if result.returncode != 0 and not task.error:
             task.error = f"exit code {result.returncode}"
-    except Exception as exc:
+    except (KeyError, RuntimeError, OSError, ValueError) as exc:
         task.status = "failed"
         task.error = str(exc)
 
@@ -134,7 +134,7 @@ def run_intake(
         if progress_callback and callable(progress_callback):
             try:
                 progress_callback(msg)
-            except Exception:
+            except (OSError, RuntimeError, ValueError):
                 pass
 
     clear_context(root)
@@ -205,7 +205,9 @@ def run_intake(
             ]
             for future in as_completed(futures):
                 completed_task = future.result()
-                _notify(f"Task {completed_task.id} ({completed_task.requirement[:50]}): {completed_task.status}")
+                _notify(
+                    f"Task {completed_task.id} ({completed_task.requirement[:50]}): {completed_task.status}"
+                )
 
     payload = {
         "created_at": _now(),
@@ -214,8 +216,7 @@ def run_intake(
         "requirements": requirements,
         "tasks": [asdict(t) for t in tasks],
         "role_assignments": [
-            {"task_id": a.task_id, "role": a.role.value, "reason": a.reason}
-            for a in assignments
+            {"task_id": a.task_id, "role": a.role.value, "reason": a.reason} for a in assignments
         ],
     }
     session_file = root / SESSION_FILE.name
@@ -228,7 +229,10 @@ def run_intake(
 
     if telemetry:
         telemetry.session_saved(
-            total=len(tasks), ok=ok, failed=failed, execute=execute,
+            total=len(tasks),
+            ok=ok,
+            failed=failed,
+            execute=execute,
         )
 
     return payload

@@ -47,7 +47,7 @@ def uninstall():
     try:
         uninstall_plist(SERVICE_NAME)
         console.print("[green]Daemon uninstalled.[/green]")
-    except Exception as e:
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError, RuntimeError) as e:
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 

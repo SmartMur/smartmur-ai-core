@@ -57,7 +57,9 @@ def browse_open(url: str, profile: str, headed: bool):
 @click.option("--output", "-o", default=None, help="Output file path.")
 @click.option("--profile", default="default", help="Browser profile name.")
 @click.option("--headed", is_flag=True, help="Run in headed (visible) mode.")
-def browse_screenshot(url: str, selector: str | None, output: str | None, profile: str, headed: bool):
+def browse_screenshot(
+    url: str, selector: str | None, output: str | None, profile: str, headed: bool
+):
     """Navigate to a URL and take a screenshot.
 
     Examples:

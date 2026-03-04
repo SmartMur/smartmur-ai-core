@@ -14,6 +14,7 @@ from dashboard.routers import (
     browser,
     chat,
     cron,
+    github,
     jobs,
     memory,
     messaging,
@@ -57,6 +58,7 @@ api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
+api_router.include_router(github.router, prefix="/github", tags=["github"])
 app.include_router(api_router)
 
 # --- Static files (SPA) ---

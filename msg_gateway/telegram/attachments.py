@@ -158,10 +158,10 @@ class AttachmentHandler:
 
     def _describe_image(self, path: Path) -> str:
         """Describe an image using available LLM or return a placeholder."""
-        # Try using Claude CLI for image description
         try:
             import base64
-            import subprocess
+
+            from superpowers.llm_provider import get_default_provider
 
             # Read image and encode as base64
             image_data = path.read_bytes()
@@ -178,19 +178,16 @@ class AttachmentHandler:
             }
             mime = mime_map.get(suffix, "image/jpeg")
 
-            # Use Claude CLI with image
-            result = subprocess.run(
-                [
-                    "claude", "-p",
-                    "Describe this image concisely in 1-2 sentences. Focus on the main subject and any text visible.",
-                    "--output-format", "text",
-                ],
-                input=f"[Image: data:{mime};base64,{b64}]",
-                capture_output=True, text=True, timeout=60,
+            prompt = (
+                f"[Image: data:{mime};base64,{b64}]\n"
+                "Describe this image concisely in 1-2 sentences. "
+                "Focus on the main subject and any text visible."
             )
-            if result.returncode == 0 and result.stdout.strip():
-                return result.stdout.strip()[:500]
-        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+            provider = get_default_provider(role="chat")
+            result = provider.invoke(prompt)
+            if result.strip():
+                return result.strip()[:500]
+        except (FileNotFoundError, RuntimeError, OSError):
             pass
 
         return "image received (description unavailable)"
@@ -200,9 +197,12 @@ class AttachmentHandler:
         # Try pdftotext (poppler-utils)
         try:
             import subprocess
+
             result = subprocess.run(
                 ["pdftotext", "-layout", str(path), "-"],
-                capture_output=True, text=True, timeout=30,
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
             if result.returncode == 0 and result.stdout.strip():
                 return result.stdout.strip()[:10000]
@@ -212,6 +212,7 @@ class AttachmentHandler:
         # Try PyPDF2 if available
         try:
             from PyPDF2 import PdfReader
+
             reader = PdfReader(str(path))
             text_parts = []
             for page in reader.pages[:20]:  # Max 20 pages

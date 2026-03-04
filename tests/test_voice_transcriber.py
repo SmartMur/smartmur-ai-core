@@ -24,7 +24,9 @@ def test_missing_whisper_cli(tmp_path):
     audio.write_bytes(b"fake audio")
     model = tmp_path / "model.bin"
     model.write_bytes(b"fake model")
-    with patch("shutil.which", side_effect=lambda x: None if x == "whisper-cli" else "/usr/bin/ffmpeg"):
+    with patch(
+        "shutil.which", side_effect=lambda x: None if x == "whisper-cli" else "/usr/bin/ffmpeg"
+    ):
         result = transcribe(audio, model_path=model)
     assert "[error: whisper-cli not found" in result
 
@@ -34,7 +36,10 @@ def test_missing_ffmpeg(tmp_path):
     audio.write_bytes(b"fake audio")
     model = tmp_path / "model.bin"
     model.write_bytes(b"fake model")
-    with patch("shutil.which", side_effect=lambda x: "/usr/local/bin/whisper-cli" if x == "whisper-cli" else None):
+    with patch(
+        "shutil.which",
+        side_effect=lambda x: "/usr/local/bin/whisper-cli" if x == "whisper-cli" else None,
+    ):
         result = transcribe(audio, model_path=model)
     assert "[error: ffmpeg not found" in result
 
@@ -45,8 +50,10 @@ def test_successful_transcribe(tmp_path):
     model = tmp_path / "model.bin"
     model.write_bytes(b"fake model")
 
-    with patch("shutil.which", return_value="/usr/local/bin/fake"), \
-         patch("subprocess.run") as mock_run:
+    with (
+        patch("shutil.which", return_value="/usr/local/bin/fake"),
+        patch("subprocess.run") as mock_run,
+    ):
         # ffmpeg succeeds
         mock_run.side_effect = [
             type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})(),
@@ -62,9 +69,13 @@ def test_ffmpeg_failure(tmp_path):
     model = tmp_path / "model.bin"
     model.write_bytes(b"fake model")
 
-    with patch("shutil.which", return_value="/usr/local/bin/fake"), \
-         patch("subprocess.run") as mock_run:
-        mock_run.return_value = type("R", (), {"returncode": 1, "stdout": "", "stderr": "bad format"})()
+    with (
+        patch("shutil.which", return_value="/usr/local/bin/fake"),
+        patch("subprocess.run") as mock_run,
+    ):
+        mock_run.return_value = type(
+            "R", (), {"returncode": 1, "stdout": "", "stderr": "bad format"}
+        )()
         result = transcribe(audio, model_path=model)
     assert "[error: ffmpeg conversion failed" in result
 
@@ -83,8 +94,10 @@ def test_download_telegram_voice_success(tmp_path):
     mock_resp.__enter__ = MagicMock(return_value=mock_resp)
     mock_resp.__exit__ = MagicMock(return_value=False)
 
-    with patch("urllib.request.urlopen", return_value=mock_resp), \
-         patch("urllib.request.urlretrieve"):
+    with (
+        patch("urllib.request.urlopen", return_value=mock_resp),
+        patch("urllib.request.urlretrieve"),
+    ):
         result = download_telegram_voice("fake-token", "fake-file-id")
 
     assert result is not None

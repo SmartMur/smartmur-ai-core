@@ -22,13 +22,13 @@ def escape_markdown_v2(text: str) -> str:
     i = 0
     while i < len(text):
         # Triple backtick code block
-        if text[i:i + 3] == "```":
+        if text[i : i + 3] == "```":
             end = text.find("```", i + 3)
             if end == -1:
                 # Unclosed block — include rest as-is
                 parts.append(text[i:])
                 break
-            parts.append(text[i:end + 3])
+            parts.append(text[i : end + 3])
             i = end + 3
             continue
 
@@ -38,7 +38,7 @@ def escape_markdown_v2(text: str) -> str:
             if end == -1:
                 parts.append(text[i:])
                 break
-            parts.append(text[i:end + 1])
+            parts.append(text[i : end + 1])
             i = end + 1
             continue
 

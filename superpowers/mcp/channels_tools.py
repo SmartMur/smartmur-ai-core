@@ -24,7 +24,7 @@ def register(mcp: FastMCP) -> None:
             if result.ok:
                 return f"Sent to {channel}:{target} successfully."
             return f"Failed to send to {channel}:{target} — {result.error}"
-        except Exception as exc:
+        except (ImportError, KeyError, ValueError, OSError, RuntimeError) as exc:
             return f"Error sending message: {exc}"
 
     @mcp.tool()
@@ -45,7 +45,7 @@ def register(mcp: FastMCP) -> None:
             if result.ok:
                 return f"Channel '{channel}' is working. {result.message}"
             return f"Channel '{channel}' test failed: {result.error}"
-        except Exception as exc:
+        except (ImportError, KeyError, ValueError, OSError, RuntimeError) as exc:
             return f"Error testing channel: {exc}"
 
     @mcp.tool()
@@ -61,7 +61,7 @@ def register(mcp: FastMCP) -> None:
             if not available:
                 return "No channels configured. Set credentials in .env (SLACK_BOT_TOKEN, TELEGRAM_BOT_TOKEN, etc.)."
             return "Configured channels:\n" + "\n".join(f"  - {name}" for name in available)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error listing channels: {exc}"
 
     @mcp.tool()
@@ -89,7 +89,7 @@ def register(mcp: FastMCP) -> None:
             return "\n".join(lines)
         except KeyError as exc:
             return f"Profile not found: {exc}"
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Error sending notification: {exc}"
 
     @mcp.tool()
@@ -114,5 +114,5 @@ def register(mcp: FastMCP) -> None:
                 for t in p.targets:
                     lines.append(f"  - {t.channel} -> {t.target}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Error listing profiles: {exc}"

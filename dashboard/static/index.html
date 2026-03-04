@@ -83,9 +83,12 @@
       </div>
       <div class="sidebar-footer">
         <span class="user-label">Claw v2</span>
-        <button class="btn-icon" @click="toggleTheme()" :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
-          <span x-text="theme === 'dark' ? '&#9728;' : '&#9790;'"></span>
-        </button>
+        <label class="theme-switch" :title="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+          <span class="theme-switch-icon" :style="theme === 'dark' ? 'color: var(--accent)' : ''">&#9790;</span>
+          <input type="checkbox" :checked="theme === 'light'" @change="toggleTheme()">
+          <span class="theme-switch-slider"></span>
+          <span class="theme-switch-icon" :style="theme === 'light' ? 'color: var(--yellow)' : ''">&#9728;</span>
+        </label>
         <button class="btn btn-sm" @click="doLogout()">Logout</button>
       </div>
     </nav>

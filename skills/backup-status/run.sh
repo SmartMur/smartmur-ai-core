@@ -3,13 +3,14 @@ set -euo pipefail
 
 # Backup status checker — Time Machine + Docker volumes
 
-WARNINGS=0
+source "$(dirname "$0")/../lib.sh"
+
+status_init "All backups are current." "One or more backups are stale or missing."
+
 NOW=$(date +%s)
 THRESHOLD=$((24 * 60 * 60))  # 24 hours in seconds
 
-printf "\n"
-printf "%-24s %-12s %-20s %s\n" "BACKUP SOURCE" "TYPE" "LAST BACKUP" "STATUS"
-printf "%-24s %-12s %-20s %s\n" "-------------" "----" "-----------" "------"
+table_header "BACKUP SOURCE:24" "TYPE:12" "LAST BACKUP:20" "STATUS:10"
 
 # --- Time Machine ---
 if command -v tmutil &>/dev/null; then
@@ -22,23 +23,20 @@ if command -v tmutil &>/dev/null; then
             BACKUP_TS=$(date -j -f "%Y-%m-%d %H:%M:%S" "$FORMATTED" +%s 2>/dev/null || echo "0")
             AGE=$(( NOW - BACKUP_TS ))
             if [ "$AGE" -gt "$THRESHOLD" ]; then
-                status="WARNING"
-                color="\033[33m"
-                WARNINGS=1
+                status="WARNING"; status_fail
             else
-                status="OK"
-                color="\033[32m"
+                status="OK"; status_pass
             fi
-            printf "%-24s %-12s %-20s ${color}%-10s\033[0m\n" "Time Machine" "TM" "$FORMATTED" "$status"
+            table_row_status 24 "Time Machine" 12 "TM" 20 "$FORMATTED" 10 "$status"
         else
-            printf "%-24s %-12s %-20s \033[33m%-10s\033[0m\n" "Time Machine" "TM" "$LATEST" "UNKNOWN"
+            table_row_status 24 "Time Machine" 12 "TM" 20 "$LATEST" 10 "UNKNOWN"
         fi
     else
-        printf "%-24s %-12s %-20s \033[31m%-10s\033[0m\n" "Time Machine" "TM" "No backup found" "MISSING"
-        WARNINGS=1
+        table_row_status 24 "Time Machine" 12 "TM" 20 "No backup found" 10 "MISSING"
+        status_fail
     fi
 else
-    printf "%-24s %-12s %-20s \033[90m%-10s\033[0m\n" "Time Machine" "TM" "N/A" "SKIPPED"
+    table_row_status 24 "Time Machine" 12 "TM" 20 "N/A" 10 "SKIPPED"
 fi
 
 # --- Docker Volumes ---
@@ -56,15 +54,7 @@ if command -v docker &>/dev/null && docker info &>/dev/null 2>&1; then
         printf "%-32s %-12s %s\n" "$vname" "$driver" "$size"
     done < <(docker volume ls --format '{{.Name}}\t{{.Driver}}\t{{.Mountpoint}}' 2>/dev/null)
 else
-    printf "\n\033[90mDocker not available — skipping volume check.\033[0m\n"
+    dim "Docker not available — skipping volume check."
 fi
 
-printf "\n"
-
-if [ "$WARNINGS" -eq 1 ]; then
-    printf "\033[33m[!] One or more backups are stale or missing.\033[0m\n"
-    exit 1
-else
-    printf "\033[32m[OK] All backups are current.\033[0m\n"
-    exit 0
-fi
+status_summary

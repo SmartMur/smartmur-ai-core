@@ -19,6 +19,7 @@ Severity = Literal["critical", "warning", "info"]
 @dataclass
 class ContainerInfo:
     """State of a single Docker container."""
+
     name: str = ""
     project: str = ""
     image: str = ""
@@ -36,6 +37,7 @@ class ContainerInfo:
 @dataclass
 class InfraIssue:
     """A detected infrastructure problem."""
+
     severity: Severity
     container: str
     project: str
@@ -49,6 +51,7 @@ class InfraIssue:
 @dataclass
 class InfraReport:
     """Full infrastructure health report."""
+
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     containers_total: int = 0
     containers_running: int = 0
@@ -188,9 +191,7 @@ class InfraFixer:
     def __init__(self, projects: dict | None = None):
         self.projects = projects or KNOWN_PROJECTS
 
-    def _run_cmd(
-        self, args: list[str], *, timeout: int = 30
-    ) -> subprocess.CompletedProcess:
+    def _run_cmd(self, args: list[str], *, timeout: int = 30) -> subprocess.CompletedProcess:
         """Run a command safely (no shell=True)."""
         return subprocess.run(args, capture_output=True, text=True, timeout=timeout)
 
@@ -199,11 +200,15 @@ class InfraFixer:
         containers: list[ContainerInfo] = []
         try:
             # Use docker ps -a with a parseable format
-            result = self._run_cmd([
-                "docker", "ps", "-a",
-                "--format",
-                '{{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Label "com.docker.compose.project"}}',
-            ])
+            result = self._run_cmd(
+                [
+                    "docker",
+                    "ps",
+                    "-a",
+                    "--format",
+                    '{{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Label "com.docker.compose.project"}}',
+                ]
+            )
             if result.returncode != 0:
                 return containers
 
@@ -225,14 +230,16 @@ class InfraFixer:
                 elif "(unhealthy)" in status_str.lower():
                     health = "unhealthy"
 
-                containers.append(ContainerInfo(
-                    name=name,
-                    project=project,
-                    image=image,
-                    status=status_str,
-                    running=running,
-                    health=health,
-                ))
+                containers.append(
+                    ContainerInfo(
+                        name=name,
+                        project=project,
+                        image=image,
+                        status=status_str,
+                        running=running,
+                        health=health,
+                    )
+                )
 
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
@@ -241,11 +248,15 @@ class InfraFixer:
         for c in containers:
             if not c.running or c.health == "unhealthy":
                 try:
-                    result = self._run_cmd([
-                        "docker", "inspect",
-                        "--format", "{{.RestartCount}} {{.State.ExitCode}}",
-                        c.name,
-                    ])
+                    result = self._run_cmd(
+                        [
+                            "docker",
+                            "inspect",
+                            "--format",
+                            "{{.RestartCount}} {{.State.ExitCode}}",
+                            c.name,
+                        ]
+                    )
                     if result.returncode == 0:
                         parts = result.stdout.strip().split()
                         if len(parts) >= 2:
@@ -256,48 +267,50 @@ class InfraFixer:
 
         return containers
 
-    def check_container_health(
-        self, containers: list[ContainerInfo]
-    ) -> list[InfraIssue]:
+    def check_container_health(self, containers: list[ContainerInfo]) -> list[InfraIssue]:
         """Check all containers for common issues."""
         issues: list[InfraIssue] = []
 
         for c in containers:
             # Crash loop detection
             if c.restart_count >= CRASH_LOOP_THRESHOLD:
-                issues.append(InfraIssue(
-                    severity="critical",
-                    container=c.name,
-                    project=c.project,
-                    issue=f"Crash loop: {c.restart_count} restarts, exit code {c.exit_code}",
-                    suggestion=f"Check logs with `docker logs {c.name}`, fix config, then restart",
-                ))
+                issues.append(
+                    InfraIssue(
+                        severity="critical",
+                        container=c.name,
+                        project=c.project,
+                        issue=f"Crash loop: {c.restart_count} restarts, exit code {c.exit_code}",
+                        suggestion=f"Check logs with `docker logs {c.name}`, fix config, then restart",
+                    )
+                )
 
             # Unhealthy container
             elif c.health == "unhealthy":
-                issues.append(InfraIssue(
-                    severity="warning",
-                    container=c.name,
-                    project=c.project,
-                    issue="Container healthcheck failing",
-                    suggestion=f"Check `docker inspect {c.name}` for healthcheck details",
-                ))
+                issues.append(
+                    InfraIssue(
+                        severity="warning",
+                        container=c.name,
+                        project=c.project,
+                        issue="Container healthcheck failing",
+                        suggestion=f"Check `docker inspect {c.name}` for healthcheck details",
+                    )
+                )
 
             # Restarting status (not yet at threshold)
             elif "restarting" in c.status.lower():
-                issues.append(InfraIssue(
-                    severity="warning",
-                    container=c.name,
-                    project=c.project,
-                    issue=f"Container is restarting (exit code {c.exit_code})",
-                    suggestion="Monitor — may recover or escalate to crash loop",
-                ))
+                issues.append(
+                    InfraIssue(
+                        severity="warning",
+                        container=c.name,
+                        project=c.project,
+                        issue=f"Container is restarting (exit code {c.exit_code})",
+                        suggestion="Monitor — may recover or escalate to crash loop",
+                    )
+                )
 
         return issues
 
-    def check_expected_running(
-        self, containers: list[ContainerInfo]
-    ) -> list[InfraIssue]:
+    def check_expected_running(self, containers: list[ContainerInfo]) -> list[InfraIssue]:
         """Check if expected containers from known projects are running."""
         issues: list[InfraIssue] = []
         running_names = {c.name for c in containers if c.running}
@@ -306,32 +319,33 @@ class InfraFixer:
             for expected in project_info.get("expected_running", []):
                 if expected not in running_names:
                     # Check if it exists but stopped
-                    stopped = [
-                        c for c in containers
-                        if c.name == expected and not c.running
-                    ]
+                    stopped = [c for c in containers if c.name == expected and not c.running]
                     if stopped:
-                        issues.append(InfraIssue(
-                            severity="warning",
-                            container=expected,
-                            project=project_name,
-                            issue=f"Expected container is stopped (exit code {stopped[0].exit_code})",
-                            suggestion=(
-                                f"Restart with: cd {project_info['compose_dir']}"
-                                " && docker compose up -d"
-                            ),
-                        ))
+                        issues.append(
+                            InfraIssue(
+                                severity="warning",
+                                container=expected,
+                                project=project_name,
+                                issue=f"Expected container is stopped (exit code {stopped[0].exit_code})",
+                                suggestion=(
+                                    f"Restart with: cd {project_info['compose_dir']}"
+                                    " && docker compose up -d"
+                                ),
+                            )
+                        )
                     else:
-                        issues.append(InfraIssue(
-                            severity="warning",
-                            container=expected,
-                            project=project_name,
-                            issue="Expected container not found",
-                            suggestion=(
-                                f"Deploy with: cd {project_info['compose_dir']}"
-                                " && docker compose up -d"
-                            ),
-                        ))
+                        issues.append(
+                            InfraIssue(
+                                severity="warning",
+                                container=expected,
+                                project=project_name,
+                                issue="Expected container not found",
+                                suggestion=(
+                                    f"Deploy with: cd {project_info['compose_dir']}"
+                                    " && docker compose up -d"
+                                ),
+                            )
+                        )
 
         return issues
 
@@ -357,13 +371,15 @@ class InfraFixer:
                 value = value.strip().strip('"').strip("'")
                 for pat in PLACEHOLDER_PATTERNS:
                     if pat.search(value):
-                        issues.append(InfraIssue(
-                            severity="critical",
-                            container="",
-                            project=project_name,
-                            issue=f"Placeholder value in .env: {key.strip()}='{value}'",
-                            suggestion=f"Edit {env_file} and set a real value for {key.strip()}",
-                        ))
+                        issues.append(
+                            InfraIssue(
+                                severity="critical",
+                                container="",
+                                project=project_name,
+                                issue=f"Placeholder value in .env: {key.strip()}='{value}'",
+                                suggestion=f"Edit {env_file} and set a real value for {key.strip()}",
+                            )
+                        )
                         break
 
         return issues
@@ -372,10 +388,15 @@ class InfraFixer:
         """Check Docker disk usage for warning signs."""
         issues: list[InfraIssue] = []
         try:
-            result = self._run_cmd([
-                "docker", "system", "df",
-                "--format", "{{.Type}}\t{{.Size}}\t{{.Reclaimable}}",
-            ])
+            result = self._run_cmd(
+                [
+                    "docker",
+                    "system",
+                    "df",
+                    "--format",
+                    "{{.Type}}\t{{.Size}}\t{{.Reclaimable}}",
+                ]
+            )
             if result.returncode != 0:
                 return issues
             # Just report as info — no auto-fix for disk
@@ -385,28 +406,26 @@ class InfraFixer:
                     resource_type, size, reclaimable = parts[0], parts[1], parts[2]
                     # Flag if reclaimable is large (contains "GB")
                     if "GB" in reclaimable:
-                        issues.append(InfraIssue(
-                            severity="info",
-                            container="",
-                            project="docker",
-                            issue=f"{resource_type}: {size} total, {reclaimable} reclaimable",
-                            suggestion="Run `docker system prune` to reclaim space",
-                        ))
+                        issues.append(
+                            InfraIssue(
+                                severity="info",
+                                container="",
+                                project="docker",
+                                issue=f"{resource_type}: {size} total, {reclaimable} reclaimable",
+                                suggestion="Run `docker system prune` to reclaim space",
+                            )
+                        )
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
         return issues
 
-    def apply_fixes(
-        self, containers: list[ContainerInfo], issues: list[InfraIssue]
-    ) -> list[str]:
+    def apply_fixes(self, containers: list[ContainerInfo], issues: list[InfraIssue]) -> list[str]:
         """Apply automatic fixes for safe, well-understood issues."""
         actions: list[str] = []
 
         # Group issues by type
         crash_loops = [i for i in issues if "crash loop" in i.issue.lower()]
-        stopped_expected = [
-            i for i in issues if "expected container is stopped" in i.issue.lower()
-        ]
+        stopped_expected = [i for i in issues if "expected container is stopped" in i.issue.lower()]
 
         # Stop crash-looping containers to save CPU
         for issue in crash_loops:
@@ -415,7 +434,7 @@ class InfraFixer:
             try:
                 self._run_cmd(["docker", "stop", issue.container])
                 actions.append(f"Stopped crash-looping container: {issue.container}")
-            except Exception:
+            except (subprocess.SubprocessError, OSError):
                 actions.append(f"Failed to stop: {issue.container}")
 
         # Restart expected containers that are stopped (but NOT crash-looping)
@@ -428,16 +447,21 @@ class InfraFixer:
             if compose_dir:
                 try:
                     self._run_cmd(
-                        ["docker", "compose", "-f",
-                         str(Path(compose_dir) / "docker-compose.yml"),
-                         "up", "-d", "--no-recreate"],
+                        [
+                            "docker",
+                            "compose",
+                            "-f",
+                            str(Path(compose_dir) / "docker-compose.yml"),
+                            "up",
+                            "-d",
+                            "--no-recreate",
+                        ],
                         timeout=60,
                     )
                     actions.append(
-                        f"Restarted stopped container: {issue.container}"
-                        f" (project: {issue.project})"
+                        f"Restarted stopped container: {issue.container} (project: {issue.project})"
                     )
-                except Exception:
+                except (subprocess.SubprocessError, OSError):
                     actions.append(f"Failed to restart: {issue.container}")
 
         return actions
@@ -462,18 +486,24 @@ class InfraFixer:
         if report.issues or report.actions_taken:
             incident_file = fixer_dir / "incident-log.jsonl"
             with incident_file.open("a") as f:
-                f.write(json.dumps({
-                    "timestamp": report.timestamp,
-                    "status": report.status,
-                    "issues": [i.to_dict() for i in report.issues],
-                    "actions": report.actions_taken,
-                }) + "\n")
+                f.write(
+                    json.dumps(
+                        {
+                            "timestamp": report.timestamp,
+                            "status": report.status,
+                            "issues": [i.to_dict() for i in report.issues],
+                            "actions": report.actions_taken,
+                        }
+                    )
+                    + "\n"
+                )
 
         return latest
 
     def run_check(self, *, auto_fix: bool = True) -> InfraReport:
         """Full infrastructure check cycle."""
         import time
+
         start = time.monotonic()
 
         # Gather all containers
@@ -497,9 +527,7 @@ class InfraFixer:
             containers_total=len(containers),
             containers_running=sum(1 for c in containers if c.running),
             containers_stopped=sum(1 for c in containers if not c.running),
-            containers_unhealthy=sum(
-                1 for c in containers if c.health == "unhealthy"
-            ),
+            containers_unhealthy=sum(1 for c in containers if c.health == "unhealthy"),
             projects_total=len(projects),
             issues=issues,
             actions_taken=actions,

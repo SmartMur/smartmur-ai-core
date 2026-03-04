@@ -28,6 +28,7 @@ class TestWebhookSignatureMiddleware:
     def _make_app(self):
         """Create a minimal FastAPI app with the webhook middleware."""
         from fastapi import FastAPI
+
         from msg_gateway.middleware import (
             RateLimitMiddleware,
             WebhookSignatureMiddleware,
@@ -186,6 +187,7 @@ class TestRateLimitMiddleware:
     def _make_app(self, per_ip: int = 5, per_user: int = 10):
         """Create a minimal app with rate limiting."""
         from fastapi import FastAPI
+
         from msg_gateway.middleware import RateLimitMiddleware
 
         app = FastAPI()
@@ -215,7 +217,7 @@ class TestRateLimitMiddleware:
         client = TestClient(app)
         for i in range(5):
             resp = client.get("/test")
-            assert resp.status_code == 200, f"Request {i+1} of 5 failed"
+            assert resp.status_code == 200, f"Request {i + 1} of 5 failed"
 
     def test_over_limit_returns_429(self):
         """Requests exceeding the rate limit should get 429."""
@@ -248,8 +250,9 @@ class TestRateLimitMiddleware:
     def test_rate_limit_configurable_via_env(self):
         """Rate limit should respect RATE_LIMIT_PER_IP env var."""
         with patch.dict(os.environ, {"RATE_LIMIT_PER_IP": "2"}):
-            from msg_gateway.middleware import RateLimitMiddleware
             from fastapi import FastAPI
+
+            from msg_gateway.middleware import RateLimitMiddleware
 
             app = FastAPI()
             app.add_middleware(RateLimitMiddleware)
@@ -287,6 +290,7 @@ class TestDashboardRateLimitMiddleware:
 
     def _make_app(self, per_ip: int = 5):
         from fastapi import FastAPI
+
         from dashboard.middleware import RateLimitMiddleware
 
         app = FastAPI()
@@ -396,31 +400,42 @@ class TestConfigValidation:
 
     def test_force_https_default_dev(self):
         """In dev, FORCE_HTTPS defaults to false."""
-        with patch.dict(os.environ, {
-            "ENVIRONMENT": "development",
-            "DASHBOARD_USER": "x",
-            "DASHBOARD_PASS": "x",
-        }, clear=False):
+        with patch.dict(
+            os.environ,
+            {
+                "ENVIRONMENT": "development",
+                "DASHBOARD_USER": "x",
+                "DASHBOARD_PASS": "x",
+            },
+            clear=False,
+        ):
             os.environ.pop("FORCE_HTTPS", None)
             from superpowers.config import Settings
+
             s = Settings.load()
             assert s.force_https is False
 
     def test_force_https_production_auto(self):
         """In production, FORCE_HTTPS should be auto-enabled."""
-        with patch.dict(os.environ, {
-            "ENVIRONMENT": "production",
-            "DASHBOARD_USER": "x",
-            "DASHBOARD_PASS": "x",
-        }, clear=False):
+        with patch.dict(
+            os.environ,
+            {
+                "ENVIRONMENT": "production",
+                "DASHBOARD_USER": "x",
+                "DASHBOARD_PASS": "x",
+            },
+            clear=False,
+        ):
             os.environ.pop("FORCE_HTTPS", None)
             from superpowers.config import Settings
+
             s = Settings.load()
             assert s.force_https is True
 
     def test_settings_has_security_fields(self):
         """Settings should expose all new Phase G fields."""
         from superpowers.config import Settings
+
         s = Settings()
         assert hasattr(s, "force_https")
         assert hasattr(s, "webhook_require_signature")
@@ -431,6 +446,7 @@ class TestConfigValidation:
     def test_insecure_defaults_frozenset(self):
         """The insecure defaults set should contain common bad passwords."""
         from superpowers.config import _INSECURE_DEFAULTS
+
         assert "admin" in _INSECURE_DEFAULTS
         assert "password" in _INSECURE_DEFAULTS
         assert "changeme" in _INSECURE_DEFAULTS
@@ -519,8 +535,9 @@ class TestChannelAdapterBase:
                 return True
 
             async def receive(self, request) -> Message:
-                return Message(id="1", channel="test", sender_id="u1",
-                               sender_name="Test", text="hello")
+                return Message(
+                    id="1", channel="test", sender_id="u1", sender_name="Test", text="hello"
+                )
 
             async def acknowledge(self, message: Message) -> None:
                 pass
@@ -544,8 +561,9 @@ class TestChannelAdapterBase:
                 return "simple"
 
             async def receive(self, request) -> Message:
-                return Message(id="1", channel="simple", sender_id="u1",
-                               sender_name="Test", text="hi")
+                return Message(
+                    id="1", channel="simple", sender_id="u1", sender_name="Test", text="hi"
+                )
 
             async def acknowledge(self, message: Message) -> None:
                 pass
@@ -579,8 +597,9 @@ class TestChannelAdapterBase:
                 return "incomplete"
 
             async def receive(self, request) -> Message:
-                return Message(id="1", channel="test", sender_id="u1",
-                               sender_name="Test", text="hi")
+                return Message(
+                    id="1", channel="test", sender_id="u1", sender_name="Test", text="hi"
+                )
 
             # Missing acknowledge, start_processing_indicator, send_response
 
@@ -590,8 +609,9 @@ class TestChannelAdapterBase:
     def test_adapter_has_required_abstract_methods(self):
         """ChannelAdapter should require name, receive, acknowledge,
         start_processing_indicator, and send_response."""
-        from msg_gateway.channels.base import ChannelAdapter
         import inspect
+
+        from msg_gateway.channels.base import ChannelAdapter
 
         # Check abstract methods
         abstract_methods = set()
@@ -637,11 +657,13 @@ class TestTokenBucket:
 
     def test_initial_capacity(self):
         from msg_gateway.middleware import _TokenBucket
+
         bucket = _TokenBucket(capacity=5, refill_rate=1.0)
         assert bucket.tokens == 5.0
 
     def test_consume_decrements(self):
         from msg_gateway.middleware import _TokenBucket
+
         bucket = _TokenBucket(capacity=3, refill_rate=1.0)
         assert bucket.consume() is True
         assert bucket.consume() is True
@@ -650,6 +672,7 @@ class TestTokenBucket:
 
     def test_refill(self):
         from msg_gateway.middleware import _TokenBucket
+
         bucket = _TokenBucket(capacity=2, refill_rate=200.0)  # 200/s for fast test
         bucket.consume()
         bucket.consume()
@@ -660,6 +683,7 @@ class TestTokenBucket:
     def test_capacity_cap(self):
         """Tokens should never exceed capacity."""
         from msg_gateway.middleware import _TokenBucket
+
         bucket = _TokenBucket(capacity=3, refill_rate=1000.0)
         time.sleep(0.1)  # Would refill 100 tokens, but cap at 3
         # Consume: should get exactly 3 then fail
@@ -679,6 +703,7 @@ class TestMiddlewareIntegration:
 
     def _make_app(self):
         from fastapi import FastAPI
+
         from msg_gateway.middleware import (
             RateLimitMiddleware,
             WebhookSignatureMiddleware,
@@ -728,6 +753,7 @@ class TestMiddlewareIntegration:
         """Rate limiting should apply even to valid webhooks."""
         with patch.dict(os.environ, {"TELEGRAM_WEBHOOK_SECRET": "s3cret"}):
             from fastapi import FastAPI
+
             from msg_gateway.middleware import (
                 RateLimitMiddleware,
                 WebhookSignatureMiddleware,

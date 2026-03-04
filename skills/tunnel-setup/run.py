@@ -28,18 +28,21 @@ CONTAINER_NAME = "cloudflared-cloudflared-1"
 # We require at least 50 chars of base64-ish content.
 TOKEN_PATTERN = re.compile(r"^[A-Za-z0-9_\-+/=.]{50,}$")
 
-PLACEHOLDER_VALUES = frozenset({
-    "your_tunnel_token_here",
-    "your_token_here",
-    "changeme",
-    "<your-token>",
-    "",
-})
+PLACEHOLDER_VALUES = frozenset(
+    {
+        "your_tunnel_token_here",
+        "your_token_here",
+        "changeme",
+        "<your-token>",
+        "",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
 # Token validation
 # ---------------------------------------------------------------------------
+
 
 def validate_token(token: str) -> tuple[bool, str]:
     """Validate a Cloudflare tunnel token.
@@ -61,6 +64,7 @@ def validate_token(token: str) -> tuple[bool, str]:
 # Docker helpers (no shell=True)
 # ---------------------------------------------------------------------------
 
+
 def _run_cmd(args: list[str], *, timeout: int = 30) -> subprocess.CompletedProcess:
     """Run a command safely."""
     return subprocess.run(args, capture_output=True, text=True, timeout=timeout)
@@ -76,23 +80,27 @@ def _get_container_status() -> dict:
         "restart_count": 0,
     }
     try:
-        result = _run_cmd([
-            "docker", "inspect",
-            "--format",
-            '{"running":{{.State.Running}},"exit_code":{{.State.ExitCode}},"restart_count":{{.RestartCount}},"status":"{{.State.Status}}"}',
-            CONTAINER_NAME,
-        ])
+        result = _run_cmd(
+            [
+                "docker",
+                "inspect",
+                "--format",
+                '{"running":{{.State.Running}},"exit_code":{{.State.ExitCode}},"restart_count":{{.RestartCount}},"status":"{{.State.Status}}"}',
+                CONTAINER_NAME,
+            ]
+        )
         if result.returncode != 0:
             return info
 
         import json
+
         data = json.loads(result.stdout.strip())
         info["exists"] = True
         info["running"] = data.get("running", False)
         info["status"] = data.get("status", "unknown")
         info["exit_code"] = data.get("exit_code", -1)
         info["restart_count"] = data.get("restart_count", 0)
-    except Exception:
+    except (subprocess.SubprocessError, OSError, json.JSONDecodeError, KeyError):
         pass
     return info
 
@@ -124,6 +132,7 @@ def _read_env_token() -> tuple[str, str]:
 # ---------------------------------------------------------------------------
 # Subcommands
 # ---------------------------------------------------------------------------
+
 
 def cmd_status() -> int:
     """Show container state, token validation, tunnel health."""
@@ -191,13 +200,13 @@ def cmd_set_token(token: str) -> int:
             f"Token updated ({len(token)} chars)",
             source="skill:tunnel-setup",
         )
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Telegram notify
     try:
         telegram_notify.notify("[TUNNEL] Token configured, starting container...")
-    except Exception:
+    except (OSError, ValueError):
         pass
 
     # Start container
@@ -207,12 +216,12 @@ def cmd_set_token(token: str) -> int:
     if rc == 0:
         try:
             telegram_notify.notify_done("Cloudflare tunnel started with new token")
-        except Exception:
+        except (OSError, ValueError):
             pass
     else:
         try:
             telegram_notify.notify_error("Cloudflare tunnel", "Failed to start after token update")
-        except Exception:
+        except (OSError, ValueError):
             pass
 
     return rc
@@ -230,12 +239,17 @@ def cmd_start() -> int:
         valid, detail = validate_token(token)
         if not valid:
             print(f"WARNING: Token issue — {detail}", file=sys.stderr)
-            print("Container may crash-loop. Use '/tunnel-setup set-token <token>' to fix.", file=sys.stderr)
+            print(
+                "Container may crash-loop. Use '/tunnel-setup set-token <token>' to fix.",
+                file=sys.stderr,
+            )
 
     try:
         result = subprocess.run(
             ["docker", "compose", "up", "-d"],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True,
+            text=True,
+            timeout=60,
             cwd=str(COMPOSE_DIR),
         )
         if result.returncode == 0:
@@ -243,7 +257,7 @@ def cmd_start() -> int:
             try:
                 audit = AuditLog(get_data_dir() / "audit.log")
                 audit.log("tunnel.started", "Container started", source="skill:tunnel-setup")
-            except Exception:
+            except (OSError, ValueError):
                 pass
             return 0
         else:
@@ -266,11 +280,11 @@ def cmd_stop() -> int:
             try:
                 audit = AuditLog(get_data_dir() / "audit.log")
                 audit.log("tunnel.stopped", "Container stopped", source="skill:tunnel-setup")
-            except Exception:
+            except (OSError, ValueError):
                 pass
             try:
                 telegram_notify.notify("[TUNNEL] Container stopped")
-            except Exception:
+            except (OSError, ValueError):
                 pass
             return 0
         else:
@@ -323,6 +337,7 @@ def cmd_help() -> int:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main(argv: list[str] | None = None) -> int:
     """Entry point — dispatch subcommand."""

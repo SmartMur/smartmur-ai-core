@@ -98,10 +98,19 @@ class FakeMemoryStore:
         return self._entries[:limit]
 
     def stats(self):
-        return {"total": len(self._entries), "by_category": {"fact": 1}, "oldest": "2026-01-01", "newest": "2026-01-01"}
+        return {
+            "total": len(self._entries),
+            "by_category": {"fact": 1},
+            "oldest": "2026-01-01",
+            "newest": "2026-01-01",
+        }
 
     def search(self, query, category=None, limit=20):
-        return [e for e in self._entries if query.lower() in e.key.lower() or query.lower() in e.value.lower()]
+        return [
+            e
+            for e in self._entries
+            if query.lower() in e.key.lower() or query.lower() in e.value.lower()
+        ]
 
     def remember(self, key, value, category="fact", tags=None, project=""):
         entry = FakeMemoryEntry(id=len(self._entries) + 1, key=key, value=value)
@@ -125,10 +134,19 @@ class FakeMemoryStore:
 
 class FakeAuditLog:
     def tail(self, n=20):
-        return [{"ts": "2026-01-01T00:00:00", "action": "test", "detail": "detail", "source": "dashboard"}]
+        return [
+            {
+                "ts": "2026-01-01T00:00:00",
+                "action": "test",
+                "detail": "detail",
+                "source": "dashboard",
+            }
+        ]
 
     def search(self, query, limit=50):
-        return [{"ts": "2026-01-01T00:00:00", "action": "test", "detail": query, "source": "dashboard"}]
+        return [
+            {"ts": "2026-01-01T00:00:00", "action": "test", "detail": query, "source": "dashboard"}
+        ]
 
 
 class FakeChannelRegistry:
@@ -138,25 +156,57 @@ class FakeChannelRegistry:
     def get(self, name):
         if name not in ("slack", "telegram"):
             from superpowers.channels.base import ChannelError
+
             raise ChannelError(f"Channel not configured: {name}")
-        return type("Ch", (), {
-            "send": lambda self, target, message: type("SR", (), {
-                "ok": True, "channel": name, "target": target, "message": message, "error": ""
-            })()
-        })()
+        return type(
+            "Ch",
+            (),
+            {
+                "send": lambda self, target, message: type(
+                    "SR",
+                    (),
+                    {
+                        "ok": True,
+                        "channel": name,
+                        "target": target,
+                        "message": message,
+                        "error": "",
+                    },
+                )(),
+                "test_connection": lambda self: type(
+                    "SR",
+                    (),
+                    {
+                        "ok": True,
+                        "channel": name,
+                        "target": "",
+                        "message": "connected",
+                        "error": "",
+                    },
+                )(),
+            },
+        )()
 
 
 class FakeProfileManager:
     def list_profiles(self):
-        return [type("NP", (), {
-            "name": "critical",
-            "targets": [type("PT", (), {"channel": "slack", "target": "#alerts"})()],
-        })()]
+        return [
+            type(
+                "NP",
+                (),
+                {
+                    "name": "critical",
+                    "targets": [type("PT", (), {"channel": "slack", "target": "#alerts"})()],
+                },
+            )()
+        ]
 
     def send(self, name, message):
         if name != "critical":
             raise KeyError(f"Profile not found: {name}")
-        return [type("SR", (), {"ok": True, "channel": "slack", "target": "#alerts", "error": ""})()]
+        return [
+            type("SR", (), {"ok": True, "channel": "slack", "target": "#alerts", "error": ""})()
+        ]
 
 
 class FakeHostRegistry:
@@ -374,8 +424,11 @@ class TestSessionAuth:
         import jwt as pyjwt
 
         from dashboard.deps import verify_session_token
+
         payload = {"sub": "admin", "iat": int(time.time()) - 90000, "exp": int(time.time()) - 3600}
-        expired_token = pyjwt.encode(payload, "test-secret-key-for-jwt-signing-1234", algorithm="HS256")
+        expired_token = pyjwt.encode(
+            payload, "test-secret-key-for-jwt-signing-1234", algorithm="HS256"
+        )
 
         result = verify_session_token(expired_token)
         assert result is None
@@ -399,6 +452,7 @@ class TestSessionAuth:
     def test_basic_auth_fallback(self, client):
         """HTTP Basic auth should still work alongside cookies."""
         import base64
+
         client.cookies.clear()
         creds = base64.b64encode(b"admin:testpass123").decode()
         resp = client.get("/api/status", headers={"Authorization": f"Basic {creds}"})
@@ -468,10 +522,13 @@ class TestChatAPI:
         create_resp = client.post("/api/chat/conversations")
         cid = create_resp.json()["id"]
 
-        resp = client.post("/api/chat/send", json={
-            "message": "Hello Claude",
-            "conversation_id": cid,
-        })
+        resp = client.post(
+            "/api/chat/send",
+            json={
+                "message": "Hello Claude",
+                "conversation_id": cid,
+            },
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert data["conversation_id"] == cid
@@ -489,10 +546,13 @@ class TestChatAPI:
         create_resp = client.post("/api/chat/conversations")
         cid = create_resp.json()["id"]
 
-        client.post("/api/chat/send", json={
-            "message": "Tell me about Python decorators",
-            "conversation_id": cid,
-        })
+        client.post(
+            "/api/chat/send",
+            json={
+                "message": "Tell me about Python decorators",
+                "conversation_id": cid,
+            },
+        )
 
         # Check the conversation was titled
         resp = client.get(f"/api/chat/conversations/{cid}")
@@ -527,12 +587,15 @@ class TestNotificationsAPI:
 
     def test_create_notification(self, client):
         _login(client)
-        resp = client.post("/api/notifications", json={
-            "source": "cron",
-            "title": "Job failed: backup",
-            "detail": "Exit code 1",
-            "level": "error",
-        })
+        resp = client.post(
+            "/api/notifications",
+            json={
+                "source": "cron",
+                "title": "Job failed: backup",
+                "detail": "Exit code 1",
+                "level": "error",
+            },
+        )
         assert resp.status_code == 201
         data = resp.json()
         assert data["title"] == "Job failed: backup"
@@ -602,7 +665,9 @@ class TestNotificationsAPI:
 
     def test_delete_notification(self, client):
         _login(client)
-        create_resp = client.post("/api/notifications", json={"source": "test", "title": "Delete me"})
+        create_resp = client.post(
+            "/api/notifications", json={"source": "test", "title": "Delete me"}
+        )
         nid = create_resp.json()["id"]
 
         resp = client.delete(f"/api/notifications/{nid}")

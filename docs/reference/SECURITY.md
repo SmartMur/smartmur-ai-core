@@ -12,7 +12,7 @@ The web dashboard at port 8200 requires HTTP Basic authentication on all `/api/*
 
 | Setting | Source | Description |
 |---------|--------|-------------|
-| `DASHBOARD_USER` | `.env` | Username (no default -- must be set) |
+| `DASHBOARD_USER` | `.env` | Username (code default is empty string -- must be set in `.env`) |
 | `DASHBOARD_PASS` | `.env` | Password (no default -- must be set) |
 
 The `/health` endpoint is unauthenticated (used by Docker health checks and monitoring tools).
@@ -244,7 +244,7 @@ audit_search(query="ssh", limit=50)
 
 - [ ] Bind the dashboard to `127.0.0.1` or use a reverse proxy with TLS
 - [ ] Do not expose port 8100 (msg-gateway) to untrusted networks
-- [ ] Use Cloudflare Tunnel or VPN for remote access (see `docs/cloudflared-setup.md`)
+- [ ] Use Cloudflare Tunnel or VPN for remote access (see `docs/guides/cloudflared-setup.md`)
 - [ ] Restrict Redis to localhost (`bind 127.0.0.1` in redis.conf or Docker network isolation)
 
 ### Webhook Security (Phase G)

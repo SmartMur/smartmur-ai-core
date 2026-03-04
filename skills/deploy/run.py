@@ -38,33 +38,37 @@ def _run_cmd(args: list[str], cwd: Path | None = None) -> subprocess.CompletedPr
 def _notify_start() -> None:
     try:
         from superpowers.telegram_notify import notify_start
+
         notify_start("Deploying claude-superpowers")
-    except Exception:
+    except (ImportError, OSError):
         pass
 
 
 def _notify_done(message: str) -> None:
     try:
         from superpowers.telegram_notify import notify_done
+
         notify_done(message)
-    except Exception:
+    except (ImportError, OSError):
         pass
 
 
 def _notify_error(message: str, details: str = "") -> None:
     try:
         from superpowers.telegram_notify import notify_error
+
         notify_error(message, details=details)
-    except Exception:
+    except (ImportError, OSError):
         pass
 
 
 def _audit_log(action: str, detail: str, metadata: dict | None = None) -> None:
     try:
         from superpowers.audit import AuditLog
+
         audit = AuditLog()
         audit.log(action, detail, source="deploy-skill", metadata=metadata)
-    except Exception:
+    except (ImportError, OSError):
         pass
 
 
@@ -136,7 +140,9 @@ def step_docker_up() -> tuple[bool, str]:
     return True, "ok"
 
 
-def step_health_check(url: str = "http://localhost:8200/health", retries: int = 3) -> tuple[bool, str]:
+def step_health_check(
+    url: str = "http://localhost:8200/health", retries: int = 3
+) -> tuple[bool, str]:
     """Check dashboard health endpoint."""
     print(f"==> Health check: {url}")
     for attempt in range(1, retries + 1):
@@ -147,10 +153,11 @@ def step_health_check(url: str = "http://localhost:8200/health", retries: int = 
                 if resp.status == 200:
                     print(f"    OK (attempt {attempt})")
                     return True, body
-        except Exception as exc:
+        except (urllib.error.URLError, OSError, ValueError) as exc:
             print(f"    Attempt {attempt}/{retries} failed: {exc}")
             if attempt < retries:
                 import time
+
                 time.sleep(2)
     return False, "health check failed after retries"
 
@@ -165,10 +172,14 @@ def step_quick_tests() -> tuple[bool, str]:
     env["PYTHONPATH"] = str(PROJECT_ROOT)
     result = subprocess.run(
         [
-            pytest_path, "tests/",
+            pytest_path,
+            "tests/",
             "--ignore=tests/test_telegram_concurrency.py",
-            "-k", "not test_vault",
-            "-x", "--tb=short", "-q",
+            "-k",
+            "not test_vault",
+            "-x",
+            "--tb=short",
+            "-q",
         ],
         cwd=PROJECT_ROOT,
         capture_output=True,

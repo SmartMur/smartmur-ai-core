@@ -19,6 +19,7 @@ from superpowers.infra_fixer import (
 # TestContainerInfo
 # ---------------------------------------------------------------------------
 
+
 class TestContainerInfo:
     """Tests for ContainerInfo dataclass."""
 
@@ -48,6 +49,7 @@ class TestContainerInfo:
 # ---------------------------------------------------------------------------
 # TestInfraIssue
 # ---------------------------------------------------------------------------
+
 
 class TestInfraIssue:
     """Tests for InfraIssue dataclass."""
@@ -84,6 +86,7 @@ class TestInfraIssue:
 # TestInfraReport
 # ---------------------------------------------------------------------------
 
+
 class TestInfraReport:
     """Tests for InfraReport dataclass."""
 
@@ -108,24 +111,30 @@ class TestInfraReport:
         assert report.projects_total == 3
 
     def test_status_healthy(self):
-        report = InfraReport(issues=[
-            InfraIssue(severity="info", container="x", project="y", issue="disk usage"),
-        ])
+        report = InfraReport(
+            issues=[
+                InfraIssue(severity="info", container="x", project="y", issue="disk usage"),
+            ]
+        )
         assert report.status == "healthy"
 
     def test_status_degraded(self):
-        report = InfraReport(issues=[
-            InfraIssue(severity="warning", container="x", project="y", issue="stopped"),
-        ])
+        report = InfraReport(
+            issues=[
+                InfraIssue(severity="warning", container="x", project="y", issue="stopped"),
+            ]
+        )
         assert report.status == "degraded"
         assert report.warning_count == 1
         assert report.critical_count == 0
 
     def test_status_down(self):
-        report = InfraReport(issues=[
-            InfraIssue(severity="critical", container="x", project="y", issue="crash loop"),
-            InfraIssue(severity="warning", container="z", project="y", issue="stopped"),
-        ])
+        report = InfraReport(
+            issues=[
+                InfraIssue(severity="critical", container="x", project="y", issue="crash loop"),
+                InfraIssue(severity="warning", container="z", project="y", issue="stopped"),
+            ]
+        )
         assert report.status == "down"
         assert report.critical_count == 1
         assert report.warning_count == 1
@@ -170,7 +179,9 @@ class TestInfraReport:
             containers_unhealthy=1,
             duration_seconds=2.3,
             issues=[
-                InfraIssue(severity="critical", container="cf", project="cloudflared", issue="crash loop"),
+                InfraIssue(
+                    severity="critical", container="cf", project="cloudflared", issue="crash loop"
+                ),
                 InfraIssue(severity="warning", container="redis", project="app", issue="stopped"),
             ],
             actions_taken=["Stopped crash-looping container: cf"],
@@ -186,6 +197,7 @@ class TestInfraReport:
 # ---------------------------------------------------------------------------
 # TestPlaceholderPatterns
 # ---------------------------------------------------------------------------
+
 
 class TestPlaceholderPatterns:
     """Tests for PLACEHOLDER_PATTERNS regexes."""
@@ -218,6 +230,7 @@ class TestPlaceholderPatterns:
 # ---------------------------------------------------------------------------
 # TestCheckContainerHealth
 # ---------------------------------------------------------------------------
+
 
 class TestCheckContainerHealth:
     """Tests for InfraFixer.check_container_health."""
@@ -287,6 +300,7 @@ class TestCheckContainerHealth:
 # TestCheckExpectedRunning
 # ---------------------------------------------------------------------------
 
+
 class TestCheckExpectedRunning:
     """Tests for InfraFixer.check_expected_running."""
 
@@ -346,6 +360,7 @@ class TestCheckExpectedRunning:
 # TestCheckEnvFiles
 # ---------------------------------------------------------------------------
 
+
 class TestCheckEnvFiles:
     """Tests for InfraFixer.check_env_files."""
 
@@ -376,12 +391,7 @@ class TestCheckEnvFiles:
 
     def test_comments_ignored(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text(
-            "# API_KEY=your_token_here\n"
-            "REAL_KEY=abc123\n"
-            "\n"
-            "# This is a comment\n"
-        )
+        env_file.write_text("# API_KEY=your_token_here\nREAL_KEY=abc123\n\n# This is a comment\n")
         projects = {"test": {"compose_dir": str(tmp_path), "expected_running": []}}
         fixer = InfraFixer(projects=projects)
         issues = fixer.check_env_files()
@@ -392,13 +402,16 @@ class TestCheckEnvFiles:
 # TestApplyFixes
 # ---------------------------------------------------------------------------
 
+
 class TestApplyFixes:
     """Tests for InfraFixer.apply_fixes."""
 
     def setup_method(self):
-        self.fixer = InfraFixer(projects={
-            "myapp": {"compose_dir": "/tmp/myapp", "expected_running": ["redis"]},
-        })
+        self.fixer = InfraFixer(
+            projects={
+                "myapp": {"compose_dir": "/tmp/myapp", "expected_running": ["redis"]},
+            }
+        )
 
     @patch.object(InfraFixer, "_run_cmd")
     def test_stops_crash_looping_container(self, mock_cmd):
@@ -474,6 +487,7 @@ class TestApplyFixes:
 # TestSaveReport
 # ---------------------------------------------------------------------------
 
+
 class TestSaveReport:
     """Tests for InfraFixer.save_report."""
 
@@ -520,6 +534,7 @@ class TestSaveReport:
 # ---------------------------------------------------------------------------
 # TestRunCheck
 # ---------------------------------------------------------------------------
+
 
 class TestRunCheck:
     """Tests for InfraFixer.run_check (integration-style with mocks)."""
@@ -576,6 +591,7 @@ class TestRunCheck:
 # TestCheckDiskUsage
 # ---------------------------------------------------------------------------
 
+
 class TestCheckDiskUsage:
     """Tests for InfraFixer.check_disk_usage."""
 
@@ -614,6 +630,7 @@ class TestCheckDiskUsage:
 # ---------------------------------------------------------------------------
 # TestKnownProjects
 # ---------------------------------------------------------------------------
+
 
 class TestKnownProjects:
     """Tests for KNOWN_PROJECTS configuration."""

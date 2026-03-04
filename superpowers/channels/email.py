@@ -47,6 +47,13 @@ class EmailChannel(Channel):
             return SendResult(ok=True, channel="email", target=target, message="sent")
         except smtplib.SMTPException as exc:
             return SendResult(ok=False, channel="email", target=target, error=str(exc))
+        except (OSError, ConnectionError, TimeoutError) as exc:
+            return SendResult(
+                ok=False,
+                channel="email",
+                target=target,
+                error=f"Unexpected error: {exc}",
+            )
 
     def test_connection(self) -> SendResult:
         try:
@@ -55,8 +62,17 @@ class EmailChannel(Channel):
                 srv.starttls()
                 srv.login(self._user, self._password)
             return SendResult(
-                ok=True, channel="email", target="",
+                ok=True,
+                channel="email",
+                target="",
                 message=f"host={self._host}:{self._port}, user={self._user}",
             )
         except (smtplib.SMTPException, OSError) as exc:
             return SendResult(ok=False, channel="email", target="", error=str(exc))
+        except (OSError, ConnectionError, TimeoutError) as exc:
+            return SendResult(
+                ok=False,
+                channel="email",
+                target="",
+                error=f"Unexpected error: {exc}",
+            )

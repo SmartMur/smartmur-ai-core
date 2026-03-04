@@ -53,10 +53,11 @@ class SessionManager:
         if redis_url:
             try:
                 import redis
+
                 self._redis = redis.Redis.from_url(redis_url, decode_responses=True)
                 self._redis.ping()
                 logger.info("SessionManager: using Redis at %s", redis_url)
-            except Exception as exc:
+            except (ImportError, ConnectionError, OSError, ValueError) as exc:
                 logger.warning("SessionManager: Redis unavailable (%s), using in-memory", exc)
                 self._redis = None
 
@@ -75,7 +76,7 @@ class SessionManager:
                 self._redis.ltrim(key, -self._max_history, -1)
                 self._redis.expire(key, self._ttl)
                 return
-            except Exception as exc:
+            except (ConnectionError, OSError, ValueError) as exc:
                 logger.warning("Redis session write failed: %s", exc)
 
         # In-memory fallback
@@ -84,7 +85,7 @@ class SessionManager:
         self._memory[chat_id].append(entry)
         # Trim
         if len(self._memory[chat_id]) > self._max_history:
-            self._memory[chat_id] = self._memory[chat_id][-self._max_history:]
+            self._memory[chat_id] = self._memory[chat_id][-self._max_history :]
 
     def get(self, chat_id: str) -> list[HistoryEntry]:
         """Get conversation history for a chat."""
@@ -95,7 +96,7 @@ class SessionManager:
                 entries = [HistoryEntry.from_dict(json.loads(r)) for r in raw_entries]
                 # Check TTL — expired entries handled by Redis TTL
                 return entries
-            except Exception as exc:
+            except (ConnectionError, OSError, ValueError) as exc:
                 logger.warning("Redis session read failed: %s", exc)
 
         # In-memory fallback
@@ -111,7 +112,7 @@ class SessionManager:
         if self._redis:
             try:
                 self._redis.delete(self._key(chat_id))
-            except Exception:
+            except (ConnectionError, OSError):
                 pass
         self._memory.pop(chat_id, None)
 

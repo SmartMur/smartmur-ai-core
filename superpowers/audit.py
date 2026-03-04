@@ -11,6 +11,7 @@ class AuditLog:
     def __init__(self, log_path: Path | None = None):
         if log_path is None:
             from superpowers.config import get_data_dir
+
             log_path = get_data_dir() / "audit.log"
         self._path = Path(log_path)
         self._path.parent.mkdir(parents=True, exist_ok=True)

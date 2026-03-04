@@ -12,8 +12,10 @@ def client(monkeypatch):
     monkeypatch.setenv("DASHBOARD_PASS", "superpowers")
     # Reset cached settings so env vars are picked up
     import dashboard.deps as deps
+
     deps._settings = None
     from dashboard.app import app
+
     yield TestClient(app)
     deps._settings = None
 
@@ -24,6 +26,7 @@ def _basic_header(user: str, password: str) -> dict:
 
 
 # --- Unauthenticated /api/* returns 401 ---
+
 
 def test_api_status_unauthenticated(client):
     resp = client.get("/api/status")
@@ -37,6 +40,7 @@ def test_api_cron_unauthenticated(client):
 
 # --- Correct credentials return 200 ---
 
+
 def test_api_status_authenticated(client):
     resp = client.get("/api/status", headers=_basic_header("admin", "superpowers"))
     assert resp.status_code == 200
@@ -48,6 +52,7 @@ def test_api_cron_authenticated(client):
 
 
 # --- Wrong credentials return 401 ---
+
 
 def test_api_wrong_password(client):
     resp = client.get("/api/status", headers=_basic_header("admin", "wrong"))
@@ -61,6 +66,7 @@ def test_api_wrong_user(client):
 
 # --- /health is public ---
 
+
 def test_health_no_auth(client):
     resp = client.get("/health")
     assert resp.status_code == 200
@@ -68,6 +74,7 @@ def test_health_no_auth(client):
 
 
 # --- Static files are public ---
+
 
 def test_static_index_no_auth(client):
     resp = client.get("/")

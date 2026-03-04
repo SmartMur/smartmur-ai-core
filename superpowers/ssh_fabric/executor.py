@@ -12,18 +12,14 @@ class SSHExecutor:
         self._pool = pool
         self._hosts = hosts
 
-    def run(
-        self, target: str, command: str, timeout: int = 30
-    ) -> list[CommandResult]:
+    def run(self, target: str, command: str, timeout: int = 30) -> list[CommandResult]:
         resolved = self._hosts.resolve(target)
         results: list[CommandResult] = []
         for host in resolved:
             results.append(self._exec_one(host, command, timeout))
         return results
 
-    def _exec_one(
-        self, host: HostConfig, command: str, timeout: int
-    ) -> CommandResult:
+    def _exec_one(self, host: HostConfig, command: str, timeout: int) -> CommandResult:
         try:
             client = self._pool.get_client(host.alias)
             _, stdout_ch, stderr_ch = client.exec_command(command, timeout=timeout)
@@ -48,7 +44,7 @@ class SSHExecutor:
                 exit_code=-1,
                 error=str(exc),
             )
-        except Exception as exc:
+        except (OSError, RuntimeError, KeyError, ValueError, TypeError) as exc:
             return CommandResult(
                 host=host.alias,
                 command=command,

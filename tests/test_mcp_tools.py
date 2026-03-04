@@ -15,52 +15,62 @@ class TestToolRegistration:
 
     def test_channels_tools_register(self):
         from superpowers.mcp.channels_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_ssh_tools_register(self):
         from superpowers.mcp.ssh_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_memory_tools_register(self):
         from superpowers.mcp.memory_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_browser_tools_register(self):
         from superpowers.mcp.browser_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_workflow_tools_register(self):
         from superpowers.mcp.workflow_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_cron_tools_register(self):
         from superpowers.mcp.cron_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_skill_tools_register(self):
         from superpowers.mcp.skill_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_audit_tools_register(self):
         from superpowers.mcp.audit_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_vault_tools_register(self):
         from superpowers.mcp.vault_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
     def test_all_register_on_main_server(self):
         """The main mcp_server module imports and registers all tools."""
         from superpowers import mcp_server
+
         assert mcp_server.mcp is not None
 
 
@@ -70,6 +80,7 @@ class TestToolRegistration:
 class TestVaultTools:
     def test_vault_status_uninitialized(self, tmp_path):
         from superpowers.mcp.vault_tools import register
+
         mcp = self._make_mcp()
         register(mcp)
 
@@ -89,6 +100,7 @@ class TestVaultTools:
 class TestMemoryTools:
     def test_remember_and_recall(self, tmp_path):
         from superpowers.mcp.memory_tools import register
+
         mcp = FastMCP("test")
         register(mcp)
 
@@ -102,15 +114,19 @@ class TestMemoryTools:
         mock_entry.access_count = 1
         mock_entry.created_at = "2026-01-01"
         mock_entry.updated_at = "2026-01-01"
-        with patch("superpowers.memory.store.MemoryStore.__init__", return_value=None), \
-             patch("superpowers.memory.store.MemoryStore.remember") as mock_remember, \
-             patch("superpowers.memory.store.MemoryStore.recall") as mock_recall:
+        with (
+            patch("superpowers.memory.store.MemoryStore.__init__", return_value=None),
+            patch("superpowers.memory.store.MemoryStore.remember") as mock_remember,
+            patch("superpowers.memory.store.MemoryStore.recall") as mock_recall,
+        ):
             mock_remember.return_value = mock_entry
             mock_recall.return_value = mock_entry
 
             tools = {name: fn for name, fn in _extract_tools(mcp)}
             result = tools["remember"]("test-key", "test-value")
-            assert "stored" in result.lower() or "remembered" in result.lower() or "test-key" in result
+            assert (
+                "stored" in result.lower() or "remembered" in result.lower() or "test-key" in result
+            )
 
             result = tools["recall"]("test-key")
             assert "test-value" in result
@@ -119,6 +135,7 @@ class TestMemoryTools:
 class TestAuditTools:
     def test_audit_tail_empty(self):
         from superpowers.mcp.audit_tools import register
+
         mcp = FastMCP("test")
         register(mcp)
 
@@ -132,6 +149,7 @@ class TestAuditTools:
 class TestWorkflowTools:
     def test_list_workflows_empty(self, tmp_path):
         from superpowers.mcp.workflow_tools import register
+
         mcp = FastMCP("test")
         register(mcp)
 

@@ -18,6 +18,7 @@ from superpowers.intake import (
 
 # --- extract_requirements ---
 
+
 def test_extract_requirements_multiline():
     text = """
     - first task
@@ -49,6 +50,7 @@ def test_extract_requirements_strips_bullets():
 
 # --- clear_context ---
 
+
 def test_clear_context_removes_json(tmp_path):
     old = tmp_path / "old.json"
     old.write_text("{}")
@@ -78,6 +80,7 @@ def test_clear_context_leaves_non_json(tmp_path):
 
 # --- build_plan ---
 
+
 def test_build_plan_creates_indexed_tasks():
     reqs = ["a", "b", "c"]
     tasks = build_plan(reqs)
@@ -93,6 +96,7 @@ def test_build_plan_empty():
 
 # --- _execute_one ---
 
+
 def test_execute_one_no_skill():
     task = IntakeTask(id=1, requirement="test", skill=None)
     result = _execute_one(task, MagicMock(), MagicMock())
@@ -105,7 +109,9 @@ def test_execute_one_success():
     mock_registry = MagicMock()
     mock_loader = MagicMock()
     mock_loader.run_sandboxed.return_value = types.SimpleNamespace(
-        stdout="OK\n", stderr="", returncode=0,
+        stdout="OK\n",
+        stderr="",
+        returncode=0,
     )
     result = _execute_one(task, mock_loader, mock_registry)
     assert result.status == "ok"
@@ -118,7 +124,9 @@ def test_execute_one_failure_exit_code():
     mock_registry = MagicMock()
     mock_loader = MagicMock()
     mock_loader.run_sandboxed.return_value = types.SimpleNamespace(
-        stdout="", stderr="boom", returncode=1,
+        stdout="",
+        stderr="boom",
+        returncode=1,
     )
     result = _execute_one(task, mock_loader, mock_registry)
     assert result.status == "failed"
@@ -136,6 +144,7 @@ def test_execute_one_exception():
 
 
 # --- run_intake ---
+
 
 def test_run_intake_writes_session(tmp_path, monkeypatch):
     session_file = tmp_path / "current_request.json"
@@ -168,7 +177,9 @@ def test_run_intake_execute_runs_tasks(tmp_path, monkeypatch):
     monkeypatch.setattr(intake, "check_and_install", lambda *_args, **_kwargs: "heartbeat")
 
     with patch.object(intake, "_execute_one") as mock_exec:
-        mock_exec.side_effect = lambda task, loader, reg, telem=None: setattr(task, "status", "ok") or task
+        mock_exec.side_effect = lambda task, loader, reg, telem=None: (
+            setattr(task, "status", "ok") or task
+        )
         payload = run_intake("run it", runtime_dir=tmp_path, execute=True)
 
     assert mock_exec.called
@@ -196,7 +207,9 @@ def test_run_intake_callback_exception_swallowed(tmp_path, monkeypatch):
         raise RuntimeError("callback boom")
 
     # Should not raise
-    payload = run_intake("test", runtime_dir=tmp_path, execute=False, progress_callback=bad_callback)
+    payload = run_intake(
+        "test", runtime_dir=tmp_path, execute=False, progress_callback=bad_callback
+    )
     assert payload is not None
 
 
@@ -205,12 +218,15 @@ def test_run_intake_multi_requirements(tmp_path, monkeypatch):
     monkeypatch.setattr(intake, "SESSION_FILE", session_file)
     monkeypatch.setattr(intake, "check_and_install", lambda *_args, **_kwargs: "heartbeat")
 
-    payload = run_intake("- task one\n- task two\n- task three", runtime_dir=tmp_path, execute=False)
+    payload = run_intake(
+        "- task one\n- task two\n- task three", runtime_dir=tmp_path, execute=False
+    )
     assert len(payload["tasks"]) == 3
     assert payload["requirements"] == ["task one", "task two", "task three"]
 
 
 # --- cli_intake ---
+
 
 def test_cli_intake_clear(tmp_path, monkeypatch):
     from click.testing import CliRunner

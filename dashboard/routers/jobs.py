@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import subprocess
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -65,6 +66,7 @@ class JobBranchDetail(BaseModel):
 
 # --- Git branch job endpoints (must be before /{jid} to avoid path conflicts) ---
 
+
 @router.get("/branches", response_model=list[JobBranchOut])
 def list_job_branches():
     """List all job/* branches and their status."""
@@ -73,7 +75,7 @@ def list_job_branches():
 
         runner = JobRunner()
         return runner.list_job_branches()
-    except Exception as exc:
+    except (ImportError, OSError, RuntimeError, subprocess.SubprocessError, KeyError) as exc:
         logger.warning("Failed to list job branches: %s", exc)
         return []
 
@@ -106,6 +108,7 @@ def get_job_branch(job_id: str):
 
 # --- DB-backed job endpoints ---
 
+
 @router.get("", response_model=list[JobOut])
 def list_jobs(limit: int = 50, status: str | None = None):
     db = get_jobs_db()
@@ -121,6 +124,7 @@ def create_job(req: JobCreate):
 @router.get("/{jid}", response_model=JobOut)
 def get_job(jid: str):
     from fastapi import HTTPException
+
     db = get_jobs_db()
     job = db.get(jid)
     if job is None:
@@ -131,6 +135,7 @@ def get_job(jid: str):
 @router.post("/{jid}/start")
 def start_job(jid: str):
     from fastapi import HTTPException
+
     db = get_jobs_db()
     if not db.start(jid):
         raise HTTPException(status_code=404, detail="Job not found")
@@ -140,6 +145,7 @@ def start_job(jid: str):
 @router.post("/{jid}/complete")
 def complete_job(jid: str, output: str = "", error: str = ""):
     from fastapi import HTTPException
+
     db = get_jobs_db()
     if not db.complete(jid, output=output, error=error):
         raise HTTPException(status_code=404, detail="Job not found")
@@ -149,6 +155,7 @@ def complete_job(jid: str, output: str = "", error: str = ""):
 @router.delete("/{jid}", status_code=204)
 def delete_job(jid: str):
     from fastapi import HTTPException
+
     db = get_jobs_db()
     if not db.delete(jid):
         raise HTTPException(status_code=404, detail="Job not found")

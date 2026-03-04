@@ -37,8 +37,11 @@ def hub_env(tmp_path):
     hub_path.mkdir()
     # Init a git repo in hub
     import subprocess
+
     subprocess.run(["git", "init"], cwd=hub_path, capture_output=True)
-    subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=hub_path, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@test.com"], cwd=hub_path, capture_output=True
+    )
     subprocess.run(["git", "config", "user.name", "Test"], cwd=hub_path, capture_output=True)
     return SkillHub(hub_path=hub_path, skills_dir=skills_dir)
 

@@ -15,6 +15,7 @@ import run as tunnel_setup
 # Token Validation
 # ---------------------------------------------------------------------------
 
+
 class TestValidateToken:
     """Tests for validate_token()."""
 
@@ -81,6 +82,7 @@ class TestValidateToken:
 # .env File Operations
 # ---------------------------------------------------------------------------
 
+
 class TestEnvFileOperations:
     """Tests for reading/writing the .env file."""
 
@@ -113,7 +115,9 @@ class TestEnvFileOperations:
     def test_read_env_token_skips_comments(self, tmp_path):
         """Commented-out lines should be ignored."""
         env_file = tmp_path / ".env"
-        env_file.write_text("# CLOUDFLARE_TUNNEL_TOKEN=old_token\nCLOUDFLARE_TUNNEL_TOKEN=real_token\n")
+        env_file.write_text(
+            "# CLOUDFLARE_TUNNEL_TOKEN=old_token\nCLOUDFLARE_TUNNEL_TOKEN=real_token\n"
+        )
         with patch.object(tunnel_setup, "ENV_FILE", env_file):
             token, msg = tunnel_setup._read_env_token()
             assert token == "real_token"
@@ -151,6 +155,7 @@ class TestEnvFileOperations:
 # ---------------------------------------------------------------------------
 # Status / Docker Commands (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestContainerStatus:
     """Tests for container status checking with mocked docker commands."""
@@ -195,6 +200,7 @@ class TestContainerStatus:
 # ---------------------------------------------------------------------------
 # Command Parsing
 # ---------------------------------------------------------------------------
+
 
 class TestCommandParsing:
     """Tests for main() argument dispatch."""
@@ -255,6 +261,7 @@ class TestCommandParsing:
 # Stop command (mocked docker)
 # ---------------------------------------------------------------------------
 
+
 class TestCmdStop:
     """Tests for cmd_stop with mocked docker."""
 
@@ -271,7 +278,9 @@ class TestCmdStop:
     @patch.object(tunnel_setup, "_run_cmd")
     def test_stop_failure(self, mock_cmd):
         """Failed stop should return 1."""
-        mock_cmd.return_value = MagicMock(returncode=1, stdout="", stderr="Error: no such container")
+        mock_cmd.return_value = MagicMock(
+            returncode=1, stdout="", stderr="Error: no such container"
+        )
         rc = tunnel_setup.cmd_stop()
         assert rc == 1
 
@@ -279,6 +288,7 @@ class TestCmdStop:
 # ---------------------------------------------------------------------------
 # Logs command (mocked docker)
 # ---------------------------------------------------------------------------
+
 
 class TestCmdLogs:
     """Tests for cmd_logs with mocked docker."""

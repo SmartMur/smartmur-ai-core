@@ -9,10 +9,23 @@ updates:
       - "dependencies"
 
   - package-ecosystem: "docker"
-    directory: "/"
+    directories:
+      - "/msg_gateway"
+      - "/dashboard"
+      - "/telegram-bot"
+      - "/browser_engine"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "docker"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import subprocess
+
 import click
 from rich.console import Console
 from rich.table import Table
@@ -113,6 +115,6 @@ def watcher_test(rule_name: str):
     try:
         engine._on_event(fake_event, rule)
         console.print("[bold green]Action executed.[/bold green]")
-    except Exception as exc:
+    except (subprocess.SubprocessError, OSError, RuntimeError, ValueError) as exc:
         console.print(f"[bold red]Action failed:[/bold red] {exc}")
         raise SystemExit(1)

@@ -85,6 +85,6 @@ def jobs_run(name: str, command: str, repo: str | None, pr: bool, auto_merge: bo
     if auto_merge and result.status.value == "completed":
         if runner.can_auto_merge(result):
             result = runner.auto_merge(result)
-            console.print(f"  [bold green]Auto-merged![/bold green]")
+            console.print("  [bold green]Auto-merged![/bold green]")
         else:
             console.print("  [yellow]Auto-merge blocked: files outside allowed paths[/yellow]")

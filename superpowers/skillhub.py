@@ -47,7 +47,7 @@ def _read_skill_name(skill_dir: Path) -> str | None:
     try:
         data = yaml.safe_load(manifest.read_text())
         return data.get("name")
-    except Exception:
+    except (yaml.YAMLError, OSError, ValueError):
         return None
 
 
@@ -112,7 +112,8 @@ class SkillHub:
             names = [skill_name]
         else:
             names = [
-                d.name for d in sorted(self.hub_path.iterdir())
+                d.name
+                for d in sorted(self.hub_path.iterdir())
                 if d.is_dir() and not d.name.startswith(".") and (d / "skill.yaml").exists()
             ]
 
@@ -144,12 +145,14 @@ class SkillHub:
                 continue
             try:
                 data = yaml.safe_load(manifest.read_text())
-                skills.append({
-                    "name": data.get("name", d.name),
-                    "version": data.get("version", "?"),
-                    "description": data.get("description", ""),
-                })
-            except Exception:
+                skills.append(
+                    {
+                        "name": data.get("name", d.name),
+                        "version": data.get("version", "?"),
+                        "description": data.get("description", ""),
+                    }
+                )
+            except (yaml.YAMLError, OSError, ValueError):
                 continue
         return skills
 

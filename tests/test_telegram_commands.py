@@ -14,13 +14,15 @@ from msg_gateway.telegram.types import Message
 
 def _make_message(text: str, chat_id: int = 100, first_name: str = "Alice") -> Message:
     """Create a Message object from a dict, simulating Telegram's format."""
-    return Message.from_dict({
-        "message_id": 1,
-        "chat": {"id": chat_id, "type": "private"},
-        "from": {"id": 42, "is_bot": False, "first_name": first_name},
-        "text": text,
-        "date": 1700000000,
-    })
+    return Message.from_dict(
+        {
+            "message_id": 1,
+            "chat": {"id": chat_id, "type": "private"},
+            "from": {"id": 42, "is_bot": False, "first_name": first_name},
+            "text": text,
+            "date": 1700000000,
+        }
+    )
 
 
 def _make_router(
@@ -89,12 +91,14 @@ def test_cmd_start_without_from_user():
     router = _make_router(api=api)
 
     # Create message without from user
-    msg = Message.from_dict({
-        "message_id": 1,
-        "chat": {"id": 100, "type": "private"},
-        "text": "/start",
-        "date": 1700000000,
-    })
+    msg = Message.from_dict(
+        {
+            "message_id": 1,
+            "chat": {"id": 100, "type": "private"},
+            "text": "/start",
+            "date": 1700000000,
+        }
+    )
     router.handle(msg)
 
     api.send_message.assert_called_once()

@@ -29,7 +29,9 @@ def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> 
     if not model_path.is_file():
         return "[error: whisper model not found — run: curl -L -o ~/.claude-superpowers/models/ggml-base.en.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin]"
     if not shutil.which("whisper-cli"):
-        return "[error: whisper-cli not found — install whisper.cpp (Debian: apt install whisper.cpp)]"
+        return (
+            "[error: whisper-cli not found — install whisper.cpp (Debian: apt install whisper.cpp)]"
+        )
 
     with tempfile.TemporaryDirectory() as tmp:
         wav_path = Path(tmp) / "audio.wav"
@@ -40,18 +42,32 @@ def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> 
             return "[error: ffmpeg not found — install it (Debian: apt install ffmpeg)]"
 
         result = subprocess.run(
-            [ffmpeg, "-i", str(audio_path), "-ar", "16000", "-ac", "1",
-             "-c:a", "pcm_s16le", str(wav_path), "-y"],
-            capture_output=True, text=True, timeout=30,
+            [
+                ffmpeg,
+                "-i",
+                str(audio_path),
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "-c:a",
+                "pcm_s16le",
+                str(wav_path),
+                "-y",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
         if result.returncode != 0:
             return f"[error: ffmpeg conversion failed: {result.stderr[:200]}]"
 
         # Transcribe
         result = subprocess.run(
-            ["whisper-cli", "-m", str(model_path), "-f", str(wav_path),
-             "--no-timestamps", "-np"],
-            capture_output=True, text=True, timeout=60,
+            ["whisper-cli", "-m", str(model_path), "-f", str(wav_path), "--no-timestamps", "-np"],
+            capture_output=True,
+            text=True,
+            timeout=60,
         )
         if result.returncode != 0:
             return f"[error: whisper failed: {result.stderr[:200]}]"
@@ -66,6 +82,7 @@ def transcribe(audio_path: str | Path, model_path: str | Path | None = None) -> 
 def download_telegram_voice(bot_token: str, file_id: str) -> Path | None:
     """Download a Telegram voice message and return the local path."""
     import json
+    import urllib.error
     import urllib.request
 
     try:
@@ -84,6 +101,6 @@ def download_telegram_voice(bot_token: str, file_id: str) -> Path | None:
         tmp = Path(tempfile.mkdtemp()) / "voice.ogg"
         urllib.request.urlretrieve(dl_url, str(tmp))
         return tmp
-    except Exception as exc:
+    except (urllib.error.URLError, OSError, ValueError, KeyError) as exc:
         logger.error("Failed to download voice: %s", exc)
         return None

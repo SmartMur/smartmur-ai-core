@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "$0")/../lib.sh"
+
 # workspace-intake-smoke — workspace intake smoke
 
 usage() {
@@ -16,7 +18,7 @@ usage() {
 [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && usage
 
 main() {
-    echo "[workspace-intake-smoke] running..."
+    info "[workspace-intake-smoke] running..."
     # TODO: implement skill logic
 }
 

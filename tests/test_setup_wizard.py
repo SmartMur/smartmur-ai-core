@@ -10,14 +10,11 @@ Covers:
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
-from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # =====================================================================
 # E1: SetupWizard — prerequisite checking
@@ -61,7 +58,7 @@ class TestCheckPrereqs:
 
     def test_missing_tool_reports_false(self, tmp_path):
         """A tool that doesn't exist should return False."""
-        from superpowers.setup_wizard import SetupWizard, PREREQS
+        from superpowers.setup_wizard import PREREQS, SetupWizard
 
         wizard = SetupWizard(project_dir=tmp_path, data_dir=tmp_path / "data")
 
@@ -97,10 +94,7 @@ class TestCreateEnv:
         """Write a minimal .env.example."""
         example = project_dir / ".env.example"
         example.write_text(
-            "# Config\n"
-            "REDIS_URL=redis://localhost:6379/0\n"
-            "SLACK_BOT_TOKEN=\n"
-            "SMTP_PORT=587\n"
+            "# Config\nREDIS_URL=redis://localhost:6379/0\nSLACK_BOT_TOKEN=\nSMTP_PORT=587\n"
         )
         return example
 
@@ -349,9 +343,7 @@ class TestTelegramSetup:
         )
 
         fake_bot = {"id": 123, "username": "testbot", "is_bot": True}
-        with patch.object(
-            SetupWizard, "_validate_telegram_token", return_value=fake_bot
-        ):
+        with patch.object(SetupWizard, "_validate_telegram_token", return_value=fake_bot):
             result = wizard.setup_telegram(bot_token="123:ABC")
 
         assert result["valid"] is True
@@ -370,9 +362,7 @@ class TestTelegramSetup:
 
         fake_bot = {"id": 123, "username": "testbot", "is_bot": True}
         with (
-            patch.object(
-                SetupWizard, "_validate_telegram_token", return_value=fake_bot
-            ),
+            patch.object(SetupWizard, "_validate_telegram_token", return_value=fake_bot),
             patch.object(SetupWizard, "_set_telegram_webhook", return_value=True),
         ):
             result = wizard.setup_telegram(
@@ -412,9 +402,7 @@ class TestTelegramSetup:
             non_interactive=True,
         )
 
-        with patch.object(
-            SetupWizard, "_validate_telegram_token", return_value=None
-        ):
+        with patch.object(SetupWizard, "_validate_telegram_token", return_value=None):
             result = wizard.setup_telegram(bot_token="bad-token")
 
         assert result["valid"] is False
@@ -1131,7 +1119,7 @@ class TestEdgeCases:
         from superpowers.setup_wizard import SetupWizard
 
         example = tmp_path / ".env.example"
-        example.write_text('PASS="my secret"\nKEY=\'quoted\'\n')
+        example.write_text("PASS=\"my secret\"\nKEY='quoted'\n")
 
         wizard = SetupWizard(
             project_dir=tmp_path,
@@ -1148,9 +1136,7 @@ class TestEdgeCases:
         from superpowers.setup_wizard import SetupWizard
 
         example = tmp_path / ".env.example"
-        example.write_text(
-            "# Header\n\n# Section\nKEY=val\n\n# Footer\n"
-        )
+        example.write_text("# Header\n\n# Section\nKEY=val\n\n# Footer\n")
 
         wizard = SetupWizard(
             project_dir=tmp_path,

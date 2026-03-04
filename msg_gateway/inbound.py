@@ -41,6 +41,7 @@ class TriggerManager:
     def __init__(self, triggers_path: Path | None = None):
         if triggers_path is None:
             from superpowers.config import get_data_dir
+
             triggers_path = get_data_dir() / "triggers.yaml"
         self._path = triggers_path
         self.rules: list[TriggerRule] = []
@@ -56,12 +57,14 @@ class TriggerManager:
 
         for entry in data:
             if isinstance(entry, dict) and "pattern" in entry and "command" in entry:
-                self.rules.append(TriggerRule(
-                    pattern=entry["pattern"],
-                    action=entry.get("action", "shell"),
-                    command=entry["command"],
-                    reply=entry.get("reply", True),
-                ))
+                self.rules.append(
+                    TriggerRule(
+                        pattern=entry["pattern"],
+                        action=entry.get("action", "shell"),
+                        command=entry["command"],
+                        reply=entry.get("reply", True),
+                    )
+                )
 
     def match(self, text: str) -> TriggerRule | None:
         for rule in self.rules:
@@ -75,19 +78,22 @@ class TriggerManager:
         try:
             if rule.action == "shell":
                 result = subprocess.run(
-                    shlex.split(rule.command), capture_output=True,
-                    text=True, timeout=120, env={**os.environ, **env},
+                    shlex.split(rule.command),
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                    env={**os.environ, **env},
                 )
                 return result.stdout + result.stderr
             elif rule.action == "claude":
-                result = subprocess.run(
-                    ["claude", "-p", rule.command, "--output-format", "text"],
-                    capture_output=True, text=True, timeout=300,
-                )
-                return result.stdout + result.stderr
+                from superpowers.llm_provider import get_default_provider
+
+                provider = get_default_provider(role="chat")
+                return provider.invoke(rule.command)
             elif rule.action == "skill":
                 from superpowers.skill_loader import SkillLoader
                 from superpowers.skill_registry import SkillRegistry
+
                 registry = SkillRegistry()
                 loader = SkillLoader()
                 skill = registry.get(rule.command)
@@ -95,7 +101,7 @@ class TriggerManager:
                 return r.stdout + r.stderr
             else:
                 return f"Unknown action type: {rule.action}"
-        except Exception as exc:
+        except (subprocess.SubprocessError, OSError, ImportError, KeyError, RuntimeError) as exc:
             return f"Trigger execution error: {exc}"
 
 
@@ -120,7 +126,7 @@ class TelegramPoller:
         while self._running:
             try:
                 self._poll()
-            except Exception as exc:
+            except (urllib.error.URLError, OSError, ValueError, KeyError) as exc:
                 logger.error("Telegram poll error: %s", exc)
                 time.sleep(5)
 
@@ -132,11 +138,13 @@ class TelegramPoller:
         url = f"https://api.telegram.org/bot{self._token}/{method}"
         data = json.dumps(payload).encode()
         req = urllib.request.Request(
-            url, data=data, headers={"Content-Type": "application/json"},
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
         )
         try:
             urllib.request.urlopen(req, timeout=10)
-        except Exception:
+        except (urllib.error.URLError, OSError):
             pass
 
     def _send_typing(self, chat_id: str) -> None:
@@ -169,7 +177,8 @@ class TelegramPoller:
             if voice:
                 logger.info("Voice message from %s — transcribing", chat_id)
                 threading.Thread(
-                    target=self._handle_voice, args=(voice, chat_id),
+                    target=self._handle_voice,
+                    args=(voice, chat_id),
                     daemon=True,
                 ).start()
                 continue
@@ -221,8 +230,10 @@ class TelegramPoller:
     def _reply_with_claude(self, text: str, chat_id: str) -> None:
         """Route to Claude in a background thread so the poller isn't blocked."""
         threading.Thread(
-            target=self._claude_worker, args=(text, chat_id),
-            daemon=True, name=f"claude-{chat_id}",
+            target=self._claude_worker,
+            args=(text, chat_id),
+            daemon=True,
+            name=f"claude-{chat_id}",
         ).start()
 
     def _claude_worker(self, text: str, chat_id: str) -> None:
@@ -230,11 +241,17 @@ class TelegramPoller:
         self._send_typing(chat_id)
         logger.info("Routing to Claude: %s", text[:100])
         try:
-            env = {k: v for k, v in os.environ.items()
-                   if k != "CLAUDECODE" and not (k == "ANTHROPIC_API_KEY" and not v)}
+            env = {
+                k: v
+                for k, v in os.environ.items()
+                if k != "CLAUDECODE" and not (k == "ANTHROPIC_API_KEY" and not v)
+            }
             result = subprocess.run(
                 ["claude", "-p", text, "--output-format", "text"],
-                capture_output=True, text=True, timeout=300, env=env,
+                capture_output=True,
+                text=True,
+                timeout=300,
+                env=env,
             )
             reply = (result.stdout or result.stderr or "[no response]").strip()
             if reply:
@@ -246,14 +263,14 @@ class TelegramPoller:
         except FileNotFoundError:
             self._send_reply(chat_id, "[Claude CLI not found]")
             logger.error("claude CLI not found")
-        except Exception as exc:
+        except (RuntimeError, OSError) as exc:
             logger.error("Claude reply error: %s", exc)
 
     def _send_reply(self, chat_id: str, text: str) -> None:
         """Send reply, splitting at Telegram's 4096 char limit."""
         ch = self._registry.get("telegram")
         for i in range(0, len(text), 4000):
-            ch.send(chat_id, text[i:i + 4000])
+            ch.send(chat_id, text[i : i + 4000])
 
 
 class InboundListener:
@@ -274,9 +291,7 @@ class InboundListener:
             allowed_ids = None
             if hasattr(self._settings, "allowed_chat_ids") and self._settings.allowed_chat_ids:
                 allowed_ids = [
-                    cid.strip()
-                    for cid in self._settings.allowed_chat_ids.split(",")
-                    if cid.strip()
+                    cid.strip() for cid in self._settings.allowed_chat_ids.split(",") if cid.strip()
                 ]
 
             poller = NewPoller(
@@ -298,6 +313,7 @@ class InboundListener:
                 # In webhook mode, register poller with the FastAPI app
                 # instead of running the polling loop
                 from msg_gateway.app import set_telegram_poller
+
                 set_telegram_poller(poller)
                 # Still register command menu
                 poller._commands.register_menu()

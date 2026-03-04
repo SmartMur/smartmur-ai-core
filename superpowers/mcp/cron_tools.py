@@ -34,7 +34,7 @@ def register(mcp: FastMCP) -> None:
             )
             engine.stop()
             return f"Job added: {job.id} ({job.name}, {job.schedule}, {job.job_type.value})"
-        except Exception as exc:
+        except (ImportError, OSError, ValueError, RuntimeError) as exc:
             return f"Error adding job: {exc}"
 
     @mcp.tool()
@@ -53,7 +53,7 @@ def register(mcp: FastMCP) -> None:
             return f"Job removed: {job_id}"
         except KeyError:
             return f"Job not found: {job_id}"
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error removing job: {exc}"
 
     @mcp.tool()
@@ -78,7 +78,7 @@ def register(mcp: FastMCP) -> None:
                     f"{j.job_type.value}: {j.command[:60]}  last: {last}"
                 )
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error listing jobs: {exc}"
 
     @mcp.tool()
@@ -97,7 +97,7 @@ def register(mcp: FastMCP) -> None:
             return f"Job enabled: {job.name} ({job_id[:8]})"
         except KeyError:
             return f"Job not found: {job_id}"
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error enabling job: {exc}"
 
     @mcp.tool()
@@ -116,7 +116,7 @@ def register(mcp: FastMCP) -> None:
             return f"Job disabled: {job.name} ({job_id[:8]})"
         except KeyError:
             return f"Job not found: {job_id}"
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError) as exc:
             return f"Error disabling job: {exc}"
 
     @mcp.tool()
@@ -147,5 +147,5 @@ def register(mcp: FastMCP) -> None:
                     content = content[:2000] + "\n... (truncated)"
                 lines.append(content)
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error reading logs: {exc}"

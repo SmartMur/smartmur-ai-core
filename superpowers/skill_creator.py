@@ -127,7 +127,9 @@ def create_skill(
         "permissions": permissions or [],
         "triggers": triggers or [],
     }
-    (skill_dir / "skill.yaml").write_text(yaml.dump(manifest, default_flow_style=False, sort_keys=False))
+    (skill_dir / "skill.yaml").write_text(
+        yaml.dump(manifest, default_flow_style=False, sort_keys=False)
+    )
 
     # --- run.sh / run.py ---
     script_path = skill_dir / script_file
@@ -154,7 +156,7 @@ def _detect_script_type(source: Path) -> str:
     """Detect whether a script is bash or python by inspecting it."""
     try:
         first_line = source.read_text().split("\n", 1)[0]
-    except Exception:
+    except (OSError, ValueError):
         return "bash"
 
     if "python" in first_line:
@@ -198,7 +200,9 @@ def scaffold_from_existing(
         "permissions": [],
         "triggers": [],
     }
-    (skill_dir / "skill.yaml").write_text(yaml.dump(manifest, default_flow_style=False, sort_keys=False))
+    (skill_dir / "skill.yaml").write_text(
+        yaml.dump(manifest, default_flow_style=False, sort_keys=False)
+    )
 
     # --- command.md ---
     title = name.replace("-", " ").title()

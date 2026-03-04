@@ -19,7 +19,7 @@ def vault_status():
         try:
             keys = v.list_keys()
             key_count = len(keys)
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             pass
     return VaultStatus(initialized=initialized, key_count=key_count)
 
@@ -31,5 +31,5 @@ def vault_keys():
         return []
     try:
         return v.list_keys()
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         return []

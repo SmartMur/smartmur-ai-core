@@ -25,21 +25,28 @@ _run_mod = importlib.util.module_from_spec(_spec)
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def admin() -> GitHubAdmin:
     return GitHubAdmin(owner="testowner")
 
 
-def _completed(returncode: int = 0, stdout: str = "", stderr: str = "") -> subprocess.CompletedProcess:
+def _completed(
+    returncode: int = 0, stdout: str = "", stderr: str = ""
+) -> subprocess.CompletedProcess:
     """Helper to build a CompletedProcess."""
     return subprocess.CompletedProcess(
-        args=[], returncode=returncode, stdout=stdout, stderr=stderr,
+        args=[],
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
 # ---------------------------------------------------------------------------
 # GH binary path
 # ---------------------------------------------------------------------------
+
 
 class TestGhBinPath:
     def test_gh_bin_path(self):
@@ -57,6 +64,7 @@ class TestGhBinPath:
 # ---------------------------------------------------------------------------
 # Authentication
 # ---------------------------------------------------------------------------
+
 
 class TestIsAuthenticated:
     @patch("superpowers.github_admin.subprocess.run")
@@ -94,12 +102,23 @@ class TestIsAuthenticated:
 # list_repos
 # ---------------------------------------------------------------------------
 
+
 class TestListRepos:
     @patch("superpowers.github_admin.subprocess.run")
     def test_list_repos_success(self, mock_run, admin: GitHubAdmin):
         repos = [
-            {"name": "repo1", "defaultBranchRef": {"name": "main"}, "isPrivate": False, "isFork": False},
-            {"name": "repo2", "defaultBranchRef": {"name": "dev"}, "isPrivate": True, "isFork": False},
+            {
+                "name": "repo1",
+                "defaultBranchRef": {"name": "main"},
+                "isPrivate": False,
+                "isFork": False,
+            },
+            {
+                "name": "repo2",
+                "defaultBranchRef": {"name": "dev"},
+                "isPrivate": True,
+                "isFork": False,
+            },
         ]
         mock_run.return_value = _completed(stdout=json.dumps(repos))
 
@@ -127,6 +146,7 @@ class TestListRepos:
 # ---------------------------------------------------------------------------
 # get_branch_protection
 # ---------------------------------------------------------------------------
+
 
 class TestGetBranchProtection:
     @patch("superpowers.github_admin.subprocess.run")
@@ -160,6 +180,7 @@ class TestGetBranchProtection:
 # ---------------------------------------------------------------------------
 # enable_branch_protection
 # ---------------------------------------------------------------------------
+
 
 class TestEnableBranchProtection:
     @patch("superpowers.github_admin.subprocess.run")
@@ -195,12 +216,23 @@ class TestEnableBranchProtection:
 # get_repo_branches
 # ---------------------------------------------------------------------------
 
+
 class TestGetRepoBranches:
     @patch("superpowers.github_admin.subprocess.run")
     def test_get_repo_branches_from_api(self, mock_run, admin: GitHubAdmin):
         repos = [
-            {"name": "alpha", "defaultBranchRef": {"name": "main"}, "isPrivate": False, "isFork": False},
-            {"name": "beta", "defaultBranchRef": {"name": "develop"}, "isPrivate": True, "isFork": False},
+            {
+                "name": "alpha",
+                "defaultBranchRef": {"name": "main"},
+                "isPrivate": False,
+                "isFork": False,
+            },
+            {
+                "name": "beta",
+                "defaultBranchRef": {"name": "develop"},
+                "isPrivate": True,
+                "isFork": False,
+            },
             {"name": "gamma", "defaultBranchRef": None, "isPrivate": False, "isFork": True},
         ]
         mock_run.return_value = _completed(stdout=json.dumps(repos))
@@ -249,13 +281,24 @@ class TestGetRepoBranches:
 # protect_all_repos
 # ---------------------------------------------------------------------------
 
+
 class TestProtectAllRepos:
     @patch("superpowers.github_admin.subprocess.run")
     def test_protect_all_repos_mixed_results(self, mock_run, admin: GitHubAdmin):
         # First call: list_repos (from get_repo_branches)
         repos = [
-            {"name": "good", "defaultBranchRef": {"name": "main"}, "isPrivate": False, "isFork": False},
-            {"name": "bad", "defaultBranchRef": {"name": "main"}, "isPrivate": False, "isFork": False},
+            {
+                "name": "good",
+                "defaultBranchRef": {"name": "main"},
+                "isPrivate": False,
+                "isFork": False,
+            },
+            {
+                "name": "bad",
+                "defaultBranchRef": {"name": "main"},
+                "isPrivate": False,
+                "isFork": False,
+            },
         ]
         mock_run.side_effect = [
             # get_repo_branches -> list_repos
@@ -306,6 +349,7 @@ class TestProtectAllRepos:
 # audit_protection
 # ---------------------------------------------------------------------------
 
+
 class TestAuditProtection:
     @patch.object(GitHubAdmin, "get_repo_branches")
     @patch.object(GitHubAdmin, "get_branch_protection")
@@ -317,7 +361,7 @@ class TestAuditProtection:
         ]
         mock_get_prot.side_effect = [
             {"enforce_admins": {"enabled": True}},  # protected-repo
-            None,                                     # open-repo
+            None,  # open-repo
             {"enforce_admins": {"enabled": False}},  # also-protected
         ]
 
@@ -338,7 +382,9 @@ class TestAuditProtection:
 
     @patch.object(GitHubAdmin, "get_repo_branches")
     @patch.object(GitHubAdmin, "get_branch_protection")
-    def test_audit_protection_all_unprotected(self, mock_get_prot, mock_branches, admin: GitHubAdmin):
+    def test_audit_protection_all_unprotected(
+        self, mock_get_prot, mock_branches, admin: GitHubAdmin
+    ):
         mock_branches.return_value = [
             {"repo": "a", "branch": "main"},
             {"repo": "b", "branch": "main"},
@@ -368,6 +414,7 @@ class TestAuditProtection:
 # Owner / constructor
 # ---------------------------------------------------------------------------
 
+
 class TestConstructor:
     def test_default_owner(self):
         admin = GitHubAdmin()
@@ -381,6 +428,7 @@ class TestConstructor:
 # ---------------------------------------------------------------------------
 # Skill run.py subcommands (smoke tests via module import)
 # ---------------------------------------------------------------------------
+
 
 class TestSkillRunModule:
     def test_module_loads(self):

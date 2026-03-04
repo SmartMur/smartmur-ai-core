@@ -132,7 +132,15 @@ class NotificationsDB:
                 "INSERT INTO notifications (id, source, title, detail, level, read, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)",
                 (nid, source, title, detail, level, now),
             )
-        return {"id": nid, "source": source, "title": title, "detail": detail, "level": level, "read": False, "created_at": now}
+        return {
+            "id": nid,
+            "source": source,
+            "title": title,
+            "detail": detail,
+            "level": level,
+            "read": False,
+            "created_at": now,
+        }
 
     def list(self, limit: int = 50, unread_only: bool = False) -> list[dict]:
         with self._conn() as conn:
@@ -150,7 +158,9 @@ class NotificationsDB:
 
     def unread_count(self) -> int:
         with self._conn() as conn:
-            row = conn.execute("SELECT COUNT(*) as cnt FROM notifications WHERE read = 0").fetchone()
+            row = conn.execute(
+                "SELECT COUNT(*) as cnt FROM notifications WHERE read = 0"
+            ).fetchone()
         return row["cnt"] if row else 0
 
     def mark_read(self, nid: str) -> bool:
@@ -206,9 +216,18 @@ class JobsDB:
                 "INSERT INTO jobs (id, name, job_type, status, created_at) VALUES (?, ?, ?, 'queued', ?)",
                 (jid, name, job_type, now),
             )
-        return {"id": jid, "name": name, "job_type": job_type, "status": "queued",
-                "started_at": None, "completed_at": None, "duration": None,
-                "output": "", "error": "", "created_at": now}
+        return {
+            "id": jid,
+            "name": name,
+            "job_type": job_type,
+            "status": "queued",
+            "started_at": None,
+            "completed_at": None,
+            "duration": None,
+            "output": "",
+            "error": "",
+            "created_at": now,
+        }
 
     def start(self, jid: str) -> bool:
         now = time.time()
@@ -253,4 +272,141 @@ class JobsDB:
     def delete(self, jid: str) -> bool:
         with self._conn() as conn:
             cur = conn.execute("DELETE FROM jobs WHERE id = ?", (jid,))
+        return cur.rowcount > 0
+
+
+class RsyncDB:
+    """Rsync job persistence backed by SQLite."""
+
+    def __init__(self, db_path: Path | None = None):
+        self._path = db_path or _db_path()
+        self._init_db()
+
+    def _conn(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(str(self._path))
+        conn.row_factory = sqlite3.Row
+        return conn
+
+    def _init_db(self):
+        with self._conn() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS rsync_jobs (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL DEFAULT '',
+                    source_host TEXT NOT NULL DEFAULT '',
+                    source_path TEXT NOT NULL,
+                    source_user TEXT NOT NULL DEFAULT 'root',
+                    dest_host TEXT NOT NULL DEFAULT '',
+                    dest_path TEXT NOT NULL,
+                    dest_user TEXT NOT NULL DEFAULT 'root',
+                    options TEXT NOT NULL DEFAULT '{}',
+                    ssh_key TEXT NOT NULL DEFAULT '',
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    progress TEXT NOT NULL DEFAULT '{}',
+                    stats TEXT NOT NULL DEFAULT '{}',
+                    output TEXT NOT NULL DEFAULT '',
+                    error TEXT NOT NULL DEFAULT '',
+                    pid INTEGER,
+                    started_at REAL,
+                    completed_at REAL,
+                    created_at REAL NOT NULL
+                )
+            """)
+
+    def create(
+        self,
+        source_path: str,
+        dest_path: str,
+        name: str = "",
+        source_host: str = "",
+        source_user: str = "root",
+        dest_host: str = "",
+        dest_user: str = "root",
+        options: str = "{}",
+        ssh_key: str = "",
+    ) -> dict:
+        jid = str(uuid.uuid4())[:8]
+        now = time.time()
+        with self._conn() as conn:
+            conn.execute(
+                """INSERT INTO rsync_jobs
+                   (id, name, source_host, source_path, source_user,
+                    dest_host, dest_path, dest_user, options, ssh_key, status, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)""",
+                (jid, name, source_host, source_path, source_user,
+                 dest_host, dest_path, dest_user, options, ssh_key, now),
+            )
+        return self.get(jid)  # type: ignore[return-value]
+
+    def update_status(self, jid: str, status: str, **fields) -> bool:
+        sets = ["status = ?"]
+        vals: list = [status]
+        for k, v in fields.items():
+            sets.append(f"{k} = ?")
+            vals.append(v)
+        vals.append(jid)
+        with self._conn() as conn:
+            cur = conn.execute(
+                f"UPDATE rsync_jobs SET {', '.join(sets)} WHERE id = ?", vals
+            )
+        return cur.rowcount > 0
+
+    def update_progress(self, jid: str, progress_json: str) -> bool:
+        with self._conn() as conn:
+            cur = conn.execute(
+                "UPDATE rsync_jobs SET progress = ? WHERE id = ?",
+                (progress_json, jid),
+            )
+        return cur.rowcount > 0
+
+    def complete(self, jid: str, status: str, stats_json: str, output: str, error: str) -> bool:
+        now = time.time()
+        with self._conn() as conn:
+            cur = conn.execute(
+                """UPDATE rsync_jobs
+                   SET status = ?, stats = ?, output = ?, error = ?, completed_at = ?
+                   WHERE id = ?""",
+                (status, stats_json, output[:50000], error[:10000], now, jid),
+            )
+        return cur.rowcount > 0
+
+    def get(self, jid: str) -> dict | None:
+        with self._conn() as conn:
+            row = conn.execute("SELECT * FROM rsync_jobs WHERE id = ?", (jid,)).fetchone()
+        if row is None:
+            return None
+        d = dict(row)
+        for key in ("options", "progress", "stats"):
+            try:
+                d[key] = json.loads(d[key]) if d[key] else {}
+            except (json.JSONDecodeError, TypeError):
+                d[key] = {}
+        return d
+
+    def list(self, limit: int = 50, status: str | None = None) -> list[dict]:
+        with self._conn() as conn:
+            if status:
+                rows = conn.execute(
+                    "SELECT * FROM rsync_jobs WHERE status = ? ORDER BY created_at DESC LIMIT ?",
+                    (status, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM rsync_jobs ORDER BY created_at DESC LIMIT ?",
+                    (limit,),
+                ).fetchall()
+        results = []
+        for row in rows:
+            d = dict(row)
+            for key in ("options", "progress", "stats"):
+                try:
+                    d[key] = json.loads(d[key]) if d[key] else {}
+                except (json.JSONDecodeError, TypeError):
+                    d[key] = {}
+            results.append(d)
+        return results
+
+    def delete(self, jid: str) -> bool:
+        with self._conn() as conn:
+            cur = conn.execute("DELETE FROM rsync_jobs WHERE id = ?", (jid,))
         return cur.rowcount > 0

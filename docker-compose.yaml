@@ -29,11 +29,20 @@ services:
       - .env
     environment:
       - BROWSER_ENGINE_URL=http://browser-engine:8300
+      - PATH=/opt/node/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+      - ENABLE_CLAUDEAI_MCP_SERVERS=false
     volumes:
       - ${HOME}/.claude-superpowers:/root/.claude-superpowers
+      - ${HOME}/.ssh:/root/.ssh:ro
       - ./skills:/app/skills:ro
+      - ${HOME}/.nvm/versions/node/v22.22.0:/opt/node:ro
+      - ${HOME}/.claude:/root/.claude
+      - ${HOME}/.claude.json:/root/.claude.json
     depends_on:
       - browser-engine
+    networks:
+      - default
+      - npm_default
     restart: unless-stopped
 
   browser-engine:
@@ -42,10 +51,14 @@ services:
       dockerfile: browser_engine/Dockerfile
     ports:
       - "8300:8300"
-    volumes:
-      - ${HOME}/.claude-superpowers/browser:/data/browser
+    env_file:
+      - .env
     environment:
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    volumes:
+      - ${HOME}/.claude-superpowers/browser/profiles:/data/browser/profiles
+    depends_on:
+      - redis
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8300/health')"]
@@ -60,12 +73,18 @@ services:
       dockerfile: telegram-bot/Dockerfile
     env_file:
       - .env
+    environment:
+      - ENABLE_CLAUDEAI_MCP_SERVERS=false
     volumes:
-      - ${HOME}/.claude:/root/.claude:ro
-      - ${HOME}/.claude.json:/root/.claude.json:ro
+      - ${HOME}/.claude:/root/.claude
+      - ${HOME}/.claude.json:/root/.claude.json
     depends_on:
       - redis
     restart: unless-stopped
+
+networks:
+  npm_default:
+    external: true
 
 volumes:
   redis-data:

@@ -36,7 +36,7 @@ def run_command(req: SSHRunRequest):
     executor = get_ssh_executor()
     try:
         results = executor.run(req.target, req.command, timeout=req.timeout)
-    except Exception as exc:
+    except (OSError, RuntimeError, KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
     return [

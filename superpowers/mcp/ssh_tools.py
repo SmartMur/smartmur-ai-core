@@ -36,7 +36,7 @@ def register(mcp: FastMCP) -> None:
                     lines.append(f"STDERR: {r.stderr.rstrip()}")
                 lines.append("")
             return "\n".join(lines).rstrip() or "No output."
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, KeyError, ValueError) as exc:
             return f"Error running SSH command: {exc}"
 
     @mcp.tool()
@@ -61,7 +61,7 @@ def register(mcp: FastMCP) -> None:
                     line += f" tags=[{tags}]"
                 lines.append(line)
             return f"SSH hosts ({len(host_list)}):\n" + "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error listing hosts: {exc}"
 
     @mcp.tool()
@@ -79,7 +79,7 @@ def register(mcp: FastMCP) -> None:
             for group, members in sorted(groups.items()):
                 lines.append(f"  {group}: {', '.join(members)}")
             return f"Host groups ({len(groups)}):\n" + "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error listing groups: {exc}"
 
     @mcp.tool()
@@ -116,7 +116,7 @@ def register(mcp: FastMCP) -> None:
             status = "ALL OK" if report.all_ok else "DEGRADED"
             lines.append(f"\nOverall: {status}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, KeyError, ValueError) as exc:
             return f"Error running health check: {exc}"
 
     @mcp.tool()
@@ -148,7 +148,7 @@ def register(mcp: FastMCP) -> None:
                 if k != "friendly_name":
                     lines.append(f"  {k}: {v}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError, KeyError) as exc:
             return f"Error getting HA state: {exc}"
 
     @mcp.tool()
@@ -168,7 +168,7 @@ def register(mcp: FastMCP) -> None:
             ha = HomeAssistantClient(settings.home_assistant_url, settings.home_assistant_token)
             ha.call_service(domain, service, entity_id)
             return f"Called {domain}.{service} on {entity_id} successfully."
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Error calling HA service: {exc}"
 
     @mcp.tool()
@@ -204,5 +204,5 @@ def register(mcp: FastMCP) -> None:
                 lines.append(f"{eid:<40} {state:<15} {name}")
             lines.append(f"\nTotal: {len(states)} entities")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, OSError, RuntimeError, ValueError) as exc:
             return f"Error listing HA entities: {exc}"

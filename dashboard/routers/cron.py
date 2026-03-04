@@ -111,8 +111,10 @@ def get_job_logs(job_id: str, limit: int = 20):
     log_files = sorted(output_dir.glob("*.log"), reverse=True)[:limit]
     entries = []
     for lf in log_files:
-        entries.append(CronLogEntry(
-            filename=lf.name,
-            content=lf.read_text()[:4000],
-        ))
+        entries.append(
+            CronLogEntry(
+                filename=lf.name,
+                content=lf.read_text()[:4000],
+            )
+        )
     return entries

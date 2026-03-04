@@ -48,14 +48,18 @@ class TelegramChannel(Channel):
             except urllib.error.HTTPError as exc:
                 last_exc = exc
                 if exc.code in _RETRY_HTTP_CODES and attempt < retries:
-                    wait = _BACKOFF_BASE * (2 ** attempt)
+                    wait = _BACKOFF_BASE * (2**attempt)
                     if exc.code == 429:
                         retry_after = exc.headers.get("Retry-After")
                         if retry_after:
                             wait = max(wait, float(retry_after))
                     logger.warning(
                         "Telegram API %s HTTP %d, retry %d/%d in %.1fs",
-                        method, exc.code, attempt + 1, retries, wait,
+                        method,
+                        exc.code,
+                        attempt + 1,
+                        retries,
+                        wait,
                     )
                     time.sleep(wait)
                     continue
@@ -65,10 +69,13 @@ class TelegramChannel(Channel):
             except urllib.error.URLError as exc:
                 last_exc = exc
                 if attempt < retries:
-                    wait = _BACKOFF_BASE * (2 ** attempt)
+                    wait = _BACKOFF_BASE * (2**attempt)
                     logger.warning(
                         "Telegram API %s network error, retry %d/%d in %.1fs",
-                        method, attempt + 1, retries, wait,
+                        method,
+                        attempt + 1,
+                        retries,
+                        wait,
                     )
                     time.sleep(wait)
                     continue
@@ -96,16 +103,30 @@ class TelegramChannel(Channel):
             result = self._api("sendMessage", payload)
             if result.get("ok"):
                 return SendResult(
-                    ok=True, channel="telegram", target=target,
+                    ok=True,
+                    channel="telegram",
+                    target=target,
                     message=f"message_id={result['result']['message_id']}",
                 )
             return SendResult(
-                ok=False, channel="telegram", target=target,
+                ok=False,
+                channel="telegram",
+                target=target,
                 error=result.get("description", "unknown error"),
             )
         except (urllib.error.URLError, json.JSONDecodeError, KeyError) as exc:
             return SendResult(
-                ok=False, channel="telegram", target=target, error=str(exc),
+                ok=False,
+                channel="telegram",
+                target=target,
+                error=str(exc),
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            return SendResult(
+                ok=False,
+                channel="telegram",
+                target=target,
+                error=f"Unexpected error: {exc}",
             )
 
     def test_connection(self) -> SendResult:
@@ -114,14 +135,28 @@ class TelegramChannel(Channel):
             if result.get("ok"):
                 bot = result["result"]
                 return SendResult(
-                    ok=True, channel="telegram", target="",
+                    ok=True,
+                    channel="telegram",
+                    target="",
                     message=f"bot=@{bot['username']}",
                 )
             return SendResult(
-                ok=False, channel="telegram", target="",
+                ok=False,
+                channel="telegram",
+                target="",
                 error=result.get("description", "unknown error"),
             )
         except (urllib.error.URLError, json.JSONDecodeError, KeyError) as exc:
             return SendResult(
-                ok=False, channel="telegram", target="", error=str(exc),
+                ok=False,
+                channel="telegram",
+                target="",
+                error=str(exc),
+            )
+        except (OSError, ValueError, TypeError) as exc:
+            return SendResult(
+                ok=False,
+                channel="telegram",
+                target="",
+                error=f"Unexpected error: {exc}",
             )

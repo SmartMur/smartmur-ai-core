@@ -68,7 +68,13 @@ class TestJobDataclass:
         assert j.job_type == JobType.shell
 
     def test_roundtrip(self):
-        j = Job(id="abc-123", name="test", schedule="every 1h", job_type=JobType.claude, command="summarize")
+        j = Job(
+            id="abc-123",
+            name="test",
+            schedule="every 1h",
+            job_type=JobType.claude,
+            command="summarize",
+        )
         d = j.to_dict()
         j2 = Job.from_dict(d)
         assert j2.id == j.id
@@ -207,9 +213,7 @@ class TestCronEngineExecution:
         assert len(logs) == 1
 
     def test_disabled_job_not_registered(self, engine: CronEngine):
-        job = engine.add_job(
-            "disabled-add", "every 1h", "shell", "echo nope", enabled=False
-        )
+        job = engine.add_job("disabled-add", "every 1h", "shell", "echo nope", enabled=False)
         # The job should exist in our registry but not in APScheduler
         assert engine.get_job(job.id).enabled is False
         scheduler_job = engine._scheduler.get_job(job.id)

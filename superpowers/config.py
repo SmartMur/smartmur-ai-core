@@ -6,10 +6,21 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # Default credential values that MUST NOT be used in production
-_INSECURE_DEFAULTS = frozenset({
-    "admin", "password", "changeme", "secret", "test", "default",
-    "12345", "123456", "root", "pass", "user",
-})
+_INSECURE_DEFAULTS = frozenset(
+    {
+        "admin",
+        "password",
+        "changeme",
+        "secret",
+        "test",
+        "default",
+        "12345",
+        "123456",
+        "root",
+        "pass",
+        "user",
+    }
+)
 
 
 def _env(key: str, default: str = "") -> str:
@@ -82,16 +93,23 @@ class Settings:
     home_assistant_token: str = ""
 
     # Job Orchestration (Phase D)
-    allowed_auto_merge_paths: list[str] = field(default_factory=lambda: [
-        "docs/*",
-        "*.md",
-        "tests/*",
-        "skills/*/skill.yaml",
-    ])
+    allowed_auto_merge_paths: list[str] = field(
+        default_factory=lambda: [
+            "docs/*",
+            "*.md",
+            "tests/*",
+            "skills/*/skill.yaml",
+        ]
+    )
 
     # Model routing (Phase F)
     chat_model: str = "claude"  # Model/provider for interactive chat
     job_model: str = "claude"  # Model/provider for background cron/workflow jobs
+
+    # OpenAI fallback
+    openai_api_key: str = ""  # OPENAI_API_KEY — enables fallback
+    openai_model: str = "gpt-4o"  # OPENAI_MODEL — default model for OpenAI
+    llm_fallback: bool = True  # LLM_FALLBACK — auto-fallback when OpenAI key is set
 
     # Telegram Bot (Phase 9)
     allowed_chat_ids: str = ""  # Comma-separated allowlist
@@ -116,8 +134,32 @@ class Settings:
     data_dir: Path = field(default_factory=get_data_dir)
 
     @classmethod
+    def _vault_get(cls, key: str, data_dir: Path) -> str:
+        """Try to read a secret from the encrypted vault.
+
+        Returns the value if the vault is available and the key exists,
+        otherwise returns empty string.  Never raises — vault is optional.
+        """
+        try:
+            from superpowers.vault import Vault
+
+            v = Vault(
+                vault_path=data_dir / "vault.enc", identity_file=data_dir / "age-identity.txt"
+            )
+            if v.vault_path.exists() and v.identity_file.exists():
+                val = v.get(key)
+                return val if val else ""
+        except (ImportError, OSError, RuntimeError, ValueError):
+            pass
+        return ""
+
+    @classmethod
     def load(cls, dotenv_path: Path | None = None) -> "Settings":
-        """Load settings from .env file and environment variables."""
+        """Load settings from .env file, environment variables, and vault.
+
+        Resolution order for sensitive fields: env var first, then vault
+        fallback.  Non-secret fields are env-only.
+        """
         if dotenv_path is None:
             dotenv_path = Path.cwd() / ".env"
         _load_dotenv(dotenv_path)
@@ -125,26 +167,36 @@ class Settings:
         data_dir = get_data_dir()
         vault_identity = _env("VAULT_IDENTITY_FILE", str(data_dir / "vault.key"))
 
+        # For sensitive fields, try env var first, then vault
+        def _secret(env_key: str) -> str:
+            val = _env(env_key)
+            if val:
+                return val
+            return cls._vault_get(env_key, data_dir)
+
         return cls(
-            anthropic_api_key=_env("ANTHROPIC_API_KEY"),
-            slack_bot_token=_env("SLACK_BOT_TOKEN"),
-            telegram_bot_token=_env("TELEGRAM_BOT_TOKEN"),
-            telegram_default_chat_id=_env("TELEGRAM_DEFAULT_CHAT_ID"),
-            discord_bot_token=_env("DISCORD_BOT_TOKEN"),
+            anthropic_api_key=_secret("ANTHROPIC_API_KEY"),
+            slack_bot_token=_secret("SLACK_BOT_TOKEN"),
+            telegram_bot_token=_secret("TELEGRAM_BOT_TOKEN"),
+            telegram_default_chat_id=_secret("TELEGRAM_DEFAULT_CHAT_ID"),
+            discord_bot_token=_secret("DISCORD_BOT_TOKEN"),
             smtp_host=_env("SMTP_HOST"),
-            smtp_user=_env("SMTP_USER"),
-            smtp_pass=_env("SMTP_PASS"),
+            smtp_user=_secret("SMTP_USER"),
+            smtp_pass=_secret("SMTP_PASS"),
             smtp_port=int(_env("SMTP_PORT", "587")),
             smtp_from=_env("SMTP_FROM"),
             redis_url=_env("REDIS_URL", "redis://localhost:6379/0"),
             vault_identity_file=vault_identity,
             dashboard_user=_env("DASHBOARD_USER"),
-            dashboard_pass=_env("DASHBOARD_PASS"),
-            dashboard_secret=_env("DASHBOARD_SECRET"),
+            dashboard_pass=_secret("DASHBOARD_PASS"),
+            dashboard_secret=_secret("DASHBOARD_SECRET"),
             home_assistant_url=_env("HOME_ASSISTANT_URL"),
-            home_assistant_token=_env("HOME_ASSISTANT_TOKEN"),
+            home_assistant_token=_secret("HOME_ASSISTANT_TOKEN"),
             chat_model=_env("CHAT_MODEL", "claude"),
             job_model=_env("JOB_MODEL", "claude"),
+            openai_api_key=_secret("OPENAI_API_KEY"),
+            openai_model=_env("OPENAI_MODEL", "gpt-4o"),
+            llm_fallback=_env("LLM_FALLBACK", "true").lower() not in ("false", "0", "no"),
             allowed_chat_ids=_env("ALLOWED_CHAT_IDS"),
             telegram_session_ttl=int(_env("TELEGRAM_SESSION_TTL", "3600")),
             telegram_max_history=int(_env("TELEGRAM_MAX_HISTORY", "20")),
@@ -158,9 +210,8 @@ class Settings:
             environment=_env("ENVIRONMENT", "development"),
             force_https=_env("FORCE_HTTPS", "").lower() in ("true", "1", "yes")
             or _env("ENVIRONMENT", "development").lower() == "production",
-            webhook_require_signature=_env(
-                "WEBHOOK_REQUIRE_SIGNATURE", "true"
-            ).lower() not in ("false", "0", "no"),
+            webhook_require_signature=_env("WEBHOOK_REQUIRE_SIGNATURE", "true").lower()
+            not in ("false", "0", "no"),
             rate_limit_per_ip=int(_env("RATE_LIMIT_PER_IP", "60")),
             rate_limit_per_user=int(_env("RATE_LIMIT_PER_USER", "120")),
             data_dir=data_dir,
@@ -193,9 +244,9 @@ class Settings:
             )
         if self.dashboard_pass and self.dashboard_pass.lower() in _INSECURE_DEFAULTS:
             warnings.append(
-                f"DASHBOARD_PASS is set to an insecure default value. "
-                f"Generate a strong password with: "
-                f"python3 -c \"import secrets; print(secrets.token_urlsafe(24))\""
+                "DASHBOARD_PASS is set to an insecure default value. "
+                "Generate a strong password with: "
+                'python3 -c "import secrets; print(secrets.token_urlsafe(24))"'
             )
 
         # HTTPS enforcement
@@ -208,8 +259,7 @@ class Settings:
         # Webhook signature validation
         if not self.webhook_require_signature:
             warnings.append(
-                "WEBHOOK_REQUIRE_SIGNATURE is disabled. "
-                "Inbound webhooks will NOT be verified."
+                "WEBHOOK_REQUIRE_SIGNATURE is disabled. Inbound webhooks will NOT be verified."
             )
 
         for w in warnings:

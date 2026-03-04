@@ -1,0 +1,87 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  msg-gateway:
+    build:
+      context: .
+      dockerfile: msg_gateway/Dockerfile
+    ports:
+      - "8100:8100"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    ports:
+      - "8200:8200"
+    env_file:
+      - .env
+    environment:
+      - BROWSER_ENGINE_URL=http://browser-engine:8300
+      - PATH=/opt/node/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+    volumes:
+      - ${HOME}/.claude-superpowers:/root/.claude-superpowers
+      - ${HOME}/.ssh:/root/.ssh:ro
+      - ./skills:/app/skills:ro
+      - ${HOME}/.nvm/versions/node/v22.22.0:/opt/node:ro
+      - ${HOME}/.claude:/root/.claude
+      - ${HOME}/.claude.json:/root/.claude.json:ro
+    depends_on:
+      - browser-engine
+    networks:
+      - default
+      - npm_default
+    restart: unless-stopped
+
+  browser-engine:
+    build:
+      context: .
+      dockerfile: browser_engine/Dockerfile
+    ports:
+      - "8300:8300"
+    env_file:
+      - .env
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    volumes:
+      - ${HOME}/.claude-superpowers/browser/profiles:/data/browser/profiles
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8300/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: telegram-bot/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ${HOME}/.claude:/root/.claude:ro
+      - ${HOME}/.claude.json:/root/.claude.json:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+networks:
+  npm_default:
+    external: true
+
+volumes:
+  redis-data:

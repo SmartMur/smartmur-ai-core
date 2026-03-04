@@ -20,7 +20,7 @@ For **every incoming request**, follow this exact order:
    - If still missing, scaffold a new skill/tool in-repo and continue execution without blocking.
 5. **Report progress to Telegram bot**
    - Intake sends start/finish updates when Telegram is configured.
-6. **Document all work in `project-docs/`**
+6. **Document all work in `docs/sessions/`**
    - Create/update session notes, change logs, and next-action queues.
 
 This is now part of the default workflow for this project.
@@ -222,7 +222,7 @@ Base directory: `/home/ray/claude-superpowers/`
 
 ## TODO — Infrastructure
 
-- [x] **Project scaffold** — `~/Projects/claude-superpowers/` with pyproject.toml, `claw` CLI entry point, config loader, .env.example, .gitignore, venv, 42 passing tests.
+- [x] **Project scaffold** — `~/claude-superpowers/` with pyproject.toml, `claw` CLI entry point, config loader, .env.example, .gitignore, venv, 42 passing tests.
 - [x] **Docker Compose stack** — Services: `msg-gateway`, `cron-daemon`, `redis`, `browser-engine` (Playwright + Chrome). All on the Docker host (192.168.30.117) or local Mac.
 - [x] **launchd plists** — macOS launch agents for: cron daemon, file watcher, message gateway (local mode).
 - [x] **CLI wrapper** — `claw` shell script that wraps common operations: `claw cron ls`, `claw msg slack "hello"`, `claw skill run network-scan`, `claw workflow run deploy`.

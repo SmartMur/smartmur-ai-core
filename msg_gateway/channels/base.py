@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -28,7 +28,7 @@ class Message:
     sender_id: str
     sender_name: str
     text: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     raw: dict[str, Any] = field(default_factory=dict)
     chat_id: str = ""
     reply_to_id: str = ""

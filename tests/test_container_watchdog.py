@@ -126,8 +126,7 @@ class TestHelpers:
     @patch("superpowers.container_watchdog.subprocess.run")
     def test_get_running_containers(self, mock_run):
         mock_run.return_value = subprocess.CompletedProcess(
-            args=[], returncode=0,
-            stdout="plex\nradarr\nsonarr\n", stderr=""
+            args=[], returncode=0, stdout="plex\nradarr\nsonarr\n", stderr=""
         )
         result = _get_running_containers()
         assert result == {"plex", "radarr", "sonarr"}

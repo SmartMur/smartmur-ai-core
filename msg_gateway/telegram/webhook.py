@@ -53,7 +53,7 @@ class WebhookHandler:
 
         try:
             update = Update.from_dict(data)
-        except Exception as exc:
+        except (KeyError, TypeError, ValueError) as exc:
             logger.error("Failed to parse webhook update: %s", exc)
             return False
 
@@ -65,7 +65,7 @@ class WebhookHandler:
             try:
                 self._update_handler(update)
                 return True
-            except Exception as exc:
+            except (RuntimeError, KeyError, ValueError, OSError) as exc:
                 logger.error("Webhook update handler error: %s", exc)
                 return False
 

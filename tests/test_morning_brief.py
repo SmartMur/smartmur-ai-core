@@ -76,13 +76,14 @@ class TestMorningBriefExecution:
 
     def _fake_skill(self, step, call_log):
         call_log.append(("skill", step.name, step.command))
-        return "HOST           STATUS\nproxmox        UP\ntruenas        UP\nhomeassistant  DOWN", True
+        return (
+            "HOST           STATUS\nproxmox        UP\ntruenas        UP\nhomeassistant  DOWN",
+            True,
+        )
 
     def _fake_claude(self, step, call_log):
         call_log.append(("claude_prompt", step.name, step.command))
-        return (
-            "- Proxmox: healthy\n- TrueNAS: healthy\n- Home Assistant: unreachable"
-        ), True
+        return ("- Proxmox: healthy\n- TrueNAS: healthy\n- Home Assistant: unreachable"), True
 
     def _fake_shell(self, step, call_log):
         call_log.append(("shell", step.name, step.command))
@@ -106,8 +107,10 @@ class TestMorningBriefExecution:
                 duration_ms=10,
             )
 
-        with patch.object(engine, "_execute_step", side_effect=mock_execute), \
-             patch.object(engine, "_notify"):
+        with (
+            patch.object(engine, "_execute_step", side_effect=mock_execute),
+            patch.object(engine, "_notify"),
+        ):
             results = engine.run(wf)
 
         assert len(results) == 3
@@ -118,12 +121,16 @@ class TestMorningBriefExecution:
         def mock_execute(step, dry_run=False):
             call_log.append(step.type.value)
             return StepResult(
-                step_name=step.name, status=StepStatus.passed,
-                output="ok", duration_ms=5,
+                step_name=step.name,
+                status=StepStatus.passed,
+                output="ok",
+                duration_ms=5,
             )
 
-        with patch.object(engine, "_execute_step", side_effect=mock_execute), \
-             patch.object(engine, "_notify"):
+        with (
+            patch.object(engine, "_execute_step", side_effect=mock_execute),
+            patch.object(engine, "_notify"),
+        ):
             engine.run(wf)
 
         assert call_log == ["skill", "claude_prompt", "shell"]
@@ -133,16 +140,22 @@ class TestMorningBriefExecution:
             call_log.append(step.name)
             if step.name == "health-check":
                 return StepResult(
-                    step_name=step.name, status=StepStatus.failed,
-                    error="skill not found", duration_ms=5,
+                    step_name=step.name,
+                    status=StepStatus.failed,
+                    error="skill not found",
+                    duration_ms=5,
                 )
             return StepResult(
-                step_name=step.name, status=StepStatus.passed,
-                output="ok", duration_ms=5,
+                step_name=step.name,
+                status=StepStatus.passed,
+                output="ok",
+                duration_ms=5,
             )
 
-        with patch.object(engine, "_execute_step", side_effect=mock_execute), \
-             patch.object(engine, "_notify"):
+        with (
+            patch.object(engine, "_execute_step", side_effect=mock_execute),
+            patch.object(engine, "_notify"),
+        ):
             results = engine.run(wf)
 
         # All 3 steps ran despite the first failing (on_failure: continue)
@@ -155,12 +168,16 @@ class TestMorningBriefExecution:
     def test_notify_called_with_info_profile(self, wf, engine):
         def mock_execute(step, dry_run=False):
             return StepResult(
-                step_name=step.name, status=StepStatus.passed,
-                output="ok", duration_ms=5,
+                step_name=step.name,
+                status=StepStatus.passed,
+                output="ok",
+                duration_ms=5,
             )
 
-        with patch.object(engine, "_execute_step", side_effect=mock_execute), \
-             patch.object(engine, "_notify") as mock_notify:
+        with (
+            patch.object(engine, "_execute_step", side_effect=mock_execute),
+            patch.object(engine, "_notify") as mock_notify,
+        ):
             engine.run(wf)
 
         mock_notify.assert_called_once()

@@ -23,7 +23,7 @@ docker compose up dashboard
 ## Architecture
 
 - **Frontend**: Alpine.js + htmx (CDN, no build step, ~30kb)
-- **Backend**: FastAPI with 11 API routers (44 endpoints)
+- **Backend**: FastAPI with 16 API routers (70 endpoints)
 - **Routing**: SPA hash routing (`#/cron`, `#/ssh`, etc.)
 - **Theme**: Dark theme with CSS custom properties, responsive grid
 - **Dependencies**: Lazy-singleton pattern via `deps.py` — same engines as CLI/MCP
@@ -49,6 +49,11 @@ dashboard/
     vault.py           # /api/vault/* (keys, status — no secrets)
     watchers.py        # /api/watchers/* (list rules)
     browser.py         # /api/browser/* (list profiles)
+    auth.py            # /login, /logout (session auth)
+    chat.py            # /api/chat/* (conversations, send, SSE stream)
+    jobs.py            # /api/jobs/* (task queue, git-branch jobs, SSE)
+    notifications.py   # /api/notifications/* (list, create, read, feed)
+    settings.py        # /api/settings/* (overview, integrations)
   static/
     index.html         # SPA shell with sidebar nav
     app.js             # Alpine.js page components + API helpers
@@ -57,7 +62,7 @@ dashboard/
   Dockerfile
 ```
 
-## REST API Endpoints (44 total)
+## REST API Endpoints (70 total)
 
 | Router | Endpoints |
 |--------|-----------|
@@ -72,6 +77,11 @@ dashboard/
 | **vault** | `GET /api/vault/keys`, `GET /api/vault/status` |
 | **watchers** | `GET /api/watchers/rules`, `GET /api/watchers/rules/{name}` |
 | **browser** | `GET /api/browser/profiles` |
+| **auth** | `POST /login`, `POST /logout` |
+| **chat** | `GET /api/chat/conversations`, `POST /api/chat/conversations`, `GET /api/chat/conversations/{cid}`, `DELETE /api/chat/conversations/{cid}`, `POST /api/chat/send`, `GET /api/chat/stream` |
+| **jobs** | `GET /api/jobs`, `POST /api/jobs`, `GET /api/jobs/{jid}`, `POST /api/jobs/{jid}/start`, `POST /api/jobs/{jid}/complete`, `DELETE /api/jobs/{jid}`, `GET /api/jobs/branches`, `GET /api/jobs/branches/{job_id}`, `GET /api/jobs/stream/updates` |
+| **notifications** | `GET /api/notifications`, `POST /api/notifications`, `GET /api/notifications/unread`, `POST /api/notifications/{nid}/read`, `POST /api/notifications/read-all`, `DELETE /api/notifications/{nid}`, `GET /api/notifications/feed` |
+| **settings** | `GET /api/settings/overview`, `GET /api/settings/integrations` |
 
 ## Dashboard Pages
 

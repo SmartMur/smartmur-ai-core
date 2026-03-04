@@ -46,6 +46,7 @@ class WatcherEngine:
     def __init__(self, rules_path: Path | None = None):
         if rules_path is None:
             from superpowers.config import get_data_dir
+
             rules_path = get_data_dir() / "watchers.yaml"
         self._rules_path = Path(rules_path)
         self._rules: list[WatchRule] = []
@@ -140,7 +141,7 @@ class WatcherEngine:
                 self._action_move(src_path, rule)
             elif rule.action == WatchAction.copy:
                 self._action_copy(src_path, rule)
-        except Exception:
+        except (subprocess.SubprocessError, OSError, KeyError, RuntimeError, ValueError):
             logger.exception("Action failed for rule '%s' on %s", rule.name, src_path)
 
     def _action_shell(self, src_path: str, rule: WatchRule) -> None:

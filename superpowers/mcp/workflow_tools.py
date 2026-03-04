@@ -21,7 +21,9 @@ def register(mcp: FastMCP) -> None:
             engine = WorkflowEngine()
             results = engine.run(config, dry_run=dry_run)
 
-            lines = [f"Workflow '{name}' {'(dry run) ' if dry_run else ''}— {len(results)} step(s):"]
+            lines = [
+                f"Workflow '{name}' {'(dry run) ' if dry_run else ''}— {len(results)} step(s):"
+            ]
             for r in results:
                 status = r.status.value.upper()
                 duration = f" ({r.duration_ms}ms)" if r.duration_ms else ""
@@ -32,7 +34,7 @@ def register(mcp: FastMCP) -> None:
                 if r.error:
                     lines.append(f"    ERROR: {r.error}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, FileNotFoundError, ValueError, KeyError, OSError, RuntimeError) as exc:
             return f"Error running workflow '{name}': {exc}"
 
     @mcp.tool()
@@ -46,7 +48,7 @@ def register(mcp: FastMCP) -> None:
             if not names:
                 return "No workflows found in ~/.claude-superpowers/workflows/"
             return "Available workflows:\n" + "\n".join(f"  - {n}" for n in names)
-        except Exception as exc:
+        except (ImportError, OSError, ValueError) as exc:
             return f"Error listing workflows: {exc}"
 
     @mcp.tool()
@@ -85,7 +87,7 @@ def register(mcp: FastMCP) -> None:
                     lines.append(f"  {i}. {step.name} ({step.type.value}): {step.command}")
 
             return "\n".join(lines)
-        except Exception as exc:
+        except (ImportError, FileNotFoundError, ValueError, KeyError, OSError) as exc:
             return f"Error showing workflow '{name}': {exc}"
 
     @mcp.tool()
@@ -103,6 +105,8 @@ def register(mcp: FastMCP) -> None:
             errors = loader.validate(config)
             if not errors:
                 return f"Workflow '{name}' is valid ({len(config.steps)} steps)."
-            return f"Workflow '{name}' has {len(errors)} error(s):\n" + "\n".join(f"  - {e}" for e in errors)
-        except Exception as exc:
+            return f"Workflow '{name}' has {len(errors)} error(s):\n" + "\n".join(
+                f"  - {e}" for e in errors
+            )
+        except (ImportError, FileNotFoundError, ValueError, KeyError, OSError) as exc:
             return f"Error validating workflow '{name}': {exc}"

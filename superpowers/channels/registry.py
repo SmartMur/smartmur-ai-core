@@ -42,15 +42,19 @@ class ChannelRegistry:
         s = self._settings
         if name == ChannelType.slack.value:
             from superpowers.channels.slack import SlackChannel
+
             return SlackChannel(bot_token=s.slack_bot_token)
         elif name == ChannelType.telegram.value:
             from superpowers.channels.telegram import TelegramChannel
+
             return TelegramChannel(bot_token=s.telegram_bot_token)
         elif name == ChannelType.discord.value:
             from superpowers.channels.discord import DiscordChannel
+
             return DiscordChannel(bot_token=s.discord_bot_token)
         elif name == ChannelType.email.value:
             from superpowers.channels.email import EmailChannel
+
             return EmailChannel(
                 host=s.smtp_host,
                 user=s.smtp_user,
@@ -60,6 +64,7 @@ class ChannelRegistry:
             )
         elif name == ChannelType.imessage.value:
             from superpowers.channels.imessage import IMessageChannel
+
             return IMessageChannel()
         else:
             raise ChannelError(f"Unknown channel: {name}")

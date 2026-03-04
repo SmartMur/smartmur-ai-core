@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AccessRequest:
     """A pending access request from an unauthorized user."""
+
     chat_id: str
     user_id: int = 0
     username: str = ""
@@ -111,13 +112,13 @@ class ChatVerification:
             user_info = self._format_user_info(request)
             self._api.send_message(
                 self._admin_chat_id,
-                f"New access request:\n{user_info}\n\n"
-                f"To approve: /approve {chat_id}",
+                f"New access request:\n{user_info}\n\nTo approve: /approve {chat_id}",
             )
 
         logger.info(
             "Access request from chat_id=%s user=%s",
-            chat_id, request.username or request.first_name or "unknown",
+            chat_id,
+            request.username or request.first_name or "unknown",
         )
         return False
 

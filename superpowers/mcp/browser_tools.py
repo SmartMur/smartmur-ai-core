@@ -20,7 +20,7 @@ def register(mcp: FastMCP) -> None:
                 text = engine.extract_text("body")
                 truncated = text[:2000] if len(text) > 2000 else text
                 return f"Title: {result.title}\nURL: {result.url}\n\n{truncated}"
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error browsing {url}: {exc}"
 
     @mcp.tool()
@@ -39,7 +39,7 @@ def register(mcp: FastMCP) -> None:
                 else:
                     path = engine.screenshot()
                 return f"Screenshot saved: {path}"
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error taking screenshot of {url}: {exc}"
 
     @mcp.tool()
@@ -55,7 +55,7 @@ def register(mcp: FastMCP) -> None:
                     return f"Failed to load {url}: {result.error}"
                 text = engine.extract_text(selector)
                 return text
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error extracting from {url}: {exc}"
 
     @mcp.tool()
@@ -87,7 +87,7 @@ def register(mcp: FastMCP) -> None:
                     if idx == 0:
                         lines.append("  ".join("─" * w for w in col_widths))
                 return "\n".join(lines)
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error extracting table from {url}: {exc}"
 
     @mcp.tool()
@@ -103,7 +103,7 @@ def register(mcp: FastMCP) -> None:
                     return f"Failed to load {url}: {result.error}"
                 js_result = engine.evaluate(script)
                 return f"JS result: {js_result}"
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error running JS on {url}: {exc}"
 
     @mcp.tool()
@@ -142,7 +142,7 @@ def register(mcp: FastMCP) -> None:
                         f"Current title: {engine.current_title}"
                     )
                 return f"Filled {len(field_map)} field(s). No submit selector provided."
-        except Exception as exc:
+        except (RuntimeError, OSError, TimeoutError, ValueError) as exc:
             return f"Error filling form on {url}: {exc}"
 
     @mcp.tool()
@@ -159,5 +159,5 @@ def register(mcp: FastMCP) -> None:
             for p in profiles:
                 lines.append(f"  - {p}")
             return "\n".join(lines)
-        except Exception as exc:
+        except (OSError, RuntimeError) as exc:
             return f"Error listing profiles: {exc}"

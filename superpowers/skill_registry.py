@@ -65,7 +65,7 @@ class SkillRegistry:
                 skill = _parse_skill_yaml(skill_yaml)
                 self._cache[skill.name] = skill
                 skills.append(skill)
-            except Exception:
+            except (yaml.YAMLError, OSError, KeyError, ValueError):
                 continue
         return skills
 

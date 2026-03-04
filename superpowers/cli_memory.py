@@ -30,7 +30,9 @@ def memory_remember(key: str, value: str, category: str, tags: str, project: str
     tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
     try:
         entry = store.remember(key, value, category=category, tags=tag_list, project=project)
-        console.print(f"[green]Remembered[/green] [bold]{entry.key}[/bold] ({entry.category.value})")
+        console.print(
+            f"[green]Remembered[/green] [bold]{entry.key}[/bold] ({entry.category.value})"
+        )
     except MemoryStoreError as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)

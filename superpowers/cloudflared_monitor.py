@@ -18,6 +18,7 @@ Status = Literal["healthy", "degraded", "down", "crash_loop", "unknown"]
 @dataclass
 class ContainerState:
     """Current state of the cloudflared container."""
+
     running: bool = False
     exit_code: int = 0
     restart_count: int = 0
@@ -32,6 +33,7 @@ class ContainerState:
 @dataclass
 class DiagnosticResult:
     """Diagnosis of what's wrong and what to do."""
+
     status: Status = "unknown"
     issues: list[str] = field(default_factory=list)
     actions_taken: list[str] = field(default_factory=list)
@@ -60,7 +62,9 @@ class DiagnosticResult:
 ERROR_PATTERNS = {
     "invalid_token": re.compile(r"(?:invalid|unauthorized|bad).*token", re.IGNORECASE),
     "placeholder_token": re.compile(r"your_tunnel_token_here", re.IGNORECASE),
-    "network_error": re.compile(r"(?:DNS|network|connection refused|timeout|dial tcp)", re.IGNORECASE),
+    "network_error": re.compile(
+        r"(?:DNS|network|connection refused|timeout|dial tcp)", re.IGNORECASE
+    ),
     "cert_error": re.compile(r"(?:certificate|TLS|SSL).*(?:error|failed|invalid)", re.IGNORECASE),
     "version_mismatch": re.compile(r"(?:version|upgrade|deprecated|incompatible)", re.IGNORECASE),
 }
@@ -84,7 +88,10 @@ class CloudflaredMonitor:
     def _run_cmd(self, args: list[str], *, timeout: int = 30) -> subprocess.CompletedProcess:
         """Run a command safely (no shell=True)."""
         return subprocess.run(
-            args, capture_output=True, text=True, timeout=timeout,
+            args,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
         )
 
     def get_container_state(self) -> ContainerState:
@@ -92,11 +99,15 @@ class CloudflaredMonitor:
         state = ContainerState()
 
         try:
-            result = self._run_cmd([
-                "docker", "inspect",
-                "--format", '{"running":{{.State.Running}},"exit_code":{{.State.ExitCode}},"restart_count":{{.RestartCount}},"status":"{{.State.Status}}","started_at":"{{.State.StartedAt}}"}',
-                self.container_name,
-            ])
+            result = self._run_cmd(
+                [
+                    "docker",
+                    "inspect",
+                    "--format",
+                    '{"running":{{.State.Running}},"exit_code":{{.State.ExitCode}},"restart_count":{{.RestartCount}},"status":"{{.State.Status}}","started_at":"{{.State.StartedAt}}"}',
+                    self.container_name,
+                ]
+            )
             if result.returncode != 0:
                 state.status = "not_found"
                 return state
@@ -114,9 +125,15 @@ class CloudflaredMonitor:
 
         # Get recent logs
         try:
-            log_result = self._run_cmd([
-                "docker", "logs", "--tail", "50", self.container_name,
-            ])
+            log_result = self._run_cmd(
+                [
+                    "docker",
+                    "logs",
+                    "--tail",
+                    "50",
+                    self.container_name,
+                ]
+            )
             state.error_log = (log_result.stdout + log_result.stderr)[-2000:]
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
@@ -214,7 +231,7 @@ class CloudflaredMonitor:
                     diagnosis.actions_taken.append(
                         "Stopped crash-looping container (bad token — waiting for user fix)"
                     )
-                except Exception:
+                except (subprocess.SubprocessError, OSError):
                     pass
             return diagnosis
 
@@ -223,7 +240,7 @@ class CloudflaredMonitor:
             try:
                 self._run_cmd(["docker", "stop", self.container_name])
                 diagnosis.actions_taken.append("Stopped crash-looping container")
-            except Exception:
+            except (subprocess.SubprocessError, OSError):
                 diagnosis.actions_taken.append("Failed to stop crash-looping container")
             return diagnosis
 
@@ -236,7 +253,7 @@ class CloudflaredMonitor:
                     timeout=60,
                 )
                 diagnosis.actions_taken.append("Restarted container (network error recovery)")
-            except Exception:
+            except (subprocess.SubprocessError, OSError):
                 diagnosis.actions_taken.append("Failed to restart container")
             return diagnosis
 
@@ -248,7 +265,7 @@ class CloudflaredMonitor:
                     timeout=60,
                 )
                 diagnosis.actions_taken.append("Started container with docker compose up -d")
-            except Exception:
+            except (subprocess.SubprocessError, OSError):
                 diagnosis.actions_taken.append("Failed to start container")
 
         return diagnosis

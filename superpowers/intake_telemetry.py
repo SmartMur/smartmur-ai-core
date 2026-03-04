@@ -78,9 +78,7 @@ class IntakeTelemetry:
             },
         )
 
-    def session_saved(
-        self, total: int, ok: int, failed: int, execute: bool
-    ) -> None:
+    def session_saved(self, total: int, ok: int, failed: int, execute: bool) -> None:
         self._audit.log(
             "intake.session_saved",
             f"{ok} ok, {failed} failed, {total} total",
@@ -93,9 +91,7 @@ class IntakeTelemetry:
             },
         )
 
-    def notification_sent(
-        self, channel: str, phase: str, success: bool
-    ) -> None:
+    def notification_sent(self, channel: str, phase: str, success: bool) -> None:
         self._audit.log(
             "intake.notification",
             f"{channel}: {phase} ({'ok' if success else 'failed'})",

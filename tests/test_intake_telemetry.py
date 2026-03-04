@@ -78,7 +78,9 @@ class TestIntakeTelemetry:
 
     def test_requirements_extracted(self, tmp_path):
         telemetry, log_file = self._make_telemetry(tmp_path)
-        telemetry.requirements_extracted(count=3, preview="do thing one; do thing two; do thing three")
+        telemetry.requirements_extracted(
+            count=3, preview="do thing one; do thing two; do thing three"
+        )
 
         entry = self._last_entry(log_file)
         assert entry["action"] == "intake.requirements_extracted"
@@ -296,6 +298,7 @@ class TestIntakeTelemetryIntegration:
         telemetry = IntakeTelemetry(audit=audit)
 
         with patch.object(intake, "_execute_one") as mock_exec:
+
             def side_effect(task, loader, reg, telem=None):
                 if telem:
                     telem.task_started(task.id, task.skill)

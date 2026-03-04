@@ -123,7 +123,7 @@ def uninstall_plist(service_name: str) -> None:
     """Stop and remove service file."""
     try:
         unload_service(service_name)
-    except Exception:
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError, RuntimeError):
         pass
 
     backend = service_backend()

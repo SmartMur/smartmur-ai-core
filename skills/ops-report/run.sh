@@ -4,48 +4,29 @@
 
 set -uo pipefail
 
-########################################
-# Config
-########################################
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-
-# Load .env if available
-if [[ -f "$PROJECT_DIR/.env" ]]; then
-    set -a
-    # shellcheck disable=SC1091
-    source "$PROJECT_DIR/.env" 2>/dev/null || true
-    set +a
-fi
+source "$(dirname "$0")/../lib.sh"
+load_env
 
 TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
 CHAT_ID="${TELEGRAM_CHAT_ID:-${TELEGRAM_DEFAULT_CHAT_ID:-}}"
 
 if [[ -z "$TELEGRAM_BOT_TOKEN" ]]; then
-    echo "ERROR: TELEGRAM_BOT_TOKEN not set" >&2
+    error "TELEGRAM_BOT_TOKEN not set"
     exit 1
 fi
 
 if [[ -z "$CHAT_ID" ]]; then
-    echo "ERROR: TELEGRAM_CHAT_ID or TELEGRAM_DEFAULT_CHAT_ID not set" >&2
+    error "TELEGRAM_CHAT_ID or TELEGRAM_DEFAULT_CHAT_ID not set"
     exit 1
 fi
 
-REPORT_TIME="$(date -u '+%Y-%m-%d %H:%M UTC')"
-
-########################################
-# Helper: safe command execution
-########################################
-safe_run() {
-    local output
-    output=$("$@" 2>&1) && echo "$output" || echo "ERROR"
-}
+REPORT_TIME="$(timestamp_utc)"
 
 ########################################
 # 1. Docker containers
 ########################################
 gather_docker() {
-    local all_output running_output
+    local all_output
     all_output=$(docker ps -a --format "{{.Names}}\t{{.Status}}" 2>/dev/null) || { echo "Docker: unavailable"; return; }
 
     local total running stopped
@@ -85,18 +66,11 @@ gather_disk() {
 # 3. Memory
 ########################################
 gather_memory() {
-    local mem_line
-    mem_line=$(free -h 2>/dev/null | awk '/^Mem:/ {printf "%s/%s (%s)", $3, $2, $3/$2*100}' 2>/dev/null) || mem_line="?"
-    if [[ "$mem_line" == "?" ]]; then
-        echo "Memory: unavailable"
-    else
-        # Better parsing
-        local used total pct
-        used=$(free -h 2>/dev/null | awk '/^Mem:/ {print $3}')
-        total=$(free -h 2>/dev/null | awk '/^Mem:/ {print $2}')
-        pct=$(free 2>/dev/null | awk '/^Mem:/ {printf "%.0f", $3/$2*100}')
-        echo "Memory: ${used}/${total} (${pct}%)"
-    fi
+    local used total pct
+    used=$(free -h 2>/dev/null | awk '/^Mem:/ {print $3}') || { echo "Memory: unavailable"; return; }
+    total=$(free -h 2>/dev/null | awk '/^Mem:/ {print $2}')
+    pct=$(free 2>/dev/null | awk '/^Mem:/ {printf "%.0f", $3/$2*100}')
+    echo "Memory: ${used}/${total} (${pct}%)"
 }
 
 ########################################
@@ -109,71 +83,37 @@ gather_load() {
 }
 
 ########################################
-# 5. Service checks
+# 5. Service checks  (uses check_http from lib.sh)
 ########################################
-check_service() {
-    local name="$1" url="$2" timeout="${3:-5}"
-    local status_code
-    status_code=$(curl -sk --connect-timeout "$timeout" --max-time "$timeout" -o /dev/null -w "%{http_code}" "$url" 2>/dev/null) || status_code="000"
-    if [[ "$status_code" =~ ^[23] ]]; then
-        echo "ok"
-    else
-        echo "down (HTTP $status_code)"
-    fi
+svc_status() {
+    local url="$1" timeout="${2:-3}"
+    if check_http "$url" "$timeout"; then echo "ok"; else echo "down"; fi
 }
 
 gather_services() {
     local dashboard_status gateway_status redis_status tgbot_status
 
-    # Dashboard (port 8200)
-    dashboard_status=$(check_service "Dashboard" "http://localhost:8200/health" 3)
+    dashboard_status=$(svc_status "http://localhost:8200/health" 3)
+    gateway_status=$(svc_status "http://localhost:8100/health" 3)
 
-    # Message Gateway (port 8100)
-    gateway_status=$(check_service "Gateway" "http://localhost:8100/health" 3)
-
-    # Redis
     redis_ping=$(docker exec claude-superpowers-redis-1 redis-cli ping 2>/dev/null) || redis_ping="FAIL"
-    if [[ "$redis_ping" == "PONG" ]]; then
-        redis_status="ok"
-    else
-        redis_status="down"
-    fi
+    if [[ "$redis_ping" == "PONG" ]]; then redis_status="ok"; else redis_status="down"; fi
 
-    # Telegram Bot container
     tgbot_running=$(docker ps --filter "name=telegram-bot" --format "{{.Status}}" 2>/dev/null)
-    if [[ -n "$tgbot_running" && "$tgbot_running" == *"Up"* ]]; then
-        tgbot_status="ok"
-    else
-        tgbot_status="down"
-    fi
+    if [[ -n "$tgbot_running" && "$tgbot_running" == *"Up"* ]]; then tgbot_status="ok"; else tgbot_status="down"; fi
 
-    # Format
     local svc_block=""
-    if [[ "$dashboard_status" == "ok" ]]; then
-        svc_block+="  ✅ Dashboard (8200)"$'\n'
-    else
-        svc_block+="  ❌ Dashboard (8200) — ${dashboard_status}"$'\n'
-    fi
-
-    if [[ "$gateway_status" == "ok" ]]; then
-        svc_block+="  ✅ Gateway (8100)"$'\n'
-    else
-        svc_block+="  ❌ Gateway (8100) — ${gateway_status}"$'\n'
-    fi
-
-    if [[ "$redis_status" == "ok" ]]; then
-        svc_block+="  ✅ Redis"$'\n'
-    else
-        svc_block+="  ❌ Redis"$'\n'
-    fi
-
-    if [[ "$tgbot_status" == "ok" ]]; then
-        svc_block+="  ✅ Telegram Bot"
-    else
-        svc_block+="  ❌ Telegram Bot"
-    fi
-
-    echo "$svc_block"
+    for pair in "Dashboard (8200):$dashboard_status" "Gateway (8100):$gateway_status" "Redis:$redis_status" "Telegram Bot:$tgbot_status"; do
+        local svc_name="${pair%%:*}"
+        local svc_st="${pair##*:}"
+        if [[ "$svc_st" == "ok" ]]; then
+            svc_block+="  ✅ ${svc_name}"$'\n'
+        else
+            svc_block+="  ❌ ${svc_name} — ${svc_st}"$'\n'
+        fi
+    done
+    # Trim trailing newline
+    echo "${svc_block%$'\n'}"
 }
 
 ########################################
@@ -183,25 +123,19 @@ gather_issues() {
     local issues=""
     local issue_count=0
 
-    # Check for containers that restarted recently
     local containers
     containers=$(docker ps --format "{{.Names}}" 2>/dev/null) || { echo "  - Docker unavailable"; return; }
 
     while IFS= read -r cname; do
         [[ -z "$cname" ]] && continue
 
-        # Check restart count
         local restart_count
         restart_count=$(docker inspect --format '{{.RestartCount}}' "$cname" 2>/dev/null) || continue
         if [[ "$restart_count" =~ ^[0-9]+$ ]] && [[ "$restart_count" -gt 0 ]]; then
-            # Check if restart was recent (container started recently)
-            local started_at
-            started_at=$(docker inspect --format '{{.State.StartedAt}}' "$cname" 2>/dev/null) || continue
             issues+="  - ${cname}: ${restart_count} restart(s)"$'\n'
             issue_count=$((issue_count + 1))
         fi
 
-        # Check for OOM or error patterns in last hour logs (quick scan)
         local err_count
         err_count=$(docker logs --since 1h "$cname" 2>&1 | grep -ciE '(error|exception|fatal|oom|killed|panic)' 2>/dev/null) || err_count=0
         if [[ "$err_count" -gt 5 ]]; then
@@ -209,7 +143,6 @@ gather_issues() {
             issue_count=$((issue_count + 1))
         fi
 
-        # Cap at 8 issues to keep report readable
         if [[ "$issue_count" -ge 8 ]]; then
             issues+="  - ... (truncated)"$'\n'
             break
@@ -227,11 +160,9 @@ gather_issues() {
 # 7. Cron jobs count
 ########################################
 gather_cron() {
-    local cron_info
     if [[ -f "$PROJECT_DIR/.venv/bin/claw" ]]; then
         local jobs_count
         jobs_count=$(cd "$PROJECT_DIR" && PYTHONPATH="$PROJECT_DIR" "$PROJECT_DIR/.venv/bin/claw" cron list 2>/dev/null | grep -c "│" 2>/dev/null) || jobs_count="0"
-        # Subtract header rows if present
         if [[ "$jobs_count" -gt 0 ]]; then
             jobs_count=$((jobs_count > 2 ? jobs_count - 2 : 0))
         fi
@@ -264,7 +195,6 @@ ISSUES_INFO=$(gather_issues)
 CRON_INFO=$(gather_cron)
 SKILLS_INFO=$(gather_skills)
 
-# Parse first line of docker info for the summary line
 DOCKER_SUMMARY=$(echo "$DOCKER_INFO" | head -1)
 DOCKER_STOPPED=$(echo "$DOCKER_INFO" | tail -n +2)
 
@@ -310,11 +240,10 @@ RESPONSE=$(curl -s -X POST \
     -d "disable_web_page_preview=true" \
     2>&1)
 
-# Check response
 if echo "$RESPONSE" | grep -q '"ok":true'; then
     echo "Telegram report sent successfully."
 else
-    echo "WARNING: Failed to send Telegram message" >&2
+    warn "WARNING: Failed to send Telegram message"
     echo "Response: $RESPONSE" >&2
 fi
 
@@ -331,10 +260,8 @@ SMTP_FROM="${SMTP_FROM:-${SMTP_USER}}"
 if [[ -n "$SMTP_USER" && -n "$SMTP_PASS" && -n "$SMTP_HOST" && -n "$EMAIL_TO" ]]; then
     echo "Sending email report to ${EMAIL_TO}..."
 
-    # Strip emoji for cleaner email, build plain text body
     EMAIL_BODY=$(echo "$REPORT" | sed 's/[📊🕐🐳💾🧠⚡🤖✅❌⚠️📋🔧]//g' | sed 's/^  /    /g')
 
-    # Build email subject with key stats
     DOCKER_SHORT=$(echo "$DOCKER_SUMMARY" | head -1)
     EMAIL_SUBJECT="Ops Report ${REPORT_TIME} — ${DOCKER_SHORT}"
 
