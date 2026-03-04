@@ -1,0 +1,103 @@
+name: CI Auto-heal
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ci-auto-heal-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  lint-autofix:
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Detect failed jobs in CI run
+        id: detect
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const { data } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+              per_page: 100,
+            });
+
+            const failedJobs = data.jobs.filter((job) => job.conclusion === "failure");
+            const failedNames = failedJobs.map((job) => job.name);
+            core.info(`Failed jobs: ${failedNames.join(", ") || "none"}`);
+
+            const lintFailed = failedNames.some((name) =>
+              name.toLowerCase().includes("lint"),
+            );
+            core.setOutput("lint_failed", lintFailed ? "true" : "false");
+            core.setOutput("failed_jobs", failedNames.join(", "));
+
+      - name: Skip non-lint failures
+        if: steps.detect.outputs.lint_failed != 'true'
+        run: |
+          echo "No lint failure detected in CI run #${{ github.event.workflow_run.id }}."
+          echo "Failed jobs: ${{ steps.detect.outputs.failed_jobs }}"
+
+      - name: Checkout failed revision
+        if: steps.detect.outputs.lint_failed == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Python 3.12
+        if: steps.detect.outputs.lint_failed == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        if: steps.detect.outputs.lint_failed == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Apply Ruff auto-fixes
+        if: steps.detect.outputs.lint_failed == 'true'
+        run: |
+          ruff check --fix .
+          ruff format .
+
+      - name: Validate lint status
+        if: steps.detect.outputs.lint_failed == 'true'
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Create auto-fix PR
+        if: steps.detect.outputs.lint_failed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "ci: auto-fix lint after CI failure"
+          title: "ci: auto-fix lint for failed run #${{ github.event.workflow_run.id }}"
+          body: |
+            Automated lint remediation for failed CI run `${{ github.event.workflow_run.id }}`.
+
+            - Source SHA: `${{ github.event.workflow_run.head_sha }}`
+            - Failed jobs: `${{ steps.detect.outputs.failed_jobs }}`
+            - Applied: `ruff check --fix .` and `ruff format .`
+          branch: ci/autofix-lint-${{ github.event.workflow_run.id }}
+          base: main
+          delete-branch: true
+          labels: |
+            automation
+            ci
