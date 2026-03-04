@@ -27,6 +27,8 @@ node_modules/
 # Logs
 *.log
 logs/
+docs/reports/remote-runs/
+docs/reports/todo-runs/
 
 # IDE
 .idea/
