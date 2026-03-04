@@ -90,8 +90,12 @@ class ConcurrencyGate:
     def stats(self, chat_id: str) -> ConcurrencyStats:
         """Get concurrency stats for a chat."""
         with self._lock:
+            if chat_id not in self._chat_sems:
+                self._chat_sems[chat_id] = threading.Semaphore(self._max_per_chat)
+                self._chat_queued[chat_id] = 0
+            chat_sem = self._chat_sems[chat_id]
             return ConcurrencyStats(
-                chat_active=self._max_per_chat - self._get_chat_sem(chat_id)._value,
+                chat_active=self._max_per_chat - chat_sem._value,
                 chat_queued=self._chat_queued.get(chat_id, 0),
                 global_active=self._active_count,
                 global_max=self._max_global,

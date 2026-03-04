@@ -1,0 +1,63 @@
+# Policy Engine Configuration
+# Copy this file to ~/.claude-superpowers/policies.yaml and customize.
+#
+# Built-in policies are always active (destructive command denial, force-push
+# protection, approval gates, file protection, secret detection). Custom
+# policies defined here are appended to the defaults.
+
+policies:
+  # Example: restrict database operations
+  - name: database-safety
+    description: Require approval for database mutations
+    rules:
+      - action: require_approval
+        command_pattern: "(?i)\\b(ALTER|TRUNCATE|UPDATE|DELETE)\\s+(TABLE|FROM)\\b"
+        description: "Database mutation requires approval"
+        max_retries: 1
+        timeout_seconds: 60
+
+      - action: deny
+        command_pattern: "(?i)\\bDROP\\s+DATABASE\\b"
+        description: "DROP DATABASE is never allowed"
+
+  # Example: protect production configs
+  - name: production-file-guard
+    description: Guard production configuration files
+    rules:
+      - action: deny
+        resource_pattern: "/etc/nginx/nginx.conf"
+        description: "Direct nginx.conf edits denied"
+
+      - action: require_approval
+        resource_pattern: "*/docker-compose.prod.yaml"
+        description: "Production compose changes need approval"
+
+      - action: require_approval
+        resource_pattern: "*.yaml"
+        description: "YAML config changes need approval"
+
+  # Example: custom secret patterns
+  - name: custom-secrets
+    description: Detect project-specific secrets in output
+    rules:
+      - action: deny
+        secret_patterns:
+          - "(?i)internal[_-]api[_-]key\\s*[:=]\\s*\\S+"
+          - "PROJ_SECRET_[A-Z0-9]{16,}"
+        description: "Project-specific secret patterns"
+
+  # Example: network safety
+  - name: network-safety
+    description: Restrict dangerous network operations
+    rules:
+      - action: deny
+        command_pattern: "iptables\\s+-F"
+        description: "Deny iptables flush (drops all rules)"
+
+      - action: require_approval
+        command_pattern: "curl.*\\|\\s*(bash|sh)"
+        description: "curl | bash requires approval"
+
+      - action: require_approval
+        command_pattern: "wget.*-O\\s*-\\s*\\|"
+        description: "wget pipe to shell requires approval"

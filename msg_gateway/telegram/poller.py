@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import logging
-import os
 import subprocess
 import threading
 import time
+import urllib.error
 
 from msg_gateway.telegram.api import TelegramApi
 from msg_gateway.telegram.attachments import AttachmentHandler
@@ -53,7 +53,7 @@ class TelegramPoller:
 
         # Shared state
         self._chat_modes: dict[str, str] = {}  # chat_id -> "chat" or "skill"
-        self._chat_models: dict[str, str] = {}  # chat_id -> "claude" or "openai"
+        self._chat_models: dict[str, str] = {}  # chat_id -> provider override ("claude"/"openai")
 
         # Components
         self._api = TelegramApi(bot_token)
@@ -250,7 +250,7 @@ class TelegramPoller:
             self._api.send_message(chat_id, f"[Attachment error: {exc}]")
 
     def _route_conversation(self, text: str, chat_id: str) -> None:
-        """Route text through session + concurrency to Claude or intake."""
+        """Route text through session + concurrency to chat LLM or intake."""
         mode = self._chat_modes.get(chat_id, "chat")
         logger.info("Routing conversation for %s (mode=%s): %s", chat_id, mode, text[:80])
 
@@ -297,7 +297,7 @@ class TelegramPoller:
 
     def _chat_mode(self, text: str, chat_id: str) -> str:
         """Process text in chat mode — send to LLM provider with history context."""
-        from superpowers.llm_provider import get_default_provider, get_provider
+        from superpowers.llm_provider import get_default_provider, get_provider_with_fallback
 
         logger.info("Chat mode for %s — building prompt", chat_id)
         context = self._session.format_context(chat_id)
@@ -308,7 +308,7 @@ class TelegramPoller:
         # Per-chat model override (from /model command)
         model_override = self._chat_models.get(chat_id)
         if model_override:
-            provider = get_provider(model_override)
+            provider = get_provider_with_fallback(model_override)
             logger.info("Using per-chat model '%s' for %s", model_override, chat_id)
         else:
             provider = get_default_provider(role="chat")

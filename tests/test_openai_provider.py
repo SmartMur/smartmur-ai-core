@@ -15,6 +15,7 @@ from superpowers.llm_provider import (
     OpenAIProvider,
     get_default_provider,
     get_provider,
+    get_provider_with_fallback,
 )
 
 
@@ -334,3 +335,36 @@ class TestFactoryFallback:
         """get_provider('openai') returns OpenAIProvider."""
         p = get_provider("openai")
         assert isinstance(p, OpenAIProvider)
+
+    def test_get_provider_chatgpt_alias(self):
+        """get_provider('chatgpt') resolves to OpenAIProvider."""
+        p = get_provider("chatgpt")
+        assert isinstance(p, OpenAIProvider)
+
+    def test_get_provider_gpt_alias(self):
+        """get_provider('gpt') resolves to OpenAIProvider."""
+        p = get_provider("gpt")
+        assert isinstance(p, OpenAIProvider)
+
+    def test_chat_model_alias_openai_primary(self):
+        """CHAT_MODEL=chatgpt returns OpenAIProvider directly (no fallback wrapper)."""
+        with patch.dict(
+            os.environ,
+            {"CHAT_MODEL": "chatgpt", "OPENAI_API_KEY": "sk-test"},
+            clear=False,
+        ):
+            p = get_default_provider(role="chat")
+        assert isinstance(p, OpenAIProvider)
+        assert not isinstance(p, FallbackProvider)
+
+    def test_get_provider_with_fallback_wraps_non_openai(self):
+        """Explicit model names still get fallback wrapping when enabled."""
+        with patch.dict(
+            os.environ,
+            {"OPENAI_API_KEY": "sk-test", "LLM_FALLBACK": "true"},
+            clear=False,
+        ):
+            p = get_provider_with_fallback("claude")
+        assert isinstance(p, FallbackProvider)
+        assert isinstance(p.primary, ClaudeProvider)
+        assert isinstance(p.fallback, OpenAIProvider)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The model routing layer provides a CLI-based abstraction for invoking language models. No vendor SDKs are used -- every provider shells out to a CLI binary, keeping the project local-first and decoupled from any particular Python client library.
+The model routing layer provides a provider abstraction for invoking language models. Claude and generic providers shell out to CLI binaries; OpenAI/ChatGPT uses the OpenAI Python SDK.
 
 Two environment variables control which model is used:
 
@@ -14,26 +14,27 @@ Individual cron jobs can override the model on a per-job basis via the `llm_mode
 ## Architecture
 
 ```
-                 +------------------+
-                 | get_default_provider() |
-                 | role="chat" or "job"   |
-                 +--------+---------+
-                          |
-             reads CHAT_MODEL or JOB_MODEL
-                          |
-                 +--------v---------+
-                 |   get_provider()  |
-                 +--------+---------+
-                          |
-          +---------------+---------------+
-          |                               |
-  +-------v-------+             +---------v---------+
-  | ClaudeProvider |             | GenericProvider    |
-  | claude -p ...  |             | <binary> -p ...   |
-  +----------------+             +-------------------+
+                 +--------------------------+
+                 | get_default_provider()   |
+                 | role="chat" or "job"     |
+                 +------------+-------------+
+                              |
+                 reads CHAT_MODEL or JOB_MODEL
+                              |
+                 +------------v-------------+
+                 | get_provider_with_fallback() |
+                 +------------+-------------+
+                              |
+              +---------------+-------------------------+
+              |                                         |
+     +--------v---------+                     +---------v---------+
+     | Primary provider |                     | OpenAI fallback   |
+     | (claude/openai/  |                     | (if enabled)      |
+     | custom/generic)  |                     |                   |
+     +------------------+                     +-------------------+
 ```
 
-`get_provider()` looks up the name in a registry of known providers. If the name is not registered, it falls back to `GenericProvider`, which wraps any CLI binary that accepts a prompt argument.
+`get_provider()` looks up the name in a registry of known providers. If the name is not registered, it falls back to `GenericProvider`, which wraps any CLI binary that accepts a prompt argument. `chatgpt` and `gpt` are aliases for `openai`.
 
 ## Configuration
 
@@ -43,6 +44,9 @@ Individual cron jobs can override the model on a per-job basis via the `llm_mode
 |----------|---------|-------------|
 | `CHAT_MODEL` | `claude` | Provider name for interactive/chat use |
 | `JOB_MODEL` | `claude` | Provider name for background jobs and cron |
+| `OPENAI_API_KEY` | `""` | Enables OpenAI provider and fallback |
+| `OPENAI_MODEL` | `gpt-4o` | Default model name for OpenAI provider |
+| `LLM_FALLBACK` | `true` | Enables Claude primary -> OpenAI fallback |
 
 Set these in `.env` or export them in your shell:
 
@@ -50,6 +54,9 @@ Set these in `.env` or export them in your shell:
 # .env
 CHAT_MODEL=claude
 JOB_MODEL=ollama
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+LLM_FALLBACK=true
 ```
 
 ### Per-Job Model Override
@@ -87,6 +94,20 @@ Invokes the `claude` CLI in headless prompt mode.
 | Model flag | `--model <name>` (optional) |
 | Timeout | 600 seconds |
 
+### OpenAIProvider (`openai` / `chatgpt` / `gpt`)
+
+Invokes the OpenAI Chat Completions API using the `openai` Python package.
+
+| Detail | Value |
+|--------|-------|
+| Auth | `OPENAI_API_KEY` |
+| Invocation | `OpenAI().chat.completions.create(...)` |
+| Default model | `OPENAI_MODEL` (default `gpt-4o`) |
+
+### FallbackProvider
+
+If `LLM_FALLBACK=true` and `OPENAI_API_KEY` is set, non-OpenAI providers are automatically wrapped so failures in the primary provider retry with OpenAI.
+
 ### GenericProvider
 
 Wraps any CLI tool that accepts a prompt string. Used as a fallback for provider names not in the registry.
@@ -118,6 +139,10 @@ from superpowers.llm_provider import get_provider, get_default_provider
 p = get_provider("claude")
 if p.available():
     answer = p.invoke("Summarize this log file")
+
+# ChatGPT alias resolves to OpenAI provider
+p = get_provider("chatgpt")
+answer = p.invoke("Summarize this log file")
 
 # Default provider for the "chat" role (reads CHAT_MODEL)
 p = get_default_provider(role="chat")
@@ -201,7 +226,20 @@ CHAT_MODEL=claude
 JOB_MODEL=ollama
 ```
 
-Interactive prompts go through `claude -p`, while all cron and background jobs use `ollama run`.
+Interactive prompts go through Claude (with optional OpenAI fallback), while cron/background jobs use `ollama run`.
+
+### Claude Primary + ChatGPT Fallback
+
+```bash
+# .env
+CHAT_MODEL=claude
+JOB_MODEL=claude
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+LLM_FALLBACK=true
+```
+
+If Claude is unavailable or errors, calls automatically retry through OpenAI.
 
 ### Single Provider for Everything
 
@@ -232,6 +270,8 @@ JOB_MODEL=ollama
 ## Troubleshooting
 
 **"claude CLI exited with code 1"** -- The `claude` binary returned an error. Check that you are authenticated (`claude auth status`) and that the model name is valid.
+
+**"OPENAI_API_KEY is not set"** -- Set `OPENAI_API_KEY` to enable `openai/chatgpt` provider usage and fallback.
 
 **"FileNotFoundError"** -- The provider binary is not on `$PATH`. Install the tool or set `CHAT_MODEL`/`JOB_MODEL` to a binary that exists.
 

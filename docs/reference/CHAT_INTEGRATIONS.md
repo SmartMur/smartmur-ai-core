@@ -88,7 +88,7 @@ The messaging subsystem has three layers: **channel adapters** for outbound deli
 1. Telegram uses long-polling (default) or webhooks (configurable).
 2. Slack and Discord use webhook endpoints at `/webhook/slack` and `/webhook/discord`.
 3. All inbound messages pass through the `WebhookSignatureMiddleware` for signature validation.
-4. Messages are matched against trigger rules. Matches are routed to shell commands, Claude CLI, or skills. Non-matches on Telegram are routed to Claude AI for conversational responses.
+4. Messages are matched against trigger rules. Matches are routed to shell commands, LLM provider calls, or skills. Non-matches on Telegram are routed to the configured chat model for conversational responses.
 
 ### Key Source Files
 
@@ -332,19 +332,19 @@ The bot registers commands with Telegram via `setMyCommands` on startup, providi
 
 ### Chat Mode (Default)
 
-Free-form messages are sent to Claude CLI (`claude -p`) with conversation history as context. The bot maintains a sliding window of the last N messages (configurable, default 20) per chat, stored in Redis (or in-memory fallback).
+Free-form messages are sent to the configured chat provider (from `CHAT_MODEL`, with optional OpenAI fallback) with conversation history as context. The bot maintains a sliding window of the last N messages (configurable, default 20) per chat, stored in Redis (or in-memory fallback).
 
 The conversation flow:
 1. User sends a text message.
 2. Bot acknowledges with a thumbs-up reaction (fire-and-forget).
 3. Message is added to session history.
 4. Concurrency gate checks if a slot is available.
-5. A background thread sends a "typing" indicator and calls Claude CLI.
+5. A background thread sends a "typing" indicator and calls the configured LLM provider.
 6. The response is added to session history and chunked for delivery.
 
 ### Skill Mode
 
-Messages are routed through the intake pipeline instead of Claude CLI. The bot:
+Messages are routed through the intake pipeline instead of direct LLM chat. The bot:
 1. Extracts requirements from the message text.
 2. Maps to available skills.
 3. Executes with progress callbacks sent to the chat.
@@ -355,13 +355,13 @@ Switch modes with `/mode chat` or `/mode skill`, or use the inline keyboard from
 ### Reactions and Typing Indicators
 
 - **Reactions**: The bot sends a thumbs-up emoji reaction on every received message using `setMessageReaction`. This is fire-and-forget -- failures are silently ignored.
-- **Typing indicators**: The bot sends a `sendChatAction(typing)` call before starting any long-running operation (Claude CLI, skill execution, attachment processing).
+- **Typing indicators**: The bot sends a `sendChatAction(typing)` call before starting any long-running operation (LLM call, skill execution, attachment processing).
 
 ### Photo and Document Ingestion
 
 The bot handles three types of attachments:
 
-**Photos**: Downloads the largest available size, describes it using Claude CLI (base64 image input), and routes the description through the conversation pipeline. Captions are included if present.
+**Photos**: Downloads the largest available size, describes it using the configured LLM provider (base64 image input), and routes the description through the conversation pipeline. Captions are included if present.
 
 **Text documents**: Downloads and reads text-based files (plain text, CSV, HTML, Markdown, JSON, XML). Content is truncated to 10,000 characters.
 
@@ -384,7 +384,7 @@ Voice messages are transcribed using whisper.cpp (local, no API key):
 3. Converts to 16kHz mono WAV using `ffmpeg`.
 4. Transcribes using `whisper-cli` with the `ggml-base.en` model.
 5. Sends the transcription back to the chat.
-6. If the transcription contains speech, routes it to Claude AI for a response.
+6. If the transcription contains speech, routes it to the configured LLM provider for a response.
 
 **Requirements:**
 - `ffmpeg` -- audio format conversion
@@ -406,7 +406,7 @@ Operations:
 - `add(chat_id, role, content)` -- append to history, trim to window size, refresh TTL
 - `get(chat_id)` -- retrieve history entries
 - `clear(chat_id)` -- delete all history for a chat
-- `format_context(chat_id)` -- format as `Human: ... / Assistant: ...` for Claude
+- `format_context(chat_id)` -- format as `Human: ... / Assistant: ...` for the active LLM provider
 
 ### Chat Verification
 
@@ -829,7 +829,7 @@ Create `~/.claude-superpowers/triggers.yaml`:
 | Action | Behavior |
 |--------|----------|
 | `shell` | Runs command via `subprocess.run()` with `TRIGGER_MESSAGE` env var set to the full message text. 120-second timeout. |
-| `claude` | Runs `claude -p "<command>" --output-format text`. 300-second timeout. |
+| `claude` | Runs the configured chat LLM provider with the command prompt. |
 | `skill` | Loads and runs the named skill via `SkillRegistry` + `SkillLoader`. |
 
 ### How Triggers Are Evaluated
@@ -838,7 +838,7 @@ Create `~/.claude-superpowers/triggers.yaml`:
 2. For each inbound message, `match(text)` iterates through rules and returns the first matching rule.
 3. If a rule matches, `execute(rule, message_text)` runs the action.
 4. If `reply` is true, the output (stdout + stderr) is sent back to the originating chat, truncated to 4,000 characters.
-5. If no rule matches on Telegram, the message is routed to Claude AI for a conversational response.
+5. If no rule matches on Telegram, the message is routed to the configured chat provider for a conversational response.
 
 ### Currently Supported Channels for Inbound Triggers
 

@@ -934,6 +934,58 @@ function settingsPage() {
   };
 }
 
+// ============================================
+// Orchestrations page component
+// ============================================
+
+function orchestrationsPage() {
+  return {
+    runs: [],
+    summary: null,
+    detail: null,
+    loading: false,
+
+    async load() {
+      this.loading = true;
+      try {
+        const [runs, summary] = await Promise.all([
+          GET('/orchestrations'),
+          GET('/orchestrations/status'),
+        ]);
+        this.runs = runs;
+        this.summary = summary;
+      } catch (e) {
+        _toast(this, 'Failed to load orchestrations', 'error');
+      }
+      this.loading = false;
+    },
+
+    async viewDetail(run) {
+      try {
+        if (run.command && run.timestamp) {
+          this.detail = await GET('/orchestrations/' + run.command + '/runs/' + run.timestamp);
+        } else {
+          this.detail = run;
+        }
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+
+    async triggerRun(command) {
+      if (!confirm('Run orchestration "' + command + '"?')) return;
+      try {
+        const res = await POST('/orchestrations/' + command + '/run', { dry_run: false });
+        _toast(this, res.message, 'success');
+        // Reload after a brief delay to let the background thread start
+        setTimeout(() => this.load(), 2000);
+      } catch (e) {
+        _toast(this, e.message, 'error');
+      }
+    },
+  };
+}
+
 // --- Toast helper (works from nested Alpine components) ---
 function _toast(ctx, msg, type) {
   let el = ctx.$el;

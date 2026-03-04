@@ -49,6 +49,9 @@
         <a class="nav-item" :class="{ active: page === 'workflows' }" @click="go('workflows')">
           <span class="nav-icon">&#9881;</span> <span class="nav-label">Workflows</span>
         </a>
+        <a class="nav-item" :class="{ active: page === 'orchestrations' }" @click="go('orchestrations')">
+          <span class="nav-icon">&#9654;</span> <span class="nav-label">Orchestrations</span>
+        </a>
         <a class="nav-item" :class="{ active: page === 'skills' }" @click="go('skills')">
           <span class="nav-icon">&#9889;</span> <span class="nav-label">Skills</span>
         </a>
@@ -599,6 +602,102 @@
                   <div x-show="r.error" class="text-red mt-2" x-text="r.error"></div>
                 </div>
               </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- ORCHESTRATIONS -->
+      <template x-if="page === 'orchestrations'">
+        <div x-data="orchestrationsPage()" x-init="load()">
+          <div class="page-header">
+            <h1>Orchestrations</h1>
+            <p>Multi-step orchestration runs and reports</p>
+          </div>
+
+          <template x-if="summary">
+            <div class="status-grid" style="margin-bottom:24px">
+              <div class="status-card">
+                <div class="card-title">Total Runs</div>
+                <div class="card-value" x-text="summary.total_runs"></div>
+              </div>
+              <div class="status-card">
+                <div class="card-title">Passed</div>
+                <div class="card-value text-green" x-text="summary.passed"></div>
+              </div>
+              <div class="status-card">
+                <div class="card-title">Failed</div>
+                <div class="card-value text-red" x-text="summary.failed"></div>
+              </div>
+              <div class="status-card">
+                <div class="card-title">Success Rate</div>
+                <div class="card-value" x-text="summary.total_runs ? Math.round(summary.passed / summary.total_runs * 100) + '%' : '-'"></div>
+              </div>
+              <div class="status-card">
+                <div class="card-title">Last Run</div>
+                <div class="card-value" style="font-size:14px" x-text="summary.last_run_time || 'Never'"></div>
+              </div>
+            </div>
+          </template>
+
+          <div class="toolbar">
+            <button class="btn" @click="load()">Refresh</button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Command</th><th>Status</th><th>Passed</th><th>Failed</th>
+                <th>Duration</th><th>Started</th><th>Artifacts</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="r in runs" :key="r.command + '-' + r.timestamp">
+                <tr>
+                  <td class="text-accent" x-text="r.command"></td>
+                  <td>
+                    <span class="tag" :class="r.status === 'passed' ? 'tag-green' : (r.status === 'failed' ? 'tag-red' : 'tag-yellow')"
+                          x-text="r.status"></span>
+                  </td>
+                  <td class="text-green" x-text="r.steps_passed"></td>
+                  <td class="text-red" x-text="r.steps_failed"></td>
+                  <td class="font-mono" x-text="r.total_duration_ms ? r.total_duration_ms + 'ms' : '-'"></td>
+                  <td class="text-muted" x-text="r.started_at ? r.started_at.substring(0, 19) : '-'"></td>
+                  <td>
+                    <span x-show="r.report_path" class="text-accent" style="cursor:pointer;font-size:12px"
+                          @click="viewDetail(r)" x-text="r.timestamp || 'view'"></span>
+                    <span x-show="!r.report_path" class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" @click="triggerRun(r.command)">Run</button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <div x-show="runs.length === 0 && !loading" class="text-muted mt-4">No orchestration runs recorded</div>
+
+          <template x-if="detail">
+            <div class="mt-4">
+              <h3 class="mb-4" style="color:var(--text-secondary)" x-text="'Run: ' + detail.command + ' / ' + (detail.timestamp || '')"></h3>
+              <div x-show="detail.summary" class="mb-4" style="color:var(--text-secondary);font-style:italic" x-text="detail.summary"></div>
+              <table class="data-table">
+                <thead><tr><th>Step</th><th>Status</th><th>Duration</th><th>Output</th></tr></thead>
+                <tbody>
+                  <template x-for="s in detail.step_details" :key="s.name">
+                    <tr>
+                      <td x-text="s.name"></td>
+                      <td>
+                        <span class="dot" :class="s.status === 'passed' ? 'dot-green' : (s.status === 'failed' ? 'dot-red' : 'dot-yellow')"></span>
+                        <span x-text="s.status"></span>
+                      </td>
+                      <td class="font-mono" x-text="(s.duration_ms || 0) + 'ms'"></td>
+                      <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+                          x-text="s.output || s.error || '-'"></td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
             </div>
           </template>
         </div>

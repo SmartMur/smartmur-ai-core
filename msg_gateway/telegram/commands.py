@@ -21,7 +21,7 @@ COMMAND_MENU = [
     {"command": "skills", "description": "List available skills"},
     {"command": "run", "description": "Run a skill by name"},
     {"command": "mode", "description": "Switch chat/skill mode"},
-    {"command": "model", "description": "Switch LLM (claude/openai)"},
+    {"command": "model", "description": "Switch LLM (claude/chatgpt/auto)"},
     {"command": "history", "description": "Show conversation history"},
     {"command": "reset", "description": "Clear conversation history"},
     {"command": "cancel", "description": "Cancel running job"},
@@ -97,7 +97,7 @@ class CommandRouter:
         self._reply(
             msg.chat_id,
             f"Hey {name}! I'm your Claude Superpowers bot.\n\n"
-            "Send me a message and I'll respond with Claude AI.\n"
+            "Send me a message and I'll respond with AI.\n"
             "Use /help to see all commands.\n"
             "Use /mode to switch between chat and skill mode.",
         )
@@ -106,7 +106,7 @@ class CommandRouter:
         lines = ["Available commands:\n"]
         for cmd in COMMAND_MENU:
             lines.append(f"/{cmd['command']} — {cmd['description']}")
-        lines.append("\nSend any text message for a Claude AI response.")
+        lines.append("\nSend any text message for an AI response.")
         self._reply(msg.chat_id, "\n".join(lines))
 
     def _cmd_status(self, msg: Message) -> None:
@@ -180,18 +180,21 @@ class CommandRouter:
 
     def _cmd_model(self, msg: Message) -> None:
         args = msg.command_args.strip().lower()
-        current = self._chat_models.get(msg.chat_id, "auto")
-        valid = ("claude", "openai", "auto")
+        aliases = {"chatgpt": "openai", "gpt": "openai"}
+        resolved = aliases.get(args, args)
+        current_stored = self._chat_models.get(msg.chat_id)
+        current = "auto" if current_stored is None else ("chatgpt" if current_stored == "openai" else current_stored)
+        valid = ("claude", "openai", "chatgpt", "gpt", "auto")
 
         if args in valid:
-            if args == "auto":
+            if resolved == "auto":
                 self._chat_models.pop(msg.chat_id, None)
             else:
-                self._chat_models[msg.chat_id] = args
+                self._chat_models[msg.chat_id] = resolved
             self._reply(
                 msg.chat_id,
-                f"LLM switched to: {args}"
-                + (" (Claude primary, OpenAI fallback)" if args == "auto" else ""),
+                f"LLM switched to: {args or 'auto'}"
+                + (" (Claude primary, ChatGPT fallback)" if resolved == "auto" else ""),
             )
             return
 
@@ -204,10 +207,10 @@ class CommandRouter:
         lines = [
             f"Current model: {current}",
             f"  Claude CLI: {'available' if claude_ok else 'not found'}",
-            f"  OpenAI API: {'configured' if openai_ok else 'no API key'}",
+            f"  ChatGPT(OpenAI) API: {'configured' if openai_ok else 'no API key'}",
             "",
-            "Usage: /model <claude|openai|auto>",
-            "  auto = Claude primary, OpenAI fallback",
+            "Usage: /model <claude|chatgpt|openai|auto>",
+            "  auto = Claude primary, ChatGPT fallback",
         ]
         self._reply(msg.chat_id, "\n".join(lines))
 

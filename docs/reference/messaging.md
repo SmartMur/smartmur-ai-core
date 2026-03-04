@@ -27,6 +27,30 @@ claw msg test slack
 claw msg send slack "#alerts" "deploy complete"
 ```
 
+## Optional: OpenAI Fallback (If Claude Is Unavailable)
+
+If you choose to keep Claude as primary but want API fallback, configure:
+
+```bash
+# Primary model routing
+CHAT_MODEL=claude
+JOB_MODEL=claude
+
+# Optional fallback
+OPENAI_API_KEY=sk-proj-...
+OPENAI_MODEL=gpt-4o-mini
+LLM_FALLBACK=true
+```
+
+Behavior:
+- Chat and job calls try the configured primary model first (`CHAT_MODEL` / `JOB_MODEL`).
+- If the primary fails and fallback is enabled, the call retries through OpenAI automatically.
+- Telegram `/model` supports `claude`, `chatgpt` (alias for `openai`), and `auto` (Claude primary + OpenAI fallback).
+
+Important:
+- ChatGPT web/app free usage does not provide OpenAI API quota.
+- `OPENAI_API_KEY` requires usable API credits/quota on the OpenAI Platform side.
+
 ## CLI Reference
 
 ```

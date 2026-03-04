@@ -2,7 +2,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis-data:/data
     restart: unless-stopped
@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile: msg_gateway/Dockerfile
     ports:
-      - "8100:8100"
+      - "127.0.0.1:8100:8100"
     env_file:
       - .env
     depends_on:
@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: dashboard/Dockerfile
     ports:
-      - "8200:8200"
+      - "127.0.0.1:8200:8200"
     env_file:
       - .env
     volumes:

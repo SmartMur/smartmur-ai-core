@@ -6,16 +6,20 @@ All user requests are logged here. Updated as work completes.
 
 ## Active / In Progress
 
-*(none)*
+- [ ] **Beat Tresor Sprint 2 execution (WIP)** — DAG executor, auto agent selection, policy engine, orchestrations monitor implemented and validated; pending final commit/push and backlog cleanup
+- [x] **Sprint 2 validation run (tmux)** — session `overnight-agents-20260304-023817`; `169 passed` (`tests/test_dag_executor.py`, `tests/test_policy_engine.py`, `tests/test_dashboard_orchestrations.py`)
+- [x] **Full test suite verification** — `2010 passed in 37.13s` (local run on 2026-03-04)
+- [x] **Overnight remote run (docker-host)** — session `overnight-agents-20260304-023817` executed and closed; logs saved in `docs/reports/remote-runs/20260304-023817/`
 
 ## Backlog
 
 - [ ] **Provide Cloudflare tunnel token** — run `/tunnel-setup set-token <token>` after getting from Cloudflare dashboard
-- [ ] **Full test suite verification** — run after all Wave 1 agents land
-- [ ] **Beat Tresor Sprint 1** — agent registry, orchestration commands, report outputs, pack installer
+- [x] **Beat Tresor Sprint 1** — agent registry (45 tests), orchestrator (62 tests), reporting (50 tests), pack manager (44 tests) — commit `dafd741`
 - [ ] **Beat Tresor Sprint 2** — DAG executor, auto agent selection, benchmarks, dashboard monitor
 
 ## Completed (Wave 1 — 2026-03-03)
+
+- [x] **ChatGPT fallback when Claude is unavailable** — provider aliasing (`chatgpt`/`gpt` → `openai`), fallback wiring for `claw agent run` + Telegram/inbound chat paths, docs updated, targeted tests passing (88)
 
 - [x] **SmartMur/.github repository created** — org profile README pushed, `https://github.com/SmartMur/.github` live, profile/README.md contains Nexus ecosystem positioning
 - [x] **Shell hardening** — last `shell=True` in `job_runner.py` fixed, entire codebase clean
@@ -370,4 +374,4 @@ Next feature enrichment: from
 
 ----
 *Location: `/home/ray/claude-superpowers/to-do.md`*
-*Updated: 2026-03-02 (all audit findings fixed — only branch protection pending PAT)*
+*Updated: 2026-03-03 (Sprint 2 in progress; ChatGPT fallback landed for Claude downtime)*

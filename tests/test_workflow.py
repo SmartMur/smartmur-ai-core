@@ -28,9 +28,10 @@ class TestStepType:
         assert StepType.skill == "skill"
         assert StepType.http == "http"
         assert StepType.approval_gate == "approval_gate"
+        assert StepType.auto_agent == "auto_agent"
 
     def test_count(self):
-        assert len(StepType) == 5
+        assert len(StepType) == 6
 
 
 class TestStepStatus:

@@ -64,6 +64,7 @@ def _mock_paramiko():
     mock_client_instance = MagicMock()
     mock_mod.SSHClient.return_value = mock_client_instance
     mock_mod.AutoAddPolicy.return_value = "auto-add"
+    mock_mod.RejectPolicy.return_value = "reject"
 
     transport = MagicMock()
     transport.is_active.return_value = True
@@ -245,7 +246,18 @@ class TestConnectionPool:
 
         assert client is mock_client
         mock_mod.SSHClient.assert_called_once()
+        mock_client.load_system_host_keys.assert_called_once()
+        mock_client.set_missing_host_key_policy.assert_called_with("reject")
         mock_client.connect.assert_called_once()
+
+    def test_get_client_allows_auto_add_policy_when_enabled(self, registry):
+        mock_mod, mock_client = _mock_paramiko()
+
+        with patch.dict("sys.modules", {"paramiko": mock_mod}):
+            pool = ConnectionPool(registry, auto_add_host_keys=True)
+            pool.get_client("proxmox")
+
+        mock_client.set_missing_host_key_policy.assert_called_with("auto-add")
 
     def test_get_client_returns_cached(self, registry):
         mock_mod, mock_client = _mock_paramiko()

@@ -278,6 +278,27 @@ class JobsDB:
 class RsyncDB:
     """Rsync job persistence backed by SQLite."""
 
+    _ALLOWED_UPDATE_FIELDS = frozenset(
+        {
+            "name",
+            "source_host",
+            "source_path",
+            "source_user",
+            "dest_host",
+            "dest_path",
+            "dest_user",
+            "options",
+            "ssh_key",
+            "progress",
+            "stats",
+            "output",
+            "error",
+            "pid",
+            "started_at",
+            "completed_at",
+        }
+    )
+
     def __init__(self, db_path: Path | None = None):
         self._path = db_path or _db_path()
         self._init_db()
@@ -339,6 +360,11 @@ class RsyncDB:
         return self.get(jid)  # type: ignore[return-value]
 
     def update_status(self, jid: str, status: str, **fields) -> bool:
+        invalid = [key for key in fields if key not in self._ALLOWED_UPDATE_FIELDS]
+        if invalid:
+            raise ValueError(
+                f"Invalid rsync update field(s): {', '.join(sorted(invalid))}"
+            )
         sets = ["status = ?"]
         vals: list = [status]
         for k, v in fields.items():

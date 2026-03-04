@@ -484,54 +484,55 @@ class TestCLIAgentRun:
         assert result.exit_code != 0
         assert "not found" in result.output
 
-    @patch("superpowers.cli_agent.shutil.which", return_value=None)
+    @patch("superpowers.cli_agent.get_default_provider")
+    @patch("superpowers.cli_agent.get_agent_body", return_value="Agent body.")
     @patch("superpowers.cli_agent._registry")
-    def test_run_no_claude_binary(self, mock_registry_fn, mock_which):
+    def test_run_no_claude_binary(self, mock_registry_fn, mock_body, mock_provider_fn):
         registry = MagicMock()
         registry.get.return_value = AgentManifest(
             name="sec", description="x", path=Path("/tmp/sec/agent.md")
         )
         mock_registry_fn.return_value = registry
+        provider = MagicMock()
+        provider.available.return_value = False
+        mock_provider_fn.return_value = provider
         runner = CliRunner()
         result = runner.invoke(agent_group, ["run", "sec"])
         assert result.exit_code != 0
-        assert "not found" in result.output
+        assert "No LLM provider available" in result.output
 
-    @patch("superpowers.cli_agent.subprocess.run")
+    @patch("superpowers.cli_agent.get_default_provider")
     @patch("superpowers.cli_agent.get_agent_body", return_value="You are a security agent.")
-    @patch("superpowers.cli_agent.shutil.which", return_value="/usr/bin/claude")
     @patch("superpowers.cli_agent._registry")
-    def test_run_success(self, mock_registry_fn, mock_which, mock_body, mock_subprocess):
+    def test_run_success(self, mock_registry_fn, mock_body, mock_provider_fn):
         registry = MagicMock()
         registry.get.return_value = AgentManifest(
             name="sec", description="x", path=Path("/tmp/sec/agent.md")
         )
         mock_registry_fn.return_value = registry
-        mock_subprocess.return_value = MagicMock(
-            stdout="Scan complete.",
-            stderr="",
-            returncode=0,
-        )
+        provider = MagicMock()
+        provider.available.return_value = True
+        provider.invoke.return_value = "Scan complete."
+        mock_provider_fn.return_value = provider
         runner = CliRunner()
         result = runner.invoke(agent_group, ["run", "sec", "--task", "scan the code"])
         assert result.exit_code == 0
         assert "Scan complete." in result.output
 
-    @patch("superpowers.cli_agent.subprocess.run")
+    @patch("superpowers.cli_agent.get_default_provider")
     @patch("superpowers.cli_agent.get_agent_body", return_value="Agent body.")
-    @patch("superpowers.cli_agent.shutil.which", return_value="/usr/bin/claude")
     @patch("superpowers.cli_agent._registry")
-    def test_run_nonzero_exit(self, mock_registry_fn, mock_which, mock_body, mock_subprocess):
+    def test_run_nonzero_exit(self, mock_registry_fn, mock_body, mock_provider_fn):
         registry = MagicMock()
         registry.get.return_value = AgentManifest(
             name="sec", description="x", path=Path("/tmp/sec/agent.md")
         )
         mock_registry_fn.return_value = registry
-        mock_subprocess.return_value = MagicMock(
-            stdout="",
-            stderr="error occurred",
-            returncode=1,
-        )
+        provider = MagicMock()
+        provider.available.return_value = True
+        provider.invoke.side_effect = RuntimeError("error occurred")
+        mock_provider_fn.return_value = provider
         runner = CliRunner()
         result = runner.invoke(agent_group, ["run", "sec"])
         assert result.exit_code != 0
+        assert "error occurred" in result.output

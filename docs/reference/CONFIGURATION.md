@@ -13,6 +13,9 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `ANTHROPIC_API_KEY` | string | `""` | Anthropic API key for Claude-type cron jobs and intake pipeline |
+| `OPENAI_API_KEY` | string | `""` | OpenAI API key for ChatGPT/OpenAI provider and fallback |
+| `OPENAI_MODEL` | string | `gpt-4o` | Default model used by the OpenAI provider |
+| `LLM_FALLBACK` | boolean | `true` | If `true`, Claude primary calls auto-fallback to OpenAI when `OPENAI_API_KEY` is set |
 
 ### Messaging
 
@@ -55,6 +58,7 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 |----------|------|---------|-------------|
 | `SSH_CONNECT_TIMEOUT` | integer | `10` | SSH connection timeout in seconds |
 | `SSH_COMMAND_TIMEOUT` | integer | `30` | SSH command execution timeout in seconds |
+| `SSH_AUTO_ADD_HOST_KEYS` | boolean | `false` | If `true`, unknown SSH host keys are auto-accepted. Leave `false` for strict host key verification |
 
 ### Telegram Bot
 
@@ -81,8 +85,8 @@ The `.env` file in the project root is loaded by `superpowers/config.py` at star
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `CHAT_MODEL` | string | `claude` | Model or provider used for interactive chat sessions |
-| `JOB_MODEL` | string | `claude` | Model or provider used for background cron and workflow jobs |
+| `CHAT_MODEL` | string | `claude` | Model/provider for interactive chat. Supports `claude`, `openai`, `chatgpt` (alias), or custom provider names |
+| `JOB_MODEL` | string | `claude` | Model/provider for background cron and workflow jobs. Supports `claude`, `openai`, `chatgpt` (alias), or custom provider names |
 
 ### Security (Phase G)
 
@@ -308,7 +312,7 @@ rollback:                       # Rollback steps, run when on_failure=rollback t
 | Type | `command` value | Description |
 |------|----------------|-------------|
 | `shell` | Shell command | Runs via `subprocess.run()` |
-| `claude_prompt` | Prompt text | Runs `claude -p "prompt" --output-format text` |
+| `claude_prompt` | Prompt text | Runs through the job LLM provider (`JOB_MODEL`) with optional OpenAI fallback |
 | `skill` | Skill name | Executes a registered skill |
 | `http` | URL | HTTP request (POST by default, configurable via `args.method`) |
 | `approval_gate` | -- | Pauses for human confirmation (auto-approved in dry-run) |
@@ -353,7 +357,7 @@ Jobs are stored in `~/.claude-superpowers/cron/jobs.json`:
 | Type | Required Fields | Description |
 |------|----------------|-------------|
 | `shell` | `command` | Subprocess execution |
-| `claude` | `prompt` | Headless Claude session via `claude -p` |
+| `claude` | `prompt` | LLM prompt via configured job provider (`JOB_MODEL`) |
 | `webhook` | `url`, optional `body` | HTTP POST to a URL |
 | `skill` | `skill`, optional `args` | Runs a registered skill |
 

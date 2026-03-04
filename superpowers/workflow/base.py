@@ -16,6 +16,7 @@ class StepType(StrEnum):
     skill = "skill"
     http = "http"
     approval_gate = "approval_gate"
+    auto_agent = "auto_agent"
 
 
 class StepStatus(StrEnum):

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import secrets
 
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from dashboard.deps import (
@@ -28,8 +28,20 @@ class LoginResponse(BaseModel):
     error: str = ""
 
 
+def _use_secure_cookie(request: Request) -> bool:
+    settings = get_settings()
+    if settings.force_https or settings.environment.lower() == "production":
+        return True
+    forwarded_proto = request.headers.get("x-forwarded-proto", "")
+    if forwarded_proto:
+        proto = forwarded_proto.split(",", 1)[0].strip().lower()
+        if proto == "https":
+            return True
+    return request.url.scheme == "https"
+
+
 @router.post("/login", response_model=LoginResponse)
-def login(req: LoginRequest, response: Response):
+def login(req: LoginRequest, response: Response, request: Request):
     settings = get_settings()
     if not settings.dashboard_user or not settings.dashboard_pass:
         raise HTTPException(
@@ -56,11 +68,12 @@ def login(req: LoginRequest, response: Response):
         httponly=True,
         samesite="lax",
         path="/",
+        secure=_use_secure_cookie(request),
     )
     return LoginResponse(ok=True, username=req.username)
 
 
 @router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie(key=COOKIE_NAME, path="/")
+def logout(response: Response, request: Request):
+    response.delete_cookie(key=COOKIE_NAME, path="/", secure=_use_secure_cookie(request))
     return {"ok": True}

@@ -196,7 +196,7 @@ class TelegramPoller:
                     ch = self._registry.get("telegram")
                     ch.send(chat_id, output[:4000])
             else:
-                # No trigger — route to Claude for AI response
+                # No trigger — route to configured LLM provider
                 self._reply_with_claude(text, chat_id)
 
     def _handle_voice(self, voice: dict, chat_id: str) -> None:
@@ -228,43 +228,34 @@ class TelegramPoller:
             audio_path.parent.rmdir()
 
     def _reply_with_claude(self, text: str, chat_id: str) -> None:
-        """Route to Claude in a background thread so the poller isn't blocked."""
+        """Route to the configured LLM provider in a background worker thread."""
         threading.Thread(
             target=self._claude_worker,
             args=(text, chat_id),
             daemon=True,
-            name=f"claude-{chat_id}",
+            name=f"llm-{chat_id}",
         ).start()
 
     def _claude_worker(self, text: str, chat_id: str) -> None:
-        """Send text to Claude CLI and reply with the response."""
+        """Send text to the configured LLM provider and reply with the response."""
         self._send_typing(chat_id)
-        logger.info("Routing to Claude: %s", text[:100])
+        logger.info("Routing to chat provider: %s", text[:100])
         try:
-            env = {
-                k: v
-                for k, v in os.environ.items()
-                if k != "CLAUDECODE" and not (k == "ANTHROPIC_API_KEY" and not v)
-            }
-            result = subprocess.run(
-                ["claude", "-p", text, "--output-format", "text"],
-                capture_output=True,
-                text=True,
-                timeout=300,
-                env=env,
-            )
-            reply = (result.stdout or result.stderr or "[no response]").strip()
+            from superpowers.llm_provider import get_default_provider
+
+            provider = get_default_provider(role="chat")
+            reply = provider.invoke(text).strip() or "[no response]"
             if reply:
                 self._send_reply(chat_id, reply)
-                logger.info("Claude replied to %s (%d chars)", chat_id, len(reply))
+                logger.info("Provider '%s' replied to %s (%d chars)", provider.name, chat_id, len(reply))
         except subprocess.TimeoutExpired:
             self._send_reply(chat_id, "[Response timed out — try a shorter question]")
-            logger.warning("Claude timed out for %s", chat_id)
+            logger.warning("Chat provider timed out for %s", chat_id)
         except FileNotFoundError:
-            self._send_reply(chat_id, "[Claude CLI not found]")
-            logger.error("claude CLI not found")
+            self._send_reply(chat_id, "[LLM provider not found]")
+            logger.error("LLM provider binary not found")
         except (RuntimeError, OSError) as exc:
-            logger.error("Claude reply error: %s", exc)
+            logger.error("Chat provider reply error: %s", exc)
 
     def _send_reply(self, chat_id: str, text: str) -> None:
         """Send reply, splitting at Telegram's 4096 char limit."""

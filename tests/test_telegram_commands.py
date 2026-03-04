@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from msg_gateway.telegram.api import ApiResponse, TelegramApi
 from msg_gateway.telegram.commands import COMMAND_MENU, CommandRouter
@@ -29,6 +29,7 @@ def _make_router(
     api: TelegramApi | None = None,
     session: SessionManager | None = None,
     chat_modes: dict | None = None,
+    chat_models: dict | None = None,
 ) -> CommandRouter:
     if api is None:
         api = MagicMock(spec=TelegramApi)
@@ -36,7 +37,12 @@ def _make_router(
         api.set_my_commands.return_value = ApiResponse(ok=True)
     if session is None:
         session = SessionManager()
-    return CommandRouter(api=api, session=session, chat_modes=chat_modes)
+    return CommandRouter(
+        api=api,
+        session=session,
+        chat_modes=chat_modes,
+        chat_models=chat_models,
+    )
 
 
 # --- can_handle ---
@@ -192,6 +198,51 @@ def test_cmd_mode_without_args_shows_current_and_keyboard():
     args, kwargs = api.send_message.call_args
     assert "skill" in args[1]  # mentions current mode
     assert kwargs.get("reply_markup") is not None  # keyboard attached
+
+
+# --- /model ---
+
+
+def test_cmd_model_chatgpt_alias_sets_openai():
+    api = MagicMock(spec=TelegramApi)
+    api.send_message.return_value = ApiResponse(ok=True)
+    chat_models = {}
+    router = _make_router(api=api, chat_models=chat_models)
+
+    msg = _make_message("/model chatgpt")
+    router.handle(msg)
+
+    assert chat_models["100"] == "openai"
+    args, _ = api.send_message.call_args
+    assert "chatgpt" in args[1].lower()
+
+
+def test_cmd_model_gpt_alias_sets_openai():
+    api = MagicMock(spec=TelegramApi)
+    api.send_message.return_value = ApiResponse(ok=True)
+    chat_models = {}
+    router = _make_router(api=api, chat_models=chat_models)
+
+    msg = _make_message("/model gpt")
+    router.handle(msg)
+
+    assert chat_models["100"] == "openai"
+
+
+def test_cmd_model_no_args_shows_alias_usage():
+    api = MagicMock(spec=TelegramApi)
+    api.send_message.return_value = ApiResponse(ok=True)
+    router = _make_router(api=api)
+
+    with patch("superpowers.llm_provider.get_provider") as mock_get_provider:
+        mock_get_provider.return_value.available.return_value = True
+        msg = _make_message("/model")
+        router.handle(msg)
+
+    args, _ = api.send_message.call_args
+    text = args[1]
+    assert "chatgpt" in text.lower()
+    assert "auto" in text.lower()
 
 
 # --- /run ---

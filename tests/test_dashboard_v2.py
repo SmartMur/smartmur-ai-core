@@ -376,6 +376,27 @@ class TestSessionAuth:
         # Session cookie should be set
         assert "claw_session" in resp.cookies
 
+    def test_login_cookie_not_secure_in_development(self, client):
+        resp = client.post("/login", json={"username": "admin", "password": "testpass123"})
+        assert resp.status_code == 200
+        assert "Secure" not in resp.headers.get("set-cookie", "")
+
+    def test_login_cookie_secure_with_forwarded_https(self, client):
+        resp = client.post(
+            "/login",
+            json={"username": "admin", "password": "testpass123"},
+            headers={"x-forwarded-proto": "https"},
+        )
+        assert resp.status_code == 200
+        assert "Secure" in resp.headers.get("set-cookie", "")
+
+    def test_login_cookie_secure_when_force_https(self, client, monkeypatch):
+        monkeypatch.setenv("FORCE_HTTPS", "true")
+        deps._settings = None
+        resp = client.post("/login", json={"username": "admin", "password": "testpass123"})
+        assert resp.status_code == 200
+        assert "Secure" in resp.headers.get("set-cookie", "")
+
     def test_login_wrong_password(self, client):
         resp = client.post("/login", json={"username": "admin", "password": "wrong"})
         assert resp.status_code == 200

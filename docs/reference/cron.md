@@ -2,7 +2,7 @@
 
 ## Overview
 
-The cron subsystem is an APScheduler-based daemon that runs scheduled jobs in the background as a managed service. On Debian/Linux it uses a user-level `systemd` unit; on macOS it uses `launchd`. It supports shell commands, headless Claude sessions, HTTP webhooks, and registered skills -- all manageable through `claw cron` and `claw daemon` CLI commands.
+The cron subsystem is an APScheduler-based daemon that runs scheduled jobs in the background as a managed service. On Debian/Linux it uses a user-level `systemd` unit; on macOS it uses `launchd`. It supports shell commands, LLM prompt jobs, HTTP webhooks, and registered skills -- all manageable through `claw cron` and `claw daemon` CLI commands.
 
 Jobs persist across restarts via a `jobs.json` manifest backed by a SQLite job store. Output from each execution is captured to structured log files under `~/.claude-superpowers/cron/output/`.
 
@@ -31,7 +31,7 @@ command: "nmap -sn 192.168.30.0/24 -oG -"
 
 ### claude
 
-Launches a headless Claude Code session with `claude -p`. Useful for AI-driven analysis, summarization, or decision-making on a schedule.
+Runs a prompt through the configured job LLM provider (`JOB_MODEL`). Useful for AI-driven analysis, summarization, or decision-making on a schedule. If `OPENAI_API_KEY` is set and `LLM_FALLBACK=true`, failed Claude calls auto-fallback to OpenAI/ChatGPT.
 
 ```yaml
 type: claude
@@ -110,7 +110,7 @@ Options:
 | `--type` | Job type: `shell`, `claude`, `webhook`, `skill` |
 | `--schedule` | Schedule expression (cron, interval, or daily-at) |
 | `--command` | Shell command (for `shell` type) |
-| `--prompt` | Claude prompt (for `claude` type) |
+| `--prompt` | LLM prompt (for `claude` type) |
 | `--url` | Webhook URL (for `webhook` type) |
 | `--body` | JSON body string (for `webhook` type) |
 | `--skill` | Skill name (for `skill` type) |
@@ -209,7 +209,7 @@ claw cron add slack-notify \
   --schedule "0 8 * * 1-5"
 ```
 
-### Claude-powered daily summary
+### AI-powered daily summary
 
 ```bash
 claw cron add daily-summary \

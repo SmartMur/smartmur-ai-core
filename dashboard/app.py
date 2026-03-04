@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from dashboard.deps import require_auth
 from dashboard.routers import (
+    agents,
     audit,
     auth,
     browser,
@@ -19,6 +20,7 @@ from dashboard.routers import (
     memory,
     messaging,
     notifications,
+    orchestrations,
     reports,
     settings,
     skills,
@@ -61,6 +63,8 @@ api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(settings.router, prefix="/settings", tags=["settings"])
 api_router.include_router(github.router, prefix="/github", tags=["github"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
+api_router.include_router(agents.router, prefix="/agents", tags=["agents"])
+api_router.include_router(orchestrations.router, prefix="/orchestrations", tags=["orchestrations"])
 app.include_router(api_router)
 
 # --- Static files (SPA) ---

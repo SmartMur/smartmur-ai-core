@@ -270,6 +270,12 @@ class FallbackProvider(LLMProvider):
 # Factory
 # ---------------------------------------------------------------------------
 
+# Friendly aliases used in CLI/chat contexts.
+_ALIASES: dict[str, str] = {
+    "chatgpt": "openai",
+    "gpt": "openai",
+}
+
 # Registry of known provider names -> constructor callables
 _PROVIDERS: dict[str, type[LLMProvider] | callable] = {
     "claude": ClaudeProvider,
@@ -279,7 +285,13 @@ _PROVIDERS: dict[str, type[LLMProvider] | callable] = {
 
 def register_provider(name: str, factory: type[LLMProvider] | callable) -> None:
     """Register a custom provider factory under *name*."""
-    _PROVIDERS[name] = factory
+    _PROVIDERS[normalise_provider_name(name)] = factory
+
+
+def normalise_provider_name(name: str) -> str:
+    """Map aliases to canonical provider names."""
+    key = name.strip().lower()
+    return _ALIASES.get(key, key)
 
 
 def get_provider(name: str) -> LLMProvider:
@@ -288,11 +300,40 @@ def get_provider(name: str) -> LLMProvider:
     Known names (e.g. ``"claude"``, ``"openai"``) resolve to built-in classes.
     Unknown names are wrapped automatically with :class:`GenericProvider`.
     """
-    factory = _PROVIDERS.get(name)
+    canonical = normalise_provider_name(name)
+    factory = _PROVIDERS.get(canonical)
     if factory is not None:
         return factory()
     # Fall back to GenericProvider for any unknown CLI tool name
-    return GenericProvider(name)
+    return GenericProvider(canonical)
+
+
+def _fallback_enabled() -> bool:
+    return os.environ.get("LLM_FALLBACK", "true").lower() not in (
+        "false",
+        "0",
+        "no",
+    )
+
+
+def _openai_fallback() -> OpenAIProvider | None:
+    openai_key = os.environ.get("OPENAI_API_KEY", "")
+    if not openai_key or not _fallback_enabled():
+        return None
+    return OpenAIProvider(api_key=openai_key)
+
+
+def get_provider_with_fallback(name: str) -> LLMProvider:
+    """Return provider by name and auto-wrap with OpenAI fallback if configured."""
+    canonical = normalise_provider_name(name)
+    primary = get_provider(canonical)
+    if canonical == "openai":
+        return primary
+
+    fallback = _openai_fallback()
+    if fallback is None:
+        return primary
+    return FallbackProvider(primary, fallback)
 
 
 def get_default_provider(*, role: str = "chat") -> LLMProvider:
@@ -312,22 +353,4 @@ def get_default_provider(*, role: str = "chat") -> LLMProvider:
         model_name = os.environ.get("JOB_MODEL", "claude")
     else:
         model_name = os.environ.get("CHAT_MODEL", "claude")
-
-    primary = get_provider(model_name)
-
-    # If the primary is already OpenAI, no fallback needed
-    if model_name == "openai":
-        return primary
-
-    # Auto-wrap with fallback if OpenAI key is available and fallback is enabled
-    openai_key = os.environ.get("OPENAI_API_KEY", "")
-    fallback_enabled = os.environ.get("LLM_FALLBACK", "true").lower() not in (
-        "false",
-        "0",
-        "no",
-    )
-    if openai_key and fallback_enabled:
-        fallback = OpenAIProvider(api_key=openai_key)
-        return FallbackProvider(primary, fallback)
-
-    return primary
+    return get_provider_with_fallback(model_name)

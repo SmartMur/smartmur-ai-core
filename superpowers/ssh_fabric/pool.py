@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 from typing import TYPE_CHECKING
 
@@ -20,10 +21,19 @@ class ConnectionPool:
         hosts: HostRegistry,
         vault: Vault | None = None,
         max_age: int = 300,
+        auto_add_host_keys: bool | None = None,
     ):
         self._hosts = hosts
         self._vault = vault
         self._max_age = max_age
+        if auto_add_host_keys is None:
+            auto_add_host_keys = os.environ.get("SSH_AUTO_ADD_HOST_KEYS", "").lower() in (
+                "1",
+                "true",
+                "yes",
+                "on",
+            )
+        self._auto_add_host_keys = auto_add_host_keys
         self._clients: dict[str, tuple[paramiko.SSHClient, float]] = {}
 
     def get_client(self, alias: str) -> paramiko.SSHClient:
@@ -53,7 +63,11 @@ class ConnectionPool:
             ) from exc
 
         client = _paramiko.SSHClient()
-        client.set_missing_host_key_policy(_paramiko.AutoAddPolicy())
+        client.load_system_host_keys()
+        if self._auto_add_host_keys:
+            client.set_missing_host_key_policy(_paramiko.AutoAddPolicy())
+        else:
+            client.set_missing_host_key_policy(_paramiko.RejectPolicy())
 
         try:
             if host.auth == AuthMethod.key:

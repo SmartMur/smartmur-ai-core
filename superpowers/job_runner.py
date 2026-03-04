@@ -4,6 +4,10 @@ Each job runs on a dedicated ``job/{id}`` git branch.  After execution the
 results are committed and the runner returns to the original branch.  If
 ``gh`` CLI is available, a pull request can be created automatically.
 Path-restricted auto-merge prevents accidental merges of sensitive changes.
+
+The ``auto_agent`` job type uses :func:`superpowers.agent_router.select_agents`
+to pick the best subagent for the job description and runs it via the
+agent's associated skills or a claude prompt.
 """
 
 from __future__ import annotations
@@ -238,6 +242,146 @@ class JobRunner:
 
         self._results[jid] = result
         return result
+
+    # ------------------------------------------------------------------
+    # Auto-agent job execution
+    # ------------------------------------------------------------------
+
+    def resolve_auto_agent(
+        self,
+        task_description: str,
+        repo_path: str | Path | None = None,
+    ) -> tuple[str, list[str]]:
+        """Select the best agent for a task and return (agent_name, reasons).
+
+        Uses :func:`superpowers.agent_router.select_agents` to rank agents
+        by relevance to the task description and optional repo tech stack.
+
+        Returns
+        -------
+        tuple[str, list[str]]:
+            ``(agent_name, reasons)`` for the top-ranked agent.
+
+        Raises
+        ------
+        JobRunnerError:
+            If no agents match the task.
+        """
+        from superpowers.agent_router import select_agents
+
+        selections = select_agents(
+            task_description=task_description,
+            repo_path=repo_path or self.repo_dir,
+        )
+        if not selections:
+            raise JobRunnerError(
+                f"No agents matched task: {task_description!r}"
+            )
+
+        top = selections[0]
+        return top.agent.name, top.reasons
+
+    def run_auto_agent(
+        self,
+        name: str,
+        task_description: str,
+        repo_path: str | Path | None = None,
+        commit_message: str | None = None,
+        job_id: str | None = None,
+    ) -> JobResult:
+        """Execute a job using the best auto-selected agent.
+
+        Combines agent selection with job execution:
+        1. Uses ``resolve_auto_agent()`` to pick the best agent.
+        2. If the agent has associated skills, runs the first one.
+        3. Otherwise, runs the task description as a claude prompt.
+        4. All execution happens on a dedicated git branch.
+
+        Parameters
+        ----------
+        name:
+            Human-readable job name.
+        task_description:
+            Natural-language description of the work to perform.
+        repo_path:
+            Optional repository path for tech-stack scanning.
+        commit_message:
+            Optional commit message override.
+        job_id:
+            Optional job identifier.
+
+        Returns
+        -------
+        JobResult:
+            The result of the job, including auto-selected agent info in output.
+        """
+        try:
+            agent_name, reasons = self.resolve_auto_agent(
+                task_description, repo_path=repo_path
+            )
+        except JobRunnerError:
+            # Fall back to running as a plain claude prompt
+            logger.warning(
+                "No agent matched for '%s', falling back to claude prompt",
+                task_description,
+            )
+            return self.run(
+                name=name,
+                command=f"echo 'No agent matched. Task: {task_description}'",
+                commit_message=commit_message,
+                job_id=job_id,
+            )
+
+        # Try to get the agent's skills to run
+        try:
+            from superpowers.agent_registry import AgentRegistry
+
+            registry = AgentRegistry()
+            agent = registry.get(agent_name)
+            agent_skills = agent.skills
+        except (KeyError, ImportError, OSError):
+            agent_skills = []
+
+        reasons_str = "; ".join(reasons)
+
+        if agent_skills:
+            # Run the first matching skill
+            skill_name = agent_skills[0]
+
+            def _run_skill() -> str:
+                from superpowers.skill_loader import SkillLoader
+                from superpowers.skill_registry import SkillRegistry
+
+                sr = SkillRegistry()
+                loader = SkillLoader()
+                skill = sr.get(skill_name)
+                result = loader.run(skill)
+                output_lines = [
+                    f"Auto-agent: {agent_name} (reasons: {reasons_str})",
+                    f"Skill: {skill_name}",
+                    f"Exit code: {result.returncode}",
+                    "",
+                    result.stdout,
+                ]
+                if result.stderr:
+                    output_lines.append(f"Stderr: {result.stderr}")
+                return "\n".join(output_lines)
+
+            return self.run(
+                name=f"{name} [agent:{agent_name}]",
+                callable=_run_skill,
+                commit_message=commit_message or f"auto-agent/{agent_name}: {name}",
+                job_id=job_id,
+            )
+        else:
+            # No skills — run task description as a shell echo (safe fallback)
+            header = f"Auto-agent: {agent_name} (reasons: {reasons_str})\n"
+            return self.run(
+                name=f"{name} [agent:{agent_name}]",
+                command=f"echo '{header}Task: {task_description}'",
+                commit_message=commit_message or f"auto-agent/{agent_name}: {name}",
+                job_id=job_id,
+            )
 
     # ------------------------------------------------------------------
     # PR creation

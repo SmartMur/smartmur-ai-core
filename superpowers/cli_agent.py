@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 
 import click
@@ -10,6 +9,7 @@ from rich.console import Console
 from rich.table import Table
 
 from superpowers.agent_registry import AgentRegistry, get_agent_body
+from superpowers.llm_provider import get_default_provider
 
 console = Console()
 
@@ -89,12 +89,6 @@ def agent_run(name: str, task: str | None):
         console.print(f"[red]Agent not found:[/red] {name}")
         raise SystemExit(1)
 
-    # Check that claude CLI is available
-    claude_bin = shutil.which("claude")
-    if not claude_bin:
-        console.print("[red]Error:[/red] 'claude' CLI not found in PATH.")
-        raise SystemExit(1)
-
     # Build the system prompt from agent.md body
     body = get_agent_body(agent.path)
     if not body:
@@ -108,25 +102,31 @@ def agent_run(name: str, task: str | None):
     if task:
         console.print(f"[dim]Task:[/dim] {task}")
 
-    try:
-        result = subprocess.run(
-            [claude_bin, "-p", prompt],
-            capture_output=True,
-            text=True,
-            timeout=300,
+    provider = get_default_provider(role="chat")
+    if not provider.available():
+        console.print(
+            "[red]Error:[/red] No LLM provider available. "
+            "Install/configure Claude CLI or set OPENAI_API_KEY for ChatGPT fallback."
         )
-        if result.stdout:
-            console.print(result.stdout, end="")
-        if result.stderr:
-            console.print(f"[yellow]{result.stderr}[/yellow]", end="")
-        if result.returncode != 0:
-            console.print(f"[red]Agent exited with code {result.returncode}[/red]")
-            raise SystemExit(result.returncode)
-    except FileNotFoundError:
-        console.print("[red]Error:[/red] 'claude' CLI not found.")
+        raise SystemExit(1)
+
+    try:
+        result = provider.invoke(prompt).strip()
+        if result:
+            console.print(result)
+        else:
+            console.print("[yellow]Agent returned no output.[/yellow]")
+    except TimeoutError:
+        console.print("[red]Error:[/red] Agent timed out after 300 seconds.")
         raise SystemExit(1)
     except subprocess.TimeoutExpired:
-        console.print("[red]Error:[/red] Agent timed out after 300 seconds.")
+        console.print("[red]Error:[/red] Agent timed out.")
+        raise SystemExit(1)
+    except FileNotFoundError:
+        console.print("[red]Error:[/red] LLM provider binary not found.")
+        raise SystemExit(1)
+    except RuntimeError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
         raise SystemExit(1)
 
 

@@ -93,6 +93,8 @@ class WorkflowEngine:
                 output, ok = self._run_http(step)
             elif step.type == StepType.approval_gate:
                 output, ok = self._run_approval(step)
+            elif step.type == StepType.auto_agent:
+                output, ok = self._run_auto_agent(step)
             else:
                 return StepResult(
                     step_name=step.name,
@@ -174,6 +176,52 @@ class WorkflowEngine:
             return "rejected", False
         except EOFError:
             return "no tty — rejected", False
+
+    def _run_auto_agent(self, step: StepConfig) -> tuple[str, bool]:
+        """Auto-select the best agent for the task and run its skills.
+
+        The ``command`` field is used as the task description for agent
+        selection.  Optional ``args`` may include ``repo_path`` for
+        tech-stack detection.
+        """
+        from superpowers.agent_router import select_agents
+
+        task = step.command
+        repo_path = step.args.get("repo_path")
+
+        selections = select_agents(
+            task_description=task,
+            repo_path=repo_path,
+        )
+
+        if not selections:
+            return f"No agents matched task: {task}", False
+
+        top = selections[0]
+        agent = top.agent
+        reasons = "; ".join(top.reasons)
+        lines = [f"Selected agent: {agent.name} (score: {top.score}, reasons: {reasons})"]
+
+        # If agent has skills, run the first one
+        if agent.skills:
+            skill_name = agent.skills[0]
+            try:
+                from superpowers.skill_loader import SkillLoader
+                from superpowers.skill_registry import SkillRegistry
+
+                sr = SkillRegistry()
+                loader = SkillLoader()
+                skill = sr.get(skill_name)
+                result = loader.run(skill, step.args or None)
+                lines.append(f"Ran skill: {skill_name}")
+                lines.append(result.stdout + result.stderr)
+                return "\n".join(lines), result.returncode == 0
+            except (KeyError, OSError, RuntimeError) as exc:
+                lines.append(f"Skill {skill_name} failed: {exc}")
+                return "\n".join(lines), False
+        else:
+            lines.append(f"Agent {agent.name} has no skills; task logged only.")
+            return "\n".join(lines), True
 
     def _check_condition(self, condition: str, results: list[StepResult]) -> bool:
         if not results:
