@@ -8,7 +8,6 @@ from pathlib import Path
 
 import yaml
 
-
 SUBAGENTS_DIR_DEFAULT = Path(__file__).resolve().parent.parent / "subagents"
 
 

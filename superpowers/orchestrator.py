@@ -72,8 +72,7 @@ class OrchResult:
             output = (step.get("output") or step.get("error") or "")[:80]
             output = output.replace("|", "\\|").replace("\n", " ")
             lines.append(
-                f"| {step['name']} | {step['status']} "
-                f"| {step.get('duration_ms', 0)}ms | {output} |"
+                f"| {step['name']} | {step['status']} | {step.get('duration_ms', 0)}ms | {output} |"
             )
         if self.summary:
             lines.extend(["", "## Summary", "", self.summary])

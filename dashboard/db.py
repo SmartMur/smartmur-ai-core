@@ -354,17 +354,26 @@ class RsyncDB:
                    (id, name, source_host, source_path, source_user,
                     dest_host, dest_path, dest_user, options, ssh_key, status, created_at)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)""",
-                (jid, name, source_host, source_path, source_user,
-                 dest_host, dest_path, dest_user, options, ssh_key, now),
+                (
+                    jid,
+                    name,
+                    source_host,
+                    source_path,
+                    source_user,
+                    dest_host,
+                    dest_path,
+                    dest_user,
+                    options,
+                    ssh_key,
+                    now,
+                ),
             )
         return self.get(jid)  # type: ignore[return-value]
 
     def update_status(self, jid: str, status: str, **fields) -> bool:
         invalid = [key for key in fields if key not in self._ALLOWED_UPDATE_FIELDS]
         if invalid:
-            raise ValueError(
-                f"Invalid rsync update field(s): {', '.join(sorted(invalid))}"
-            )
+            raise ValueError(f"Invalid rsync update field(s): {', '.join(sorted(invalid))}")
         sets = ["status = ?"]
         vals: list = [status]
         for k, v in fields.items():
@@ -372,9 +381,7 @@ class RsyncDB:
             vals.append(v)
         vals.append(jid)
         with self._conn() as conn:
-            cur = conn.execute(
-                f"UPDATE rsync_jobs SET {', '.join(sets)} WHERE id = ?", vals
-            )
+            cur = conn.execute(f"UPDATE rsync_jobs SET {', '.join(sets)} WHERE id = ?", vals)
         return cur.rowcount > 0
 
     def update_progress(self, jid: str, progress_json: str) -> bool:

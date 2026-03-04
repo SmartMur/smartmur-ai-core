@@ -17,7 +17,6 @@ from superpowers.dag_executor import (
     _safe_serialize,
 )
 
-
 # ---------------------------------------------------------------------------
 # DAGNode dataclass
 # ---------------------------------------------------------------------------
@@ -108,6 +107,7 @@ class TestLinearChain:
             def action():
                 order.append(label)
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -153,6 +153,7 @@ class TestParallelExecution:
                 time.sleep(0.1)
                 end_times[label] = time.monotonic()
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -198,6 +199,7 @@ class TestDiamondDependency:
                 with lock:
                     order.append(label)
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -255,8 +257,9 @@ class TestFailurePropagation:
         """
         dag = DAGExecutor()
         dag.add_node("a", "A", action=lambda: "ok")
-        dag.add_node("b", "B", action=lambda: (_ for _ in ()).throw(RuntimeError("b-fail")),
-                     depends_on=["a"])
+        dag.add_node(
+            "b", "B", action=lambda: (_ for _ in ()).throw(RuntimeError("b-fail")), depends_on=["a"]
+        )
         dag.add_node("c", "C", action=lambda: "ok", depends_on=["a"])
         dag.add_node("d", "D", action=lambda: "ok", depends_on=["b", "c"])
         dag.execute()
@@ -268,8 +271,7 @@ class TestFailurePropagation:
 
     def test_error_message_stored(self):
         dag = DAGExecutor()
-        dag.add_node("a", "A", action=lambda: (_ for _ in ()).throw(
-            TypeError("wrong type")))
+        dag.add_node("a", "A", action=lambda: (_ for _ in ()).throw(TypeError("wrong type")))
         dag.execute()
         assert dag.get_node("a").error == "wrong type"
 
@@ -339,6 +341,7 @@ class TestResourceConflicts:
                 with lock:
                     concurrent_count["current"] -= 1
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -361,6 +364,7 @@ class TestResourceConflicts:
                 start_times[label] = time.monotonic()
                 time.sleep(0.08)
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -396,6 +400,7 @@ class TestResourceConflicts:
                 with lock:
                     concurrent_count["current"] -= 1
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -426,6 +431,7 @@ class TestMaxWorkers:
             def action():
                 order.append(label)
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -453,6 +459,7 @@ class TestMaxWorkers:
                 with lock:
                     concurrent_count["current"] -= 1
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -504,7 +511,14 @@ class TestStatusSummary:
         dag.add_node("b", "B", action=lambda: "ok")
         dag.execute()
         summary = dag.status_summary()
-        assert summary == {"done": 2, "failed": 0, "skipped": 0, "pending": 0, "running": 0, "total": 2}
+        assert summary == {
+            "done": 2,
+            "failed": 0,
+            "skipped": 0,
+            "pending": 0,
+            "running": 0,
+            "total": 2,
+        }
 
     def test_mixed_statuses(self):
         dag = DAGExecutor()
@@ -706,6 +720,7 @@ class TestEdgeCases:
 class TestCLI:
     def test_dag_group_help(self):
         from superpowers.cli_dag import dag_group
+
         runner = CliRunner()
         result = runner.invoke(dag_group, ["--help"])
         assert result.exit_code == 0
@@ -713,12 +728,14 @@ class TestCLI:
 
     def test_dag_run_missing_workflow(self):
         from superpowers.cli_dag import dag_group
+
         runner = CliRunner()
         result = runner.invoke(dag_group, ["run", "nonexistent-workflow-xyz"])
         assert result.exit_code != 0
 
     def test_dag_visualize_missing_workflow(self):
         from superpowers.cli_dag import dag_group
+
         runner = CliRunner()
         result = runner.invoke(dag_group, ["visualize", "nonexistent-workflow-xyz"])
         assert result.exit_code != 0
@@ -740,6 +757,7 @@ class TestCLI:
         runner = CliRunner()
         with patch("superpowers.cli_dag.WorkflowLoader") as mock_loader_cls:
             from superpowers.workflow.base import StepConfig, StepType, WorkflowConfig
+
             mock_loader = mock_loader_cls.return_value
             mock_loader.load.return_value = WorkflowConfig(
                 name="test-dag",
@@ -757,6 +775,7 @@ class TestCLI:
         runner = CliRunner()
         with patch("superpowers.cli_dag.WorkflowLoader") as mock_loader_cls:
             from superpowers.workflow.base import StepConfig, StepType, WorkflowConfig
+
             mock_loader = mock_loader_cls.return_value
             mock_loader.load.return_value = WorkflowConfig(
                 name="viz-test",
@@ -773,6 +792,7 @@ class TestCLI:
 
     def test_dag_registered_in_main_cli(self):
         from superpowers.cli import main
+
         runner = CliRunner()
         result = runner.invoke(main, ["dag", "--help"])
         assert result.exit_code == 0
@@ -801,6 +821,7 @@ class TestComplexTopologies:
                 with lock:
                     results_order.append(label)
                 return label
+
             return action
 
         dag = DAGExecutor()
@@ -827,6 +848,7 @@ class TestComplexTopologies:
                 with lock:
                     order.append(label)
                 return label
+
             return action
 
         dag = DAGExecutor()

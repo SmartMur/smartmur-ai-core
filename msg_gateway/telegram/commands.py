@@ -183,7 +183,11 @@ class CommandRouter:
         aliases = {"chatgpt": "openai", "gpt": "openai"}
         resolved = aliases.get(args, args)
         current_stored = self._chat_models.get(msg.chat_id)
-        current = "auto" if current_stored is None else ("chatgpt" if current_stored == "openai" else current_stored)
+        current = (
+            "auto"
+            if current_stored is None
+            else ("chatgpt" if current_stored == "openai" else current_stored)
+        )
         valid = ("claude", "openai", "chatgpt", "gpt", "auto")
 
         if args in valid:

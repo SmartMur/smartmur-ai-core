@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
@@ -31,9 +30,7 @@ def _make_engine(jobs=None):
     engine = MagicMock()
     _jobs = jobs if jobs is not None else [FakeJob()]
     engine.list_jobs.return_value = _jobs
-    engine.get_job.side_effect = lambda jid: next(
-        (j for j in _jobs if j.id == jid), None
-    )
+    engine.get_job.side_effect = lambda jid: next((j for j in _jobs if j.id == jid), None)
     engine.add_job.return_value = FakeJob()
     engine.remove_job.return_value = None
     engine.enable_job.return_value = None

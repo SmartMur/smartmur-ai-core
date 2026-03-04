@@ -101,8 +101,14 @@ class WorkflowEngine:
                     status=StepStatus.failed,
                     error=f"Unknown step type: {step.type}",
                 )
-        except (subprocess.SubprocessError, OSError, RuntimeError, ValueError, KeyError,
-                urllib.error.URLError) as exc:
+        except (
+            subprocess.SubprocessError,
+            OSError,
+            RuntimeError,
+            ValueError,
+            KeyError,
+            urllib.error.URLError,
+        ) as exc:
             return StepResult(
                 step_name=step.name,
                 status=StepStatus.failed,

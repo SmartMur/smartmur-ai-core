@@ -18,7 +18,6 @@ from superpowers.agent_registry import (
 )
 from superpowers.cli_agent import agent_group
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -170,6 +169,7 @@ class TestDiscover:
         assert "agent-a" in registry._cache
         # Remove agent-a, add agent-b
         import shutil
+
         shutil.rmtree(tmp_path / "agent-a")
         _make_agent(tmp_path, "agent-b")
         registry.discover()

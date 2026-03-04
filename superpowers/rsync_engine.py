@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import queue
 import re
-import signal
 import subprocess
 import threading
 import time
@@ -16,18 +14,14 @@ from dataclasses import dataclass, field
 logger = logging.getLogger(__name__)
 
 # Validation patterns
-_IPV4_RE = re.compile(
-    r"^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$"
-)
+_IPV4_RE = re.compile(r"^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$")
 _IPV6_RE = re.compile(r"^[0-9a-fA-F:]+$")
 _HOSTNAME_RE = re.compile(r"^[a-zA-Z0-9]([a-zA-Z0-9\-\.]*[a-zA-Z0-9])?$")
 _SHELL_META = re.compile(r"[;&|`$(){}!\n\r]")
 _PATH_RE = re.compile(r"^/[^\x00;&|`$(){}!\n\r]*$")
 
 # Rsync progress line: e.g. "  1,234,567  45%   12.34MB/s    0:01:23"
-_PROGRESS_RE = re.compile(
-    r"^\s*([\d,]+)\s+(\d+)%\s+(\S+/s)\s+([\d:]+)"
-)
+_PROGRESS_RE = re.compile(r"^\s*([\d,]+)\s+(\d+)%\s+(\S+/s)\s+([\d:]+)")
 # Stats line patterns
 _STATS_FILES_RE = re.compile(r"Number of regular files transferred:\s*([\d,]+)")
 _STATS_TOTAL_RE = re.compile(r"Total transferred file size:\s*([\d,]+)")
@@ -56,6 +50,7 @@ class RsyncStats:
 @dataclass
 class _RunningJob:
     """Internal tracking for a running rsync process."""
+
     process: subprocess.Popen | None = None
     progress_queue: queue.Queue = field(default_factory=queue.Queue)
     cancel_event: threading.Event = field(default_factory=threading.Event)
@@ -79,8 +74,16 @@ class RsyncEngine:
         self._running: dict[str, _RunningJob] = {}
         self._lock = threading.Lock()
 
-    def validate(self, source_host: str, source_path: str, dest_host: str, dest_path: str,
-                 source_user: str = "", dest_user: str = "", ssh_key: str = "") -> list[str]:
+    def validate(
+        self,
+        source_host: str,
+        source_path: str,
+        dest_host: str,
+        dest_path: str,
+        source_user: str = "",
+        dest_user: str = "",
+        ssh_key: str = "",
+    ) -> list[str]:
         """Return a list of validation errors (empty = valid)."""
         errors = []
 
@@ -97,7 +100,9 @@ class RsyncEngine:
 
         # Validate hosts (if provided)
         for label, host in [("Source host", source_host), ("Dest host", dest_host)]:
-            if host and not (_IPV4_RE.match(host) or _IPV6_RE.match(host) or _HOSTNAME_RE.match(host)):
+            if host and not (
+                _IPV4_RE.match(host) or _IPV6_RE.match(host) or _HOSTNAME_RE.match(host)
+            ):
                 errors.append(f"{label} '{host}' is not a valid IP or hostname")
 
         # Validate users
@@ -175,9 +180,7 @@ class RsyncEngine:
         with self._lock:
             self._running[job_id] = running
 
-        thread = threading.Thread(
-            target=self._run_job, args=(job_id, job, running), daemon=True
-        )
+        thread = threading.Thread(target=self._run_job, args=(job_id, job, running), daemon=True)
         thread.start()
 
     def _run_job(self, job_id: str, job: dict, running: _RunningJob) -> None:
@@ -186,9 +189,19 @@ class RsyncEngine:
         logger.info("rsync start job=%s cmd=%s", job_id, " ".join(cmd))
 
         if self._audit:
-            src = f"{job.get('source_user', '')}@{job.get('source_host', '')}:{job['source_path']}" if job.get("source_host") else job["source_path"]
-            dst = f"{job.get('dest_user', '')}@{job.get('dest_host', '')}:{job['dest_path']}" if job.get("dest_host") else job["dest_path"]
-            self._audit.log("rsync_start", f"{src} -> {dst}", source="rsync", metadata={"job_id": job_id})
+            src = (
+                f"{job.get('source_user', '')}@{job.get('source_host', '')}:{job['source_path']}"
+                if job.get("source_host")
+                else job["source_path"]
+            )
+            dst = (
+                f"{job.get('dest_user', '')}@{job.get('dest_host', '')}:{job['dest_path']}"
+                if job.get("dest_host")
+                else job["dest_path"]
+            )
+            self._audit.log(
+                "rsync_start", f"{src} -> {dst}", source="rsync", metadata={"job_id": job_id}
+            )
 
         start_time = time.time()
         self._db.update_status(job_id, "running", started_at=start_time)
@@ -216,7 +229,9 @@ class RsyncEngine:
                         proc.wait(timeout=5)
                     except subprocess.TimeoutExpired:
                         proc.kill()
-                    self._db.complete(job_id, "cancelled", "{}", "\n".join(output_lines), "Cancelled by user")
+                    self._db.complete(
+                        job_id, "cancelled", "{}", "\n".join(output_lines), "Cancelled by user"
+                    )
                     if self._audit:
                         self._audit.log("rsync_cancel", f"job {job_id} cancelled", source="rsync")
                     return
@@ -242,7 +257,9 @@ class RsyncEngine:
                         last_update = now
                 else:
                     stripped = line.strip()
-                    if stripped and not stripped.startswith(("sending", "sent ", "total ", "Number", "File list")):
+                    if stripped and not stripped.startswith(
+                        ("sending", "sent ", "total ", "Number", "File list")
+                    ):
                         current_file = stripped
                         # Lines like ">f+++++++ path/file" indicate a transferred file
                         if stripped.startswith(">f") or stripped.startswith("cd"):
@@ -271,21 +288,26 @@ class RsyncEngine:
                 final_status = "failed"
 
             self._db.complete(
-                job_id, final_status, json.dumps(stats_dict),
-                "\n".join(output_lines[-500:]), stderr[:5000]
+                job_id,
+                final_status,
+                json.dumps(stats_dict),
+                "\n".join(output_lines[-500:]),
+                stderr[:5000],
             )
 
             # Final progress push
-            running.progress_queue.put({
-                "current_file": "",
-                "percent": 100 if proc.returncode == 0 else -1,
-                "speed": "",
-                "eta": "",
-                "files_transferred": stats.files_transferred,
-                "bytes_transferred": stats.bytes_total,
-                "done": True,
-                "status": final_status,
-            })
+            running.progress_queue.put(
+                {
+                    "current_file": "",
+                    "percent": 100 if proc.returncode == 0 else -1,
+                    "speed": "",
+                    "eta": "",
+                    "files_transferred": stats.files_transferred,
+                    "bytes_transferred": stats.bytes_total,
+                    "done": True,
+                    "status": final_status,
+                }
+            )
 
             if self._audit:
                 self._audit.log(

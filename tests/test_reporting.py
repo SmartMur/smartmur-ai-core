@@ -430,7 +430,9 @@ class TestCLI:
         reports_dir = tmp_path / "reports"
         reports_dir.mkdir()
         monkeypatch.setattr("superpowers.reporting.get_data_dir", lambda: tmp_path)
-        monkeypatch.setattr("superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir))
+        monkeypatch.setattr(
+            "superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir)
+        )
         reg = ReportRegistry(reports_dir=reports_dir)
         r = Report(title="CLI Test Report", command="claw test", status="pass")
         r.finish()
@@ -440,7 +442,9 @@ class TestCLI:
     def test_list_empty(self, runner, tmp_path, monkeypatch):
         reports_dir = tmp_path / "reports"
         reports_dir.mkdir()
-        monkeypatch.setattr("superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir))
+        monkeypatch.setattr(
+            "superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir)
+        )
         from superpowers.cli_report import report_group
 
         result = runner.invoke(report_group, ["list"])
@@ -467,7 +471,9 @@ class TestCLI:
     def test_show_not_found(self, runner, tmp_path, monkeypatch):
         reports_dir = tmp_path / "reports"
         reports_dir.mkdir()
-        monkeypatch.setattr("superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir))
+        monkeypatch.setattr(
+            "superpowers.cli_report.ReportRegistry", lambda: ReportRegistry(reports_dir=reports_dir)
+        )
         from superpowers.cli_report import report_group
 
         result = runner.invoke(report_group, ["show", "nonexistent"])

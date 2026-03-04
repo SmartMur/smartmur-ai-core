@@ -86,9 +86,7 @@ def _all_commands() -> list[str]:
     out_dir = _output_dir()
     if not out_dir.is_dir():
         return []
-    return sorted(
-        d.name for d in out_dir.iterdir() if d.is_dir() and any(d.glob("*.json"))
-    )
+    return sorted(d.name for d in out_dir.iterdir() if d.is_dir() and any(d.glob("*.json")))
 
 
 # --- Endpoints ---

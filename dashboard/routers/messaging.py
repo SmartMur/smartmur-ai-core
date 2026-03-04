@@ -5,7 +5,6 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from dashboard.deps import get_channel_registry, get_profile_manager
-from superpowers.channels.base import ChannelError
 from dashboard.models import (
     ChannelInfo,
     ProfileOut,
@@ -13,6 +12,7 @@ from dashboard.models import (
     SendMessageRequest,
     SendMessageResponse,
 )
+from superpowers.channels.base import ChannelError
 
 router = APIRouter()
 

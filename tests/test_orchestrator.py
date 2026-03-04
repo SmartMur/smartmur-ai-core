@@ -403,9 +403,7 @@ class TestCLI:
             mock_orch_fn.return_value = orch
             # Need to also patch the Orchestrator used in orchestrate_run
             # since it creates its own instance when --output is not provided
-            with patch(
-                "superpowers.cli_orchestrate.Orchestrator", return_value=orch
-            ):
+            with patch("superpowers.cli_orchestrate.Orchestrator", return_value=orch):
                 result = runner.invoke(orchestrate_group, ["run", "audit"])
 
         assert result.exit_code == 0

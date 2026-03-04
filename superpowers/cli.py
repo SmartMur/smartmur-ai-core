@@ -9,12 +9,12 @@ from superpowers.cli_dag import dag_group
 from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_intake import intake_group
 from superpowers.cli_jobs import jobs_group
-from superpowers.cli_pack import pack_group
-from superpowers.cli_policy import policy_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
 from superpowers.cli_orchestrate import orchestrate_group
+from superpowers.cli_pack import pack_group
+from superpowers.cli_policy import policy_group
 from superpowers.cli_report import report_group
 from superpowers.cli_setup import setup_group
 from superpowers.cli_skill import (

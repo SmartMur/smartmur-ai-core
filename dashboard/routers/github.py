@@ -31,7 +31,7 @@ def github_status():
 
     try:
         audit = ga.audit_protection()
-    except (RuntimeError, OSError, subprocess.SubprocessError, KeyError) as exc:
+    except (RuntimeError, OSError, subprocess.SubprocessError, KeyError):
         return GitHubSecurityStatus(
             authenticated=True,
             auth_detail=detail,

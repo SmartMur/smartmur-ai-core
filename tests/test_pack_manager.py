@@ -83,7 +83,12 @@ def _make_pack(
             wf_dir.mkdir(exist_ok=True)
             for wf in workflows:
                 (wf_dir / f"{wf}.yaml").write_text(
-                    yaml.dump({"name": wf, "steps": [{"name": "test", "type": "shell", "command": "echo ok"}]})
+                    yaml.dump(
+                        {
+                            "name": wf,
+                            "steps": [{"name": "test", "type": "shell", "command": "echo ok"}],
+                        }
+                    )
                 )
 
         # Create agent directories
@@ -353,6 +358,7 @@ class TestUninstall:
         env.install(pack_dir)
         # Manually remove the skill dir
         import shutil
+
         shutil.rmtree(env.skills_dir / "s1")
         # Should not raise
         env.uninstall("demo")

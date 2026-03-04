@@ -7,13 +7,13 @@ from dataclasses import asdict
 from fastapi import APIRouter, HTTPException
 
 from dashboard.deps import get_workflow_engine, get_workflow_loader
-from superpowers.workflow.base import WorkflowError
 from dashboard.models import (
     StepResultOut,
     WorkflowDetail,
     WorkflowOut,
     WorkflowRunRequest,
 )
+from superpowers.workflow.base import WorkflowError
 
 router = APIRouter()
 

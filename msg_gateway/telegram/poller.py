@@ -315,15 +315,15 @@ class TelegramPoller:
 
         logger.info(
             "Calling LLM provider '%s' for %s (prompt length=%d)",
-            provider.name, chat_id, len(prompt),
+            provider.name,
+            chat_id,
+            len(prompt),
         )
         try:
             reply = provider.invoke(prompt).strip()
             if not reply:
                 reply = "[no response]"
-            logger.info(
-                "LLM replied for %s (%d chars)", chat_id, len(reply)
-            )
+            logger.info("LLM replied for %s (%d chars)", chat_id, len(reply))
             return reply
         except (RuntimeError, subprocess.TimeoutExpired):
             return "[Response timed out — try a shorter question]"

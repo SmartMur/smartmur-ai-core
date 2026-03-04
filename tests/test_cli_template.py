@@ -8,7 +8,6 @@ from click.testing import CliRunner
 
 from superpowers.cli_template import template_group
 
-
 # --- template init ---
 
 
@@ -44,7 +43,11 @@ def test_template_list_with_templates(mock_cls):
     tm = MagicMock()
     tm.list_templates.return_value = [
         {"name": "hosts.yaml", "dest": "~/.claude-superpowers/hosts.yaml", "status": "current"},
-        {"name": "profiles.yaml", "dest": "~/.claude-superpowers/profiles.yaml", "status": "modified"},
+        {
+            "name": "profiles.yaml",
+            "dest": "~/.claude-superpowers/profiles.yaml",
+            "status": "modified",
+        },
         {"name": "cron.yaml", "dest": "~/.claude-superpowers/cron.yaml", "status": "missing"},
     ]
     mock_cls.return_value = tm

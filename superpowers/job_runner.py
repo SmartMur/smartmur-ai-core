@@ -274,9 +274,7 @@ class JobRunner:
             repo_path=repo_path or self.repo_dir,
         )
         if not selections:
-            raise JobRunnerError(
-                f"No agents matched task: {task_description!r}"
-            )
+            raise JobRunnerError(f"No agents matched task: {task_description!r}")
 
         top = selections[0]
         return top.agent.name, top.reasons
@@ -316,9 +314,7 @@ class JobRunner:
             The result of the job, including auto-selected agent info in output.
         """
         try:
-            agent_name, reasons = self.resolve_auto_agent(
-                task_description, repo_path=repo_path
-            )
+            agent_name, reasons = self.resolve_auto_agent(task_description, repo_path=repo_path)
         except JobRunnerError:
             # Fall back to running as a plain claude prompt
             logger.warning(

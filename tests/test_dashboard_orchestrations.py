@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import time
-from dataclasses import dataclass, field
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,7 +11,6 @@ from fastapi.testclient import TestClient
 
 from dashboard import deps
 from dashboard.app import app
-
 
 # =============================================================================
 # Fake engines (minimal stubs so the dashboard starts)
@@ -152,9 +149,27 @@ def _make_report(
 ) -> dict:
     if step_details is None:
         step_details = [
-            {"name": "lint", "status": "passed", "output": "clean", "error": "", "duration_ms": 10000},
-            {"name": "test", "status": "passed", "output": "42 passed", "error": "", "duration_ms": 30000},
-            {"name": "scan", "status": "passed", "output": "no issues", "error": "", "duration_ms": 20000},
+            {
+                "name": "lint",
+                "status": "passed",
+                "output": "clean",
+                "error": "",
+                "duration_ms": 10000,
+            },
+            {
+                "name": "test",
+                "status": "passed",
+                "output": "42 passed",
+                "error": "",
+                "duration_ms": 30000,
+            },
+            {
+                "name": "scan",
+                "status": "passed",
+                "output": "no issues",
+                "error": "",
+                "duration_ms": 20000,
+            },
         ]
     return {
         "command": command,
@@ -305,12 +320,12 @@ class TestListOrchestrations:
 
     def test_list_with_limit(self, client, orch_dir):
         for i in range(5):
-            ts = f"20260301-{10+i:02d}0000"
+            ts = f"20260301-{10 + i:02d}0000"
             _write_report(
                 orch_dir,
                 "audit",
                 ts,
-                _make_report(command="audit", started_at=f"2026-03-01T{10+i:02d}:00:00+00:00"),
+                _make_report(command="audit", started_at=f"2026-03-01T{10 + i:02d}:00:00+00:00"),
             )
 
         resp = client.get("/api/orchestrations?limit=3")
@@ -482,7 +497,9 @@ class TestStatus:
         assert data["commands"] == []
 
     def test_status_with_data(self, client, orch_dir):
-        _write_report(orch_dir, "audit", "20260301-100000", _make_report(command="audit", status="passed"))
+        _write_report(
+            orch_dir, "audit", "20260301-100000", _make_report(command="audit", status="passed")
+        )
         _write_report(
             orch_dir,
             "health-check",
@@ -523,7 +540,9 @@ class TestStatus:
     def test_status_commands_list(self, client, orch_dir):
         _write_report(orch_dir, "audit", "20260301-100000", _make_report(command="audit"))
         _write_report(orch_dir, "benchmark", "20260301-110000", _make_report(command="benchmark"))
-        _write_report(orch_dir, "code-health", "20260301-120000", _make_report(command="code-health"))
+        _write_report(
+            orch_dir, "code-health", "20260301-120000", _make_report(command="code-health")
+        )
 
         resp = client.get("/api/orchestrations/status")
         data = resp.json()

@@ -38,9 +38,10 @@ If Ray asks you to do something on the server, explain what commands or skills w
 
 def _load_memories() -> str:
     """Load facts from the memory DB for context injection."""
-    mem_path = Path(os.environ.get(
-        "SUPERPOWERS_DIR", os.path.expanduser("~/.claude-superpowers")
-    )) / "memory.db"
+    mem_path = (
+        Path(os.environ.get("SUPERPOWERS_DIR", os.path.expanduser("~/.claude-superpowers")))
+        / "memory.db"
+    )
     if not mem_path.exists():
         return ""
     try:
@@ -64,18 +65,15 @@ def _build_system_prompt() -> str:
 
 def _build_conversation_context(messages: list[dict], max_turns: int = 10) -> str:
     """Format recent conversation history for context."""
-    recent = messages[-(max_turns * 2):]  # last N turns (user+assistant pairs)
+    recent = messages[-(max_turns * 2) :]  # last N turns (user+assistant pairs)
     if not recent:
         return ""
     lines = []
     for msg in recent:
         role = "Ray" if msg.get("role") == "user" else "Claw"
         lines.append(f"{role}: {msg['content']}")
-    return (
-        "\n<conversation_history>\n"
-        + "\n".join(lines)
-        + "\n</conversation_history>\n\n"
-    )
+    return "\n<conversation_history>\n" + "\n".join(lines) + "\n</conversation_history>\n\n"
+
 
 router = APIRouter()
 
@@ -233,7 +231,4 @@ def _generate_response(message: str, history: list[dict] | None = None) -> str:
         logger.warning("LLM provider error: %s", exc)
         return "Response timed out — try a shorter question."
 
-    return (
-        f"Received: {message}\n\n"
-        "(LLM provider not available. Check configuration.)"
-    )
+    return f"Received: {message}\n\n(LLM provider not available. Check configuration.)"

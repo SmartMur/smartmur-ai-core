@@ -22,10 +22,9 @@ import platform
 import socket
 import subprocess
 import time
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Sequence
-
 
 # ── Defaults ──────────────────────────────────────────────────────────
 
@@ -213,7 +212,7 @@ def check_port(ip: str, port: int, timeout: int = DEFAULT_TIMEOUT) -> PortResult
         if result == 0:
             return PortResult(port=port, open=True, response_time_ms=elapsed)
         return PortResult(port=port, open=False)
-    except (socket.timeout, socket.error, OSError):
+    except (TimeoutError, OSError):
         return PortResult(port=port, open=False)
 
 
@@ -380,27 +379,19 @@ def format_table(report: ScanReport) -> str:
     lines.append("")
 
     # Host status table
-    lines.append(
-        f"{'HOST':<20} {'IP':<18} {'STATUS':<8} {'PING':<10} {'OPEN PORTS'}"
-    )
-    lines.append(
-        f"{'----':<20} {'--':<18} {'------':<8} {'----':<10} {'----------'}"
-    )
+    lines.append(f"{'HOST':<20} {'IP':<18} {'STATUS':<8} {'PING':<10} {'OPEN PORTS'}")
+    lines.append(f"{'----':<20} {'--':<18} {'------':<8} {'----':<10} {'----------'}")
 
     for host in report.hosts:
         status = "UP" if host.alive else "DOWN"
         ping_str = f"{host.ping_time_ms:.1f}ms" if host.ping_time_ms is not None else "---"
         open_ports = [p for p in host.ports if p.open]
         if open_ports:
-            port_str = ", ".join(
-                f"{p.port}/{PORT_NAMES.get(p.port, '?')}" for p in open_ports
-            )
+            port_str = ", ".join(f"{p.port}/{PORT_NAMES.get(p.port, '?')}" for p in open_ports)
         else:
             port_str = "none" if host.alive else "---"
 
-        lines.append(
-            f"{host.label:<20} {host.ip:<18} {status:<8} {ping_str:<10} {port_str}"
-        )
+        lines.append(f"{host.label:<20} {host.ip:<18} {status:<8} {ping_str:<10} {port_str}")
 
     lines.append("")
 

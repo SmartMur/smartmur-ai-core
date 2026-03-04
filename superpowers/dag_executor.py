@@ -12,10 +12,11 @@ from __future__ import annotations
 import threading
 import time
 from collections import deque
+from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Any, Callable
+from typing import Any
 
 
 class DAGError(Exception):
@@ -122,9 +123,7 @@ class DAGExecutor:
         for node in self._nodes.values():
             for dep_id in node.depends_on:
                 if dep_id not in self._nodes:
-                    raise DAGError(
-                        f"Node '{node.id}' depends on unknown node '{dep_id}'"
-                    )
+                    raise DAGError(f"Node '{node.id}' depends on unknown node '{dep_id}'")
 
         # Cycle detection via Kahn's algorithm
         in_degree: dict[str, int] = {nid: 0 for nid in self._nodes}
@@ -134,9 +133,7 @@ class DAGExecutor:
                 adj[dep_id].append(node.id)
                 in_degree[node.id] += 1
 
-        queue: deque[str] = deque(
-            nid for nid, deg in in_degree.items() if deg == 0
-        )
+        queue: deque[str] = deque(nid for nid, deg in in_degree.items() if deg == 0)
         visited = 0
         while queue:
             nid = queue.popleft()
@@ -148,12 +145,9 @@ class DAGExecutor:
 
         if visited != len(self._nodes):
             # Find the nodes involved in cycles for a useful error message
-            cycle_nodes = [
-                nid for nid, deg in in_degree.items() if deg > 0
-            ]
+            cycle_nodes = [nid for nid, deg in in_degree.items() if deg > 0]
             raise DAGError(
-                f"Circular dependency detected involving nodes: "
-                f"{', '.join(sorted(cycle_nodes))}"
+                f"Circular dependency detected involving nodes: {', '.join(sorted(cycle_nodes))}"
             )
 
     def _topological_sort(self) -> list[str]:
@@ -165,9 +159,7 @@ class DAGExecutor:
                 adj[dep_id].append(node.id)
                 in_degree[node.id] += 1
 
-        queue: deque[str] = deque(
-            sorted(nid for nid, deg in in_degree.items() if deg == 0)
-        )
+        queue: deque[str] = deque(sorted(nid for nid, deg in in_degree.items() if deg == 0))
         order: list[str] = []
         while queue:
             nid = queue.popleft()

@@ -209,7 +209,14 @@ class GitHubAdmin:
                 branch = branch_ref.get("name", "main") if isinstance(branch_ref, dict) else "main"
                 result.append({"repo": r["name"], "branch": branch})
             return result if result else list(self._KNOWN_REPOS)
-        except (RuntimeError, subprocess.SubprocessError, OSError, json.JSONDecodeError, KeyError, TypeError):
+        except (
+            RuntimeError,
+            subprocess.SubprocessError,
+            OSError,
+            json.JSONDecodeError,
+            KeyError,
+            TypeError,
+        ):
             return list(self._KNOWN_REPOS)
 
     # ------------------------------------------------------------------

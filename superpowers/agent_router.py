@@ -138,11 +138,29 @@ _TOOL_SIGNALS: dict[str, str] = {
 }
 
 # Directories to always skip when scanning
-_SKIP_DIRS = frozenset({
-    ".git", ".hg", ".svn", "node_modules", "__pycache__", ".venv", "venv",
-    ".tox", ".mypy_cache", ".pytest_cache", ".ruff_cache", "dist", "build",
-    ".next", ".nuxt", "target", "vendor", "bower_components", ".eggs",
-})
+_SKIP_DIRS = frozenset(
+    {
+        ".git",
+        ".hg",
+        ".svn",
+        "node_modules",
+        "__pycache__",
+        ".venv",
+        "venv",
+        ".tox",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        "dist",
+        "build",
+        ".next",
+        ".nuxt",
+        "target",
+        "vendor",
+        "bower_components",
+        ".eggs",
+    }
+)
 
 # Max files to scan (avoid huge repos)
 _MAX_FILES = 5000

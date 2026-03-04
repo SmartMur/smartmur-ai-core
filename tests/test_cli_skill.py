@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -331,9 +330,7 @@ def test_sync_pull_error(mock_cls):
 @patch("superpowers.skillhub.SkillHub")
 def test_sync_list_with_skills(mock_cls):
     hub = MagicMock()
-    hub.list_remote.return_value = [
-        {"name": "sk1", "version": "1.0", "description": "Skill 1"}
-    ]
+    hub.list_remote.return_value = [{"name": "sk1", "version": "1.0", "description": "Skill 1"}]
     mock_cls.return_value = hub
     runner = CliRunner()
     result = runner.invoke(sync_list)

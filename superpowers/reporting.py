@@ -221,8 +221,7 @@ class ReportFormatter:
         console.print(f"  [dim]Started:[/dim] {report.started_at}")
         if report.finished_at:
             console.print(
-                f"  [dim]Finished:[/dim] {report.finished_at}  "
-                f"({report.duration_seconds:.1f}s)"
+                f"  [dim]Finished:[/dim] {report.finished_at}  ({report.duration_seconds:.1f}s)"
             )
         if report.metadata:
             for k, v in report.metadata.items():
@@ -233,8 +232,7 @@ class ReportFormatter:
         for section in report.sections:
             sec_st = style_map.get(section.status, "white")
             console.print(
-                f"  [{sec_st}]{_STATUS_BADGE.get(section.status, '')} "
-                f"{section.heading}[/{sec_st}]"
+                f"  [{sec_st}]{_STATUS_BADGE.get(section.status, '')} {section.heading}[/{sec_st}]"
             )
             if section.content:
                 console.print(f"    {section.content}")

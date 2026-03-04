@@ -71,9 +71,7 @@ class TestOpenAIProvider:
         mock_client = MagicMock()
         mock_choice = MagicMock()
         mock_choice.message.content = "Hello from OpenAI"
-        mock_client.chat.completions.create.return_value = MagicMock(
-            choices=[mock_choice]
-        )
+        mock_client.chat.completions.create.return_value = MagicMock(choices=[mock_choice])
         mock_client_cls.return_value = mock_client
 
         with patch.dict(sys.modules, {"openai": mock_module}):
@@ -93,9 +91,7 @@ class TestOpenAIProvider:
         mock_client = MagicMock()
         mock_choice = MagicMock()
         mock_choice.message.content = "response"
-        mock_client.chat.completions.create.return_value = MagicMock(
-            choices=[mock_choice]
-        )
+        mock_client.chat.completions.create.return_value = MagicMock(choices=[mock_choice])
         mock_client_cls.return_value = mock_client
 
         with patch.dict(sys.modules, {"openai": mock_module}):
@@ -114,9 +110,7 @@ class TestOpenAIProvider:
         mock_client = MagicMock()
         mock_choice = MagicMock()
         mock_choice.message.content = "ok"
-        mock_client.chat.completions.create.return_value = MagicMock(
-            choices=[mock_choice]
-        )
+        mock_client.chat.completions.create.return_value = MagicMock(choices=[mock_choice])
         mock_client_cls.return_value = mock_client
 
         with patch.dict(sys.modules, {"openai": mock_module}):
@@ -252,13 +246,9 @@ class TestFallbackProvider:
 
         fb.invoke("test", system_prompt="Be helpful")
         # Primary called with system_prompt
-        primary.invoke.assert_called_once_with(
-            "test", model=None, system_prompt="Be helpful"
-        )
+        primary.invoke.assert_called_once_with("test", model=None, system_prompt="Be helpful")
         # Fallback called with system_prompt (model=None since it's a different provider)
-        fallback.invoke.assert_called_once_with(
-            "test", model=None, system_prompt="Be helpful"
-        )
+        fallback.invoke.assert_called_once_with("test", model=None, system_prompt="Be helpful")
 
     def test_properties(self):
         primary = self._make_provider("claude")

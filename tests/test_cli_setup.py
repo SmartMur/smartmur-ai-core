@@ -8,7 +8,6 @@ from click.testing import CliRunner
 
 from superpowers.cli_setup import setup_group
 
-
 # --- setup run ---
 
 
@@ -138,7 +137,15 @@ def test_setup_telegram_valid(mock_cls):
     runner = CliRunner()
     result = runner.invoke(
         setup_group,
-        ["telegram", "--token", "123:ABC", "--webhook-url", "https://x.com/hook", "--chat-ids", "123,456"],
+        [
+            "telegram",
+            "--token",
+            "123:ABC",
+            "--webhook-url",
+            "https://x.com/hook",
+            "--chat-ids",
+            "123,456",
+        ],
     )
     assert result.exit_code == 0
     assert "Bot validated" in result.output

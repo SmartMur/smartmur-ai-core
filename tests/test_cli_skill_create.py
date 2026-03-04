@@ -9,7 +9,6 @@ from click.testing import CliRunner
 
 from superpowers.cli_skill_create import skill_create
 
-
 # --- skill create ---
 
 
@@ -79,11 +78,16 @@ def test_skill_create_with_permissions(mock_create, mock_reg_cls, tmp_path):
     result = runner.invoke(
         skill_create,
         [
-            "--name", "vault-reader",
-            "--description", "Read vault secrets",
-            "--type", "bash",
-            "-p", "vault",
-            "-p", "ssh",
+            "--name",
+            "vault-reader",
+            "--description",
+            "Read vault secrets",
+            "--type",
+            "bash",
+            "-p",
+            "vault",
+            "-p",
+            "ssh",
         ],
     )
     assert result.exit_code == 0
@@ -108,11 +112,16 @@ def test_skill_create_with_triggers(mock_create, mock_reg_cls, tmp_path):
     result = runner.invoke(
         skill_create,
         [
-            "--name", "watcher",
-            "--description", "Watch files",
-            "--type", "bash",
-            "-t", "file-change",
-            "-t", "cron",
+            "--name",
+            "watcher",
+            "--description",
+            "Watch files",
+            "--type",
+            "bash",
+            "-t",
+            "file-change",
+            "-t",
+            "cron",
         ],
     )
     assert result.exit_code == 0

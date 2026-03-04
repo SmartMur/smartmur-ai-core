@@ -7,14 +7,7 @@ from unittest.mock import MagicMock, patch
 from click.testing import CliRunner
 
 from superpowers.cli_browse import (
-    browse_extract,
     browse_group,
-    browse_js,
-    browse_open,
-    browse_profiles,
-    browse_profiles_delete,
-    browse_screenshot,
-    browse_table,
 )
 
 

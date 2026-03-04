@@ -100,7 +100,7 @@ def recommend_agents(
     top_n: int = Query(5, ge=1, le=20, description="Max number of recommendations"),
 ):
     """Return ranked agent recommendations for a task, optionally boosted by repo context."""
-    from superpowers.agent_router import select_agents, detect_tech_stack
+    from superpowers.agent_router import detect_tech_stack, select_agents
 
     registry = _get_registry()
     repo_path = repo if repo else None

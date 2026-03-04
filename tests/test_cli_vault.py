@@ -9,7 +9,6 @@ from click.testing import CliRunner
 from superpowers.cli_vault import vault_group
 from superpowers.vault import VaultError
 
-
 # --- vault init ---
 
 

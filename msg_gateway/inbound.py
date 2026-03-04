@@ -247,7 +247,9 @@ class TelegramPoller:
             reply = provider.invoke(text).strip() or "[no response]"
             if reply:
                 self._send_reply(chat_id, reply)
-                logger.info("Provider '%s' replied to %s (%d chars)", provider.name, chat_id, len(reply))
+                logger.info(
+                    "Provider '%s' replied to %s (%d chars)", provider.name, chat_id, len(reply)
+                )
         except subprocess.TimeoutExpired:
             self._send_reply(chat_id, "[Response timed out — try a shorter question]")
             logger.warning("Chat provider timed out for %s", chat_id)

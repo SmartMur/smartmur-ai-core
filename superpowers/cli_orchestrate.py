@@ -52,9 +52,7 @@ def orchestrate_list():
 @orchestrate_group.command("run")
 @click.argument("command")
 @click.option("--repo", "repo_path", default=None, help="Repository path to run against")
-@click.option(
-    "--output", "output_dir", default=None, help="Output directory for reports"
-)
+@click.option("--output", "output_dir", default=None, help="Output directory for reports")
 @click.option("--dry-run", is_flag=True, help="Show what would execute without running")
 def orchestrate_run(command: str, repo_path: str | None, output_dir: str | None, dry_run: bool):
     """Run an orchestration command."""

@@ -25,7 +25,9 @@ def pack_install(source: str):
     pm = PackManager()
     try:
         manifest = pm.install(source)
-        console.print(f"[green]Installed pack:[/green] [bold]{manifest.name}[/bold] v{manifest.version}")
+        console.print(
+            f"[green]Installed pack:[/green] [bold]{manifest.name}[/bold] v{manifest.version}"
+        )
         if manifest.skills:
             console.print(f"  Skills:    {', '.join(manifest.skills)}")
         if manifest.workflows:
@@ -44,7 +46,9 @@ def pack_update(name: str):
     pm = PackManager()
     try:
         manifest = pm.update(name)
-        console.print(f"[green]Updated pack:[/green] [bold]{manifest.name}[/bold] v{manifest.version}")
+        console.print(
+            f"[green]Updated pack:[/green] [bold]{manifest.name}[/bold] v{manifest.version}"
+        )
     except PackError as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise SystemExit(1)

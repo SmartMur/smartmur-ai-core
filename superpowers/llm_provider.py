@@ -126,9 +126,7 @@ class OpenAIProvider(LLMProvider):
 
     def __init__(self, *, api_key: str | None = None, default_model: str | None = None) -> None:
         self._api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
-        self._default_model = (
-            default_model or os.environ.get("OPENAI_MODEL", "gpt-4o")
-        )
+        self._default_model = default_model or os.environ.get("OPENAI_MODEL", "gpt-4o")
 
     @property
     def name(self) -> str:

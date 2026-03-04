@@ -8,8 +8,6 @@ import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from superpowers.network_scanner import (
     DEFAULT_HOSTS,
     DEFAULT_PORTS,
@@ -82,9 +80,7 @@ class TestPingHost:
             "\n"
             "--- 192.168.1.1 ping statistics ---\n"
         )
-        fake = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout=output, stderr=""
-        )
+        fake = subprocess.CompletedProcess(args=[], returncode=0, stdout=output, stderr="")
         with patch("superpowers.network_scanner.subprocess.run", return_value=fake):
             alive, latency = ping_host("192.168.1.1")
             assert alive is True
@@ -119,7 +115,7 @@ class TestCheckPort:
     def test_port_timeout(self):
         """check_port returns open=False on socket timeout."""
         mock_sock = MagicMock(spec=socket.socket)
-        mock_sock.connect_ex.side_effect = socket.timeout("timed out")
+        mock_sock.connect_ex.side_effect = TimeoutError("timed out")
         with patch("superpowers.network_scanner.socket.socket", return_value=mock_sock):
             result = check_port("10.0.0.1", 443, timeout=1)
             assert result.open is False
@@ -167,8 +163,7 @@ class TestScanHost:
         mock_sock.connect_ex.return_value = 0  # All ports open
 
         fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=0,
-            stdout="64 bytes: time=2.00 ms\n", stderr=""
+            args=[], returncode=0, stdout="64 bytes: time=2.00 ms\n", stderr=""
         )
 
         with (
@@ -182,9 +177,7 @@ class TestScanHost:
 
     def test_scan_dead_host_skips_ports(self):
         """scan_host skips port scan when host is down."""
-        fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=1, stdout="", stderr=""
-        )
+        fake_ping = subprocess.CompletedProcess(args=[], returncode=1, stdout="", stderr="")
         with patch("superpowers.network_scanner.subprocess.run", return_value=fake_ping):
             result = scan_host("10.0.0.1", "DeadHost", ports=[22, 80])
             assert result.alive is False
@@ -192,9 +185,7 @@ class TestScanHost:
 
     def test_scan_host_default_label(self):
         """scan_host uses IP as label when label is empty."""
-        fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=1, stdout="", stderr=""
-        )
+        fake_ping = subprocess.CompletedProcess(args=[], returncode=1, stdout="", stderr="")
         with patch("superpowers.network_scanner.subprocess.run", return_value=fake_ping):
             result = scan_host("10.0.0.1", "", ports=[])
             assert result.label == "10.0.0.1"
@@ -209,8 +200,7 @@ class TestRunScan:
         hosts = [("10.0.0.1", "Host1"), ("10.0.0.2", "Host2")]
 
         fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=0,
-            stdout="64 bytes: time=1.00 ms\n", stderr=""
+            args=[], returncode=0, stdout="64 bytes: time=1.00 ms\n", stderr=""
         )
         mock_sock = MagicMock(spec=socket.socket)
         mock_sock.connect_ex.return_value = 111  # closed
@@ -230,9 +220,7 @@ class TestRunScan:
         """run_scan detects critical host failures."""
         hosts = [("10.0.0.1", "Host1")]
 
-        fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=1, stdout="", stderr=""
-        )
+        fake_ping = subprocess.CompletedProcess(args=[], returncode=1, stdout="", stderr="")
         with patch("superpowers.network_scanner.subprocess.run", return_value=fake_ping):
             report = run_scan(hosts=hosts, ports=[], critical=["10.0.0.1"])
             assert report.hosts_down == 1
@@ -247,12 +235,9 @@ class TestRunScan:
             ip = cmd[-1]
             if ip == "10.0.0.1":
                 return subprocess.CompletedProcess(
-                    args=cmd, returncode=0,
-                    stdout="time=1.00 ms\n", stderr=""
+                    args=cmd, returncode=0, stdout="time=1.00 ms\n", stderr=""
                 )
-            return subprocess.CompletedProcess(
-                args=cmd, returncode=1, stdout="", stderr=""
-            )
+            return subprocess.CompletedProcess(args=cmd, returncode=1, stdout="", stderr="")
 
         mock_sock = MagicMock(spec=socket.socket)
         mock_sock.connect_ex.return_value = 111
@@ -272,9 +257,7 @@ class TestRunScan:
 
     def test_scan_with_subnet(self):
         """run_scan expands subnets and includes them in scan."""
-        fake_ping = subprocess.CompletedProcess(
-            args=[], returncode=1, stdout="", stderr=""
-        )
+        fake_ping = subprocess.CompletedProcess(args=[], returncode=1, stdout="", stderr="")
         with patch("superpowers.network_scanner.subprocess.run", return_value=fake_ping):
             report = run_scan(
                 hosts=[],
@@ -292,9 +275,7 @@ class TestRunScan:
 class TestLoadConfig:
     def test_defaults(self):
         """load_config returns defaults when no env vars are set."""
-        env = {
-            k: v for k, v in {}.items()
-        }
+        env = {k: v for k, v in {}.items()}
         with patch.dict("os.environ", env, clear=True):
             config = load_config()
             assert config["hosts"] == list(DEFAULT_HOSTS)
@@ -425,9 +406,7 @@ class TestFormatTable:
 
     def test_table_all_ok_message(self):
         """format_table shows OK message when no critical hosts down."""
-        report = ScanReport(
-            hosts=[], total_hosts=1, hosts_up=1, hosts_down=0
-        )
+        report = ScanReport(hosts=[], total_hosts=1, hosts_up=1, hosts_down=0)
         output = format_table(report)
         assert "[OK]" in output
 
@@ -482,14 +461,18 @@ class TestSkillRunner:
             scan_time_seconds=0.5,
         )
         with (
-            patch.object(skill_mod, "load_config", return_value={
-                "hosts": [("10.0.0.1", "H1")],
-                "subnets": [],
-                "ports": [22],
-                "critical": ["10.0.0.1"],
-                "timeout": 2,
-                "workers": 5,
-            }),
+            patch.object(
+                skill_mod,
+                "load_config",
+                return_value={
+                    "hosts": [("10.0.0.1", "H1")],
+                    "subnets": [],
+                    "ports": [22],
+                    "critical": ["10.0.0.1"],
+                    "timeout": 2,
+                    "workers": 5,
+                },
+            ),
             patch.object(skill_mod, "run_scan", return_value=fake_report),
             patch.object(skill_mod, "format_table", return_value="table"),
             patch.object(skill_mod, "format_port_detail", return_value="detail"),
@@ -508,14 +491,18 @@ class TestSkillRunner:
             scan_time_seconds=0.5,
         )
         with (
-            patch.object(skill_mod, "load_config", return_value={
-                "hosts": [("10.0.0.1", "H1")],
-                "subnets": [],
-                "ports": [22],
-                "critical": ["10.0.0.1"],
-                "timeout": 2,
-                "workers": 5,
-            }),
+            patch.object(
+                skill_mod,
+                "load_config",
+                return_value={
+                    "hosts": [("10.0.0.1", "H1")],
+                    "subnets": [],
+                    "ports": [22],
+                    "critical": ["10.0.0.1"],
+                    "timeout": 2,
+                    "workers": 5,
+                },
+            ),
             patch.object(skill_mod, "run_scan", return_value=fake_report),
             patch.object(skill_mod, "format_table", return_value="table"),
             patch.object(skill_mod, "format_port_detail", return_value="detail"),
@@ -526,10 +513,18 @@ class TestSkillRunner:
     def test_main_returns_2_on_exception(self):
         """Skill main() returns 2 when scan raises an exception."""
         with (
-            patch.object(skill_mod, "load_config", return_value={
-                "hosts": [], "subnets": [], "ports": [],
-                "critical": [], "timeout": 2, "workers": 5,
-            }),
+            patch.object(
+                skill_mod,
+                "load_config",
+                return_value={
+                    "hosts": [],
+                    "subnets": [],
+                    "ports": [],
+                    "critical": [],
+                    "timeout": 2,
+                    "workers": 5,
+                },
+            ),
             patch.object(skill_mod, "run_scan", side_effect=RuntimeError("boom")),
             patch.object(skill_mod.telegram_notify, "notify_error", return_value=False),
         ):

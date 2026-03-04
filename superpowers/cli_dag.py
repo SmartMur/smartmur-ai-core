@@ -53,6 +53,7 @@ def dag_run(workflow: str, max_workers: int, dry_run: bool):
                 if result.status.value == "failed":
                     raise RuntimeError(result.error or result.output or "step failed")
                 return result.output
+
             return _action
 
         dag.add_node(node_id, step.name, action=_make_action(), depends_on=deps)

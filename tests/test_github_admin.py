@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
@@ -50,7 +51,7 @@ def _completed(
 
 class TestGhBinPath:
     def test_gh_bin_path(self):
-        assert GH_BIN == "/home/ray/.local/bin/gh"
+        assert GH_BIN == (shutil.which("gh") or "/home/ray/.local/bin/gh")
 
     def test_default_gh_bin_on_instance(self):
         admin = GitHubAdmin()

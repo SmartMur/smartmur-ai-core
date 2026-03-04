@@ -9,7 +9,6 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
-import urllib.error
 from pathlib import Path
 from typing import Any
 

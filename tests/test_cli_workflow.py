@@ -17,7 +17,9 @@ from superpowers.workflow.base import (
 )
 
 
-def _make_workflow(name="deploy", description="Deploy the app", steps=None, rollback=None, notify=""):
+def _make_workflow(
+    name="deploy", description="Deploy the app", steps=None, rollback=None, notify=""
+):
     if steps is None:
         steps = [
             StepConfig(name="build", type=StepType.shell, command="make build"),
@@ -152,7 +154,9 @@ def test_workflow_run_with_failure(mock_loader_fn, mock_engine_cls):
     engine = MagicMock()
     results = [
         StepResult(step_name="build", status=StepStatus.passed, output="ok", duration_ms=100),
-        StepResult(step_name="test", status=StepStatus.failed, error="assertion error", duration_ms=200),
+        StepResult(
+            step_name="test", status=StepStatus.failed, error="assertion error", duration_ms=200
+        ),
     ]
     engine.run.return_value = results
     mock_engine_cls.return_value = engine

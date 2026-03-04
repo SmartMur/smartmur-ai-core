@@ -9,15 +9,14 @@ import yaml
 from click.testing import CliRunner
 
 from superpowers.policy_engine import (
+    _DEFAULT_SECRET_PATTERNS,
     Policy,
     PolicyAction,
     PolicyDecision,
     PolicyEngine,
     PolicyRule,
-    _DEFAULT_SECRET_PATTERNS,
     _default_policies,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

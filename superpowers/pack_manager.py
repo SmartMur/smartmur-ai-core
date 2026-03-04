@@ -61,7 +61,7 @@ class PackManifest:
     checksum: str = ""
 
     @classmethod
-    def from_yaml(cls, path: Path) -> "PackManifest":
+    def from_yaml(cls, path: Path) -> PackManifest:
         """Load a manifest from a ``pack.yaml`` file."""
         if not path.is_file():
             raise PackError(f"Manifest not found: {path}")
@@ -233,7 +233,8 @@ class PackManager:
         errors = self._validate_contents(pack_dir, manifest)
         if errors:
             raise PackError(
-                f"Pack '{manifest.name}' validation failed:\n" + "\n".join(f"  - {e}" for e in errors)
+                f"Pack '{manifest.name}' validation failed:\n"
+                + "\n".join(f"  - {e}" for e in errors)
             )
 
         # Copy artefacts
@@ -340,9 +341,7 @@ class PackManager:
         if manifest.checksum:
             actual = _compute_pack_checksum(pack_dir)
             if actual != manifest.checksum:
-                errors.append(
-                    f"Checksum mismatch: expected {manifest.checksum}, got {actual}"
-                )
+                errors.append(f"Checksum mismatch: expected {manifest.checksum}, got {actual}")
 
         return errors
 
