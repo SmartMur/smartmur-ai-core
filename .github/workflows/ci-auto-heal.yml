@@ -43,7 +43,11 @@ jobs:
             const lintFailed = failedNames.some((name) =>
               name.toLowerCase().includes("lint"),
             );
+            const testFailed = failedNames.some((name) =>
+              name.toLowerCase().includes("test"),
+            );
             core.setOutput("lint_failed", lintFailed ? "true" : "false");
+            core.setOutput("test_failed", testFailed ? "true" : "false");
             core.setOutput("failed_jobs", failedNames.join(", "));
 
       - name: Skip non-lint failures
@@ -101,3 +105,60 @@ jobs:
           labels: |
             automation
             ci
+
+  retry-tests-once:
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Detect failed jobs in CI run
+        id: detect
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const { data } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+              per_page: 100,
+            });
+
+            const failedJobs = data.jobs.filter((job) => job.conclusion === "failure");
+            const failedNames = failedJobs.map((job) => job.name);
+            core.info(`Failed jobs: ${failedNames.join(", ") || "none"}`);
+
+            const lintFailed = failedNames.some((name) =>
+              name.toLowerCase().includes("lint"),
+            );
+            const testFailed = failedNames.some((name) =>
+              name.toLowerCase().includes("test"),
+            );
+            core.setOutput("lint_failed", lintFailed ? "true" : "false");
+            core.setOutput("test_failed", testFailed ? "true" : "false");
+            core.setOutput("failed_jobs", failedNames.join(", "));
+
+      - name: Skip retry conditions not met
+        if: steps.detect.outputs.test_failed != 'true' || steps.detect.outputs.lint_failed == 'true'
+        run: |
+          echo "Retry not needed."
+          echo "Failed jobs: ${{ steps.detect.outputs.failed_jobs }}"
+
+      - name: Re-run failed jobs once
+        if: steps.detect.outputs.test_failed == 'true' && steps.detect.outputs.lint_failed != 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.actions.reRunWorkflowFailedJobs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            core.info(`Re-ran failed jobs for CI run #${context.payload.workflow_run.id}`);
