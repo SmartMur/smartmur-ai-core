@@ -9,6 +9,7 @@ All user requests are logged here. Updated as work completes.
 - [ ] **Beat Tresor Sprint 2 execution (WIP)** — DAG executor, auto agent selection, policy engine, orchestrations monitor implemented and validated; pending final commit/push and backlog cleanup
 - [x] **Sprint 2 validation run (tmux)** — session `overnight-agents-20260304-023817`; `169 passed` (`tests/test_dag_executor.py`, `tests/test_policy_engine.py`, `tests/test_dashboard_orchestrations.py`)
 - [x] **Full test suite verification** — `2010 passed in 37.13s` (local run on 2026-03-04)
+- [x] **Private repos security baseline hardening (2026-03-04)** — all private SmartMur repos now have `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `.github/dependabot.yml`, workflow coverage (including `security.yml`), vulnerability alerts + automated security fixes enabled, and `0` open Dependabot alerts
 - [x] **Overnight remote run (docker-host)** — session `overnight-agents-20260304-023817` executed and closed; logs saved in `docs/reports/remote-runs/20260304-023817/`
 
 ## Backlog
