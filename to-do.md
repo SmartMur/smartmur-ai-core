@@ -6,7 +6,7 @@ All user requests are logged here. Updated as work completes.
 
 ## Active / In Progress
 
-- [ ] **Fix 83 bare `except Exception` clauses** — agent running, replacing with specific exception types
+*(none)*
 
 ## Backlog
 
@@ -17,10 +17,12 @@ All user requests are logged here. Updated as work completes.
 
 ## Completed (Wave 1 — 2026-03-03)
 
+- [x] **SmartMur/.github repository created** — org profile README pushed, `https://github.com/SmartMur/.github` live, profile/README.md contains Nexus ecosystem positioning
 - [x] **Shell hardening** — last `shell=True` in `job_runner.py` fixed, entire codebase clean
 - [x] **CLI test coverage** — 166 tests across 11 `cli_*.py` modules (was zero)
 - [x] **Network-scan skill** — replaced nmap stub with working Python scanner, 36 tests
 - [x] **Shared lib.sh** — 251-line shared library, 8 skill scripts refactored to use it
+- [x] **Exception specificity** — 45 bare `except Exception` → specific types across 19 files, 1587 tests passing
 
 ## Completed
 
