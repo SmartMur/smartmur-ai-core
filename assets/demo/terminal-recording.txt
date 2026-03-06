@@ -1,0 +1,160 @@
+Script started on 2026-03-06 06:56:56-05:00 [COMMAND="bash -c " echo \"$ claw --version\" .venv/bin/claw --version echo \"\" echo \"$ claw skill list\" .venv/bin/claw skill list echo \"\" echo \"$ claw cron list\" .venv/bin/claw cron list echo \"\" echo \"$ claw agent list\" .venv/bin/claw agent list echo \"\" echo \"$ claw benchmark list\" .venv/bin/claw benchmark list echo \"\" echo \"$ claw llm list\" .venv/bin/claw llm list "" <not executed on terminal>]
+$ claw --version
+claw, version 0.1.0
+
+$ claw skill list
+[3m                                     Skills                                     [0m
+┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃[1m [0m[1mName            [0m[1m [0m┃[1m [0m[1mVersion[0m[1m [0m┃[1m [0m[1mDescription     [0m[1m [0m┃[1m [0m[1mSlash Cmd[0m[1m [0m┃[1m [0m[1mPermissions     [0m[1m [0m┃
+┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│[36m [0m[36mbackup-status   [0m[36m [0m│ 0.1.0   │ Check backup     │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ status across    │           │                  │
+│[36m                  [0m│         │ systems          │           │                  │
+│[36m [0m[36mcloudflared-fix…[0m[36m [0m│ 1.0.0   │ Monitor and      │    [32myes[0m    │ docker           │
+│[36m                  [0m│         │ auto-fix         │           │                  │
+│[36m                  [0m│         │ cloudflared      │           │                  │
+│[36m                  [0m│         │ tunnel container │           │                  │
+│[36m                  [0m│         │ — crash loop     │           │                  │
+│[36m                  [0m│         │ detection,       │           │                  │
+│[36m                  [0m│         │ diagnostics,     │           │                  │
+│[36m                  [0m│         │ recovery         │           │                  │
+│[36m [0m[36mcontainer-watch…[0m[36m [0m│ 0.1.0   │ Real-time        │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ container        │           │                  │
+│[36m                  [0m│         │ monitoring with  │           │                  │
+│[36m                  [0m│         │ Telegram alerts  │           │                  │
+│[36m [0m[36mdeploy          [0m[36m [0m│ 1.0.0   │ Deploy           │    [32myes[0m    │ docker           │
+│[36m                  [0m│         │ claude-superpow… │           │                  │
+│[36m                  [0m│         │ — pull latest,   │           │                  │
+│[36m                  [0m│         │ rebuild          │           │                  │
+│[36m                  [0m│         │ containers, run  │           │                  │
+│[36m                  [0m│         │ health checks    │           │                  │
+│[36m [0m[36mdocker-monitor  [0m[36m [0m│ 0.1.0   │ Monitor Docker   │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ container health │           │                  │
+│[36m                  [0m│         │ and resources    │           │                  │
+│[36m [0m[36mgithub-admin    [0m[36m [0m│ 1.0.0   │ GitHub           │    [32myes[0m    │ network,         │
+│[36m                  [0m│         │ administration — │           │ subprocess       │
+│[36m                  [0m│         │ auth, branch     │           │                  │
+│[36m                  [0m│         │ protection, repo │           │                  │
+│[36m                  [0m│         │ audit            │           │                  │
+│[36m [0m[36mheartbeat       [0m[36m [0m│ 0.1.0   │ Ping key network │    [32myes[0m    │ ssh              │
+│[36m                  [0m│         │ services and     │           │                  │
+│[36m                  [0m│         │ report status    │           │                  │
+│[36m [0m[36minfra-fixer     [0m[36m [0m│ 1.0.0   │ General-purpose  │    [32myes[0m    │ docker           │
+│[36m                  [0m│         │ infrastructure   │           │                  │
+│[36m                  [0m│         │ health monitor — │           │                  │
+│[36m                  [0m│         │ checks all       │           │                  │
+│[36m                  [0m│         │ Docker services, │           │                  │
+│[36m                  [0m│         │ detects crash    │           │                  │
+│[36m                  [0m│         │ loops,           │           │                  │
+│[36m                  [0m│         │ auto-fixes       │           │                  │
+│[36m                  [0m│         │ common issues    │           │                  │
+│[36m [0m[36mnetwork-scan    [0m[36m [0m│ 1.0.0   │ Scan network     │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ hosts — ping     │           │                  │
+│[36m                  [0m│         │ sweep, port      │           │                  │
+│[36m                  [0m│         │ check, formatted │           │                  │
+│[36m                  [0m│         │ status report.   │           │                  │
+│[36m                  [0m│         │ No nmap          │           │                  │
+│[36m                  [0m│         │ required.        │           │                  │
+│[36m [0m[36mops-report      [0m[36m [0m│ 1.0     │ Hourly           │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ operations       │           │                  │
+│[36m                  [0m│         │ status report    │           │                  │
+│[36m                  [0m│         │ sent to Telegram │           │                  │
+│[36m [0m[36mqa-guardian     [0m[36m [0m│ 1.0.0   │ Autonomous code  │    [32myes[0m    │ file-read        │
+│[36m                  [0m│         │ quality guardian │           │                  │
+│[36m                  [0m│         │ — security,      │           │                  │
+│[36m                  [0m│         │ quality, test    │           │                  │
+│[36m                  [0m│         │ health, and      │           │                  │
+│[36m                  [0m│         │ efficiency       │           │                  │
+│[36m                  [0m│         │ checks           │           │                  │
+│[36m [0m[36mssl-cert-check  [0m[36m [0m│ 0.1.0   │ Check SSL        │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ certificate      │           │                  │
+│[36m                  [0m│         │ expiry for       │           │                  │
+│[36m                  [0m│         │ domains          │           │                  │
+│[36m [0m[36mtunnel-setup    [0m[36m [0m│ 1.0.0   │ Cloudflare       │    [32myes[0m    │ docker,          │
+│[36m                  [0m│         │ tunnel setup     │           │ file-write       │
+│[36m                  [0m│         │ helper —         │           │                  │
+│[36m                  [0m│         │ validates token, │           │                  │
+│[36m                  [0m│         │ manages          │           │                  │
+│[36m                  [0m│         │ container,       │           │                  │
+│[36m                  [0m│         │ checks           │           │                  │
+│[36m                  [0m│         │ connectivity     │           │                  │
+│[36m [0m[36mworkspace-intak…[0m[36m [0m│ 0.1.0   │ workspace intake │    [32myes[0m    │ -                │
+│[36m                  [0m│         │ smoke            │           │                  │
+└──────────────────┴─────────┴──────────────────┴───────────┴──────────────────┘
+
+$ claw cron list
+[3m                                 Scheduled Jobs                                 [0m
+┏━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━┓
+┃[1m            [0m┃[1m         [0m┃[1m         [0m┃[1m       [0m┃[1m         [0m┃[1m         [0m┃[1m [0m[1mLast  [0m[1m [0m┃[1m        [0m┃
+┃[1m [0m[1mID        [0m[1m [0m┃[1m [0m[1mName   [0m[1m [0m┃[1m [0m[1mSchedu…[0m[1m [0m┃[1m [0m[1mType [0m[1m [0m┃[1m [0m[1mCommand[0m[1m [0m┃[1m [0m[1mEnabled[0m[1m [0m┃[1m [0m[1mRun   [0m[1m [0m┃[1m [0m[1mStatus[0m[1m [0m┃
+┡━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━┩
+│[2m [0m[2maa59475c  [0m[2m [0m│[1;36m [0m[1;36mheartb…[0m[1;36m [0m│[32m [0m[32mevery  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m30m    [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m [0m[2m5d597530  [0m[2m [0m│[1;36m [0m[1;36minfra-…[0m[1;36m [0m│[32m [0m[32mevery  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m1h     [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m [0m[2mea04f1fc  [0m[2m [0m│[1;36m [0m[1;36mdocker…[0m[1;36m [0m│[32m [0m[32mevery  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m15m    [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m [0m[2m3a0011aa  [0m[2m [0m│[1;36m [0m[1;36mops-re…[0m[1;36m [0m│[32m [0m[32mdaily  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32mat     [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m08:00  [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m [0m[2m553ca7ed  [0m[2m [0m│[1;36m [0m[1;36mqa-gua…[0m[1;36m [0m│[32m [0m[32mdaily  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32mat     [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m03:00  [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m [0m[2mfe6a455c  [0m[2m [0m│[1;36m [0m[1;36mssl-ce…[0m[1;36m [0m│[32m [0m[32mdaily  [0m[32m [0m│[35m [0m[35mskill[0m[35m [0m│ skill:… │   [32myes[0m   │ -      │ -      │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32mat     [0m[32m [0m│[35m       [0m│         │         │        │        │
+│[2m            [0m│[1;36m         [0m│[32m [0m[32m06:00  [0m[32m [0m│[35m       [0m│         │         │        │        │
+└────────────┴─────────┴─────────┴───────┴─────────┴─────────┴────────┴────────┘
+
+$ claw agent list
+[3m                                     Agents                                     [0m
+┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃[1m [0m[1mName            [0m[1m [0m┃[1m [0m[1mDescription      [0m[1m [0m┃[1m [0m[1mTags             [0m[1m [0m┃[1m [0m[1mSkills           [0m[1m [0m┃
+┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│[36m [0m[36mcode-reviewer   [0m[36m [0m│ Reviews code for  │ code, review,     │ qa-guardian       │
+│[36m                  [0m│ quality, style,   │ quality, style,   │                   │
+│[36m                  [0m│ best practices,   │ refactor, lint    │                   │
+│[36m                  [0m│ and maintai       │                   │                   │
+│[36m [0m[36mdevops-engineer [0m[36m [0m│ Manages Docker,   │ devops, docker,   │ deploy,           │
+│[36m                  [0m│ CI/CD pipelines,  │ ci, cd, deploy,   │ infra-fixer,      │
+│[36m                  [0m│ deployment, and   │ infrastructure,   │ container-watchd… │
+│[36m                  [0m│ infrastruct       │ kubernetes,       │ tunnel-setup      │
+│[36m                  [0m│                   │ pipeline          │                   │
+│[36m [0m[36mdocs-writer     [0m[36m [0m│ Writes and        │ docs,             │ -                 │
+│[36m                  [0m│ maintains         │ documentation,    │                   │
+│[36m                  [0m│ documentation,    │ readme, api,      │                   │
+│[36m                  [0m│ READMEs, API      │ guide, tutorial,  │                   │
+│[36m                  [0m│ docs, and t       │ reference         │                   │
+│[36m [0m[36msecurity-auditor[0m[36m [0m│ Scans code for    │ security, audit,  │ qa-guardian       │
+│[36m                  [0m│ security          │ vulnerability,    │                   │
+│[36m                  [0m│ vulnerabilities,  │ OWASP             │                   │
+│[36m                  [0m│ OWASP top 10,     │                   │                   │
+│[36m                  [0m│ crede             │                   │                   │
+│[36m [0m[36mtest-writer     [0m[36m [0m│ Writes            │ test, testing,    │ qa-guardian       │
+│[36m                  [0m│ comprehensive     │ coverage, pytest, │                   │
+│[36m                  [0m│ tests, analyzes   │ unittest, tdd, qa │                   │
+│[36m                  [0m│ coverage, and     │                   │                   │
+│[36m                  [0m│ improves          │                   │                   │
+└──────────────────┴───────────────────┴───────────────────┴───────────────────┘
+
+$ claw benchmark list
+[3m                  Available Benchmark Scenarios                  [0m
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃[1m [0m[1mScenario         [0m[1m [0m┃[1m [0m[1mThresholds                               [0m[1m [0m┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│[36m [0m[36mdag_throughput   [0m[36m [0m│ duration_ms=10000.0, memory_peak_mb=100.0 │
+│[36m [0m[36morchestration_e2e[0m[36m [0m│ duration_ms=5000.0                        │
+│[36m [0m[36mpolicy_evaluation[0m[36m [0m│ duration_ms=5000.0, ops_per_sec=100.0     │
+│[36m [0m[36mreport_generation[0m[36m [0m│ duration_ms=5000.0, ops_per_sec=10.0      │
+└───────────────────┴───────────────────────────────────────────┘
+
+$ claw llm list
+[3m           LLM Providers           [0m
+┏━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓
+┃[1m [0m[1mProvider[0m[1m [0m┃[1m [0m[1m Status  [0m[1m [0m┃[1m [0m[1mPosition[0m[1m [0m┃
+┡━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩
+│[36m [0m[36mclaude  [0m[36m [0m│ [32mavailable[0m │        1 │
+└──────────┴───────────┴──────────┘
+
+Fallback chain: [1mclaude[0m
+
+Script done on 2026-03-06 06:56:58-05:00 [COMMAND_EXIT_CODE="0"]
