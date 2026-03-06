@@ -1,279 +1,223 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/architecture/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/good-first-issues/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/browser/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/architecture/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/cron/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/getting-started/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/dashboard/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/guides/DEPLOYMENT/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/getting-started/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/guides/UPGRADE/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/good-first-issues/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/guides/cloudflared-setup/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/heartbeat/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/guides/getting-started/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/mcp-server/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/CHAT_INTEGRATIONS/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/memory/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/CONFIGURATION/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/messaging/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/CUSTOMIZATION/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/skills/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/SECURITY/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/ssh/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/architecture/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/vault/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/browser/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/watchers/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/ci-cd/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/workflows/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/cli/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/architecture/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/cron/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/getting-started/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/dashboard/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/guides/DEPLOYMENT/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/heartbeat/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/guides/UPGRADE/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/intake/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/guides/cloudflared-setup/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/job-runner/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/guides/getting-started/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/mcp-server/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/CHAT_INTEGRATIONS/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/memory/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/CONFIGURATION/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/messaging/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/CUSTOMIZATION/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/model-routing/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/SECURITY/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/release-process/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/architecture/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/setup-wizard/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/browser/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/skills/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/ci-cd/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/ssh/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/cli/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/telegram-bot/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/cron/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/template-manager/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/dashboard/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/vault/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/heartbeat/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/watchers/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/intake/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reference/workflows/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/job-runner/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/action-plan-defg/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/mcp-server/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/all-projects-cve-audit-2026-03-06/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/memory/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/benchmark-baseline/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/messaging/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/competitive-analysis/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/model-routing/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/cve-audit-2026-03-06/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/release-process/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/github-audit-2026-03-02/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/setup-wizard/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/github-issues-audit/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/skills/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/security-audit-2026-03-04/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/ssh/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/final-naming-map-v1/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/telegram-bot/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/org-profile-README/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/template-manager/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase1-identity/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/vault/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase2-architecture/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/watchers/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase3-repo-reorg/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reference/workflows/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase4-messaging/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/action-plan-defg/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase5-star-strategy/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/all-projects-cve-audit-2026-03-06/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase6-competitive/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/benchmark-baseline/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/reports/ecosystem-reposition/phase7-roadmap/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/competitive-analysis/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/runbooks/RUNBOOKS/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/cve-audit-2026-03-06/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/sessions/2026-03-01-night-ops/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/github-audit-2026-03-02/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/sessions/telegram-reporting/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/github-issues-audit/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/security-audit-2026-03-04/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/final-naming-map-v1/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/org-profile-README/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase1-identity/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase2-architecture/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase3-repo-reorg/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase4-messaging/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase5-star-strategy/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase6-competitive/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase7-roadmap/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/runbooks/RUNBOOKS/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/sessions/2026-03-01-night-ops/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/sessions/telegram-reporting/</loc>
-         <lastmod>2026-03-06</lastmod>
-    </url>
-    <url>
-         <loc>https://smartmur.github.io/claude-superpowers/sessions/work-queue/</loc>
+         <loc>https://smartmur.github.io/smartmur-ai-core/sessions/work-queue/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
 </urlset>
