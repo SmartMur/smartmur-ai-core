@@ -10,7 +10,7 @@ All user requests are logged here. Updated as work completes.
 - [x] **Install scripts** — `install.sh` + `install-docker.sh` for one-command setup
 - [x] **MkDocs Material documentation site** — builds clean, full reference docs
 - [x] **Ollama/multi-LLM provider integration** — ProviderRegistry with Claude/Ollama/OpenAI fallback chain
-- [x] **Star-optimized README rewrite** — Nexus Core format, comparison tables, architecture diagram
+- [x] **Star-optimized README rewrite** — SmartMur Core format, comparison tables, architecture diagram
 - [x] **Demo/recording scripts** — scripted demo scenarios for terminal recording
 - [x] **GitHub issue/PR templates + good first issues** — `.github/ISSUE_TEMPLATE/`, PR template, starter issues created
 - [x] **Repo rename to smartmur-ai-core** — already renamed on GitHub remote

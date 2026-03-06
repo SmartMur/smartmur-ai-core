@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide walks you through installing Nexus Core, configuring the environment, and running your first commands.
+This guide walks you through installing SmartMur Core, configuring the environment, and running your first commands.
 
 ---
 
@@ -165,7 +165,7 @@ claw cron list
 claw msg channels
 
 # Send a test message (requires configured tokens)
-claw msg send telegram "Hello from Nexus Core!"
+claw msg send telegram "Hello from SmartMur Core!"
 ```
 
 ---

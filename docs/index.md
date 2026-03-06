@@ -1,4 +1,4 @@
-# Nexus Core
+# SmartMur Core
 
 **Self-hosted AI operations platform.**
 
@@ -7,9 +7,9 @@ Your infrastructure, your AI, your rules.
 
 ---
 
-## What is Nexus Core?
+## What is SmartMur Core?
 
-Nexus Core (`claude-superpowers`) gives Claude Code autonomous operational capabilities: encrypted credential management, a pluggable skill system, scheduled jobs, multi-channel messaging, remote SSH execution, browser automation, multi-step workflow orchestration, and persistent memory.
+SmartMur Core (`claude-superpowers`) gives Claude Code autonomous operational capabilities: encrypted credential management, a pluggable skill system, scheduled jobs, multi-channel messaging, remote SSH execution, browser automation, multi-step workflow orchestration, and persistent memory.
 
 One platform. Eight integrated subsystems. Zero cloud dependencies.
 

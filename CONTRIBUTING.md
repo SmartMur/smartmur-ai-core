@@ -1,6 +1,6 @@
 # Contributing to Claude Superpowers
 
-Thank you for your interest in contributing to the Nexus ecosystem.
+Thank you for your interest in contributing to the SmartMur ecosystem.
 
 ## Table of Contents
 
@@ -276,4 +276,4 @@ Open a [Discussion](https://github.com/SmartMur/claude-superpowers/discussions) 
 
 ---
 
-**Thank you for contributing to the Nexus ecosystem.**
+**Thank you for contributing to the SmartMur ecosystem.**

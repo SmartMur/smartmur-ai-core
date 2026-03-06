@@ -1,6 +1,6 @@
 # CLI Command Reference
 
-The `claw` CLI is the primary interface to Nexus Core. All commands are organized into groups by subsystem.
+The `claw` CLI is the primary interface to SmartMur Core. All commands are organized into groups by subsystem.
 
 ```bash
 claw --version    # Show version

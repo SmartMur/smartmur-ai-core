@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Nexus Core is built as a modular Python platform with eight integrated subsystems, a CLI entry point (`claw`), and optional Docker services for the full stack.
+SmartMur Core is built as a modular Python platform with eight integrated subsystems, a CLI entry point (`claw`), and optional Docker services for the full stack.
 
 ---
 
