@@ -5,7 +5,63 @@
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
+         <loc>https://smartmur.github.io/claude-superpowers/architecture/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/browser/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/cron/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/dashboard/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/getting-started/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
          <loc>https://smartmur.github.io/claude-superpowers/good-first-issues/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/heartbeat/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/mcp-server/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/memory/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/messaging/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/skills/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/ssh/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/vault/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/watchers/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/workflows/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
@@ -141,11 +197,19 @@
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
+         <loc>https://smartmur.github.io/claude-superpowers/reports/all-projects-cve-audit-2026-03-06/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
          <loc>https://smartmur.github.io/claude-superpowers/reports/benchmark-baseline/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
          <loc>https://smartmur.github.io/claude-superpowers/reports/competitive-analysis/</loc>
+         <lastmod>2026-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://smartmur.github.io/claude-superpowers/reports/cve-audit-2026-03-06/</loc>
          <lastmod>2026-03-06</lastmod>
     </url>
     <url>
