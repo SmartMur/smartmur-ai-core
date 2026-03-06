@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/SmartMur/smartmur-ai-core/actions/workflows/ci.yml"><img src="https://github.com/SmartMur/smartmur-ai-core/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/tests-2331_passing-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-2320_passing-brightgreen" alt="Tests" />
   <img src="https://img.shields.io/badge/python-3.12+-blue" alt="Python" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/docker-compose-blue" alt="Docker" />
