@@ -1,0 +1,30 @@
+name: Label Issues
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  label:
+    name: Auto-label issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Add bug label
+        if: contains(github.event.issue.title, '[Bug]')
+        run: gh issue edit "$ISSUE" --add-label "bug"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Add enhancement label
+        if: contains(github.event.issue.title, '[Feature]')
+        run: gh issue edit "$ISSUE" --add-label "enhancement"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          GH_REPO: ${{ github.repository }}
