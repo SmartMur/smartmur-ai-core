@@ -1,0 +1,14 @@
+name: security-sentinel
+version: "1.0.0"
+description: "Brutal security guardian — CVE scanning, zero-day patching, code vulnerability detection, Docker hardening"
+author: DreDay
+slash_command: true
+script: run.py
+triggers:
+  - on: pull_request
+  - on: push
+    branches: [main]
+  - on: schedule
+    cron: "0 6 * * *"
+dependencies: [python3]
+permissions: [file-read, write-suggestions]
