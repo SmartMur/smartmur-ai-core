@@ -1,0 +1,17 @@
+[
+  {
+    "name": "backup",
+    "description": "Snapshot VMs, verify snapshots",
+    "step_count": 2
+  },
+  {
+    "name": "deploy",
+    "description": "Pull latest code, test, deploy via Docker Compose, health check",
+    "step_count": 4
+  },
+  {
+    "name": "morning-brief",
+    "description": "Check services, summarize alerts, send digest",
+    "step_count": 2
+  }
+]

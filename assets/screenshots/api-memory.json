@@ -1,0 +1,110 @@
+[
+  {
+    "id": 10,
+    "category": "project_context",
+    "key": "claw-phases",
+    "value": "All 8 phases complete + web dashboard, 404 tests, 43 MCP tools",
+    "tags": [
+      "claw"
+    ],
+    "project": "claude-superpowers",
+    "created_at": "2026-03-01T21:56:17.330736+00:00",
+    "accessed_at": "2026-03-01T21:56:17.330736+00:00",
+    "access_count": 0
+  },
+  {
+    "id": 9,
+    "category": "preference",
+    "key": "deploy-target",
+    "value": "ray@192.168.30.117, Docker-based, compose stack",
+    "tags": [
+      "deploy"
+    ],
+    "project": "",
+    "created_at": "2026-03-01T21:56:17.291706+00:00",
+    "accessed_at": "2026-03-01T21:56:17.291706+00:00",
+    "access_count": 0
+  },
+  {
+    "id": 8,
+    "category": "project_context",
+    "key": "claw-dashboard",
+    "value": "Web UI at http://192.168.30.117:8200, FastAPI + Alpine.js, Docker container",
+    "tags": [
+      "claw",
+      "dashboard"
+    ],
+    "project": "claude-superpowers",
+    "created_at": "2026-03-01T21:56:17.244629+00:00",
+    "accessed_at": "2026-03-01T21:56:17.244629+00:00",
+    "access_count": 0
+  },
+  {
+    "id": 7,
+    "category": "fact",
+    "key": "gateway",
+    "value": "192.168.30.1 \u2014 network gateway",
+    "tags": [
+      "network"
+    ],
+    "project": "",
+    "created_at": "2026-03-01T21:56:17.132164+00:00",
+    "accessed_at": "2026-03-01T21:56:17.132164+00:00",
+    "access_count": 0
+  },
+  {
+    "id": 2,
+    "category": "fact",
+    "key": "truenas-ssh",
+    "value": "ray@192.168.13.69 \u2014 TrueNAS storage, pubkey auth needed",
+    "tags": [
+      "ssh",
+      "storage"
+    ],
+    "project": "",
+    "created_at": "2026-03-01T21:43:15.596715+00:00",
+    "accessed_at": "2026-03-01T21:56:17.090479+00:00",
+    "access_count": 1
+  },
+  {
+    "id": 1,
+    "category": "fact",
+    "key": "docker-host",
+    "value": "ray@192.168.30.117 \u2014 main Docker host, dev-deb, 205GB disk, Debian x86_64",
+    "tags": [
+      "infra",
+      "docker"
+    ],
+    "project": "",
+    "created_at": "2026-03-01T21:43:15.557899+00:00",
+    "accessed_at": "2026-03-01T21:56:16.987641+00:00",
+    "access_count": 1
+  },
+  {
+    "id": 4,
+    "category": "project_context",
+    "key": "superpowers-arch",
+    "value": "Python 3.12, FastAPI, APScheduler, Playwright, Paramiko, Alpine.js dashboard",
+    "tags": [
+      "claw",
+      "architecture"
+    ],
+    "project": "claude-superpowers",
+    "created_at": "2026-03-01T21:43:15.677582+00:00",
+    "accessed_at": "2026-03-01T21:43:15.677582+00:00",
+    "access_count": 0
+  },
+  {
+    "id": 3,
+    "category": "preference",
+    "key": "preferred-editor",
+    "value": "neovim with lazy.nvim config",
+    "tags": [
+      "tools"
+    ],
+    "project": "",
+    "created_at": "2026-03-01T21:43:15.636688+00:00",
+    "accessed_at": "2026-03-01T21:43:15.636688+00:00",
+    "access_count": 0
+  }
+]

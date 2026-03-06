@@ -1,0 +1,70 @@
+{
+  "subsystems": [
+    {
+      "name": "cron",
+      "ok": true,
+      "detail": "6 jobs (6 enabled)",
+      "count": 6
+    },
+    {
+      "name": "channels",
+      "ok": true,
+      "detail": "slack, telegram, discord, email",
+      "count": 4
+    },
+    {
+      "name": "ssh",
+      "ok": true,
+      "detail": "2 hosts, 3 groups",
+      "count": 2
+    },
+    {
+      "name": "workflows",
+      "ok": true,
+      "detail": "3 workflows",
+      "count": 3
+    },
+    {
+      "name": "memory",
+      "ok": true,
+      "detail": "8 entries",
+      "count": 8
+    },
+    {
+      "name": "skills",
+      "ok": true,
+      "detail": "backup-status, cloudflared-fixer, container-watchdog, deploy, docker-monitor, github-admin, heartbeat, infra-fixer, network-scan, ops-report, qa-guardian, ssl-cert-check, tunnel-setup, workspace-intake-smoke",
+      "count": 14
+    },
+    {
+      "name": "vault",
+      "ok": true,
+      "detail": "initialized",
+      "count": 0
+    },
+    {
+      "name": "watchers",
+      "ok": true,
+      "detail": "9 rules (9 enabled)",
+      "count": 9
+    },
+    {
+      "name": "audit",
+      "ok": true,
+      "detail": "5 recent entries",
+      "count": 5
+    },
+    {
+      "name": "github",
+      "ok": false,
+      "detail": "not authenticated",
+      "count": 0
+    },
+    {
+      "name": "browser",
+      "ok": true,
+      "detail": "engine running",
+      "count": 0
+    }
+  ]
+}

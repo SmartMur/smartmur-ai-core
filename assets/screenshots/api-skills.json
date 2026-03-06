@@ -1,0 +1,86 @@
+[
+  {
+    "name": "backup-status",
+    "description": "Check backup status across systems",
+    "version": "0.1.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "cloudflared-fixer",
+    "description": "Monitor and auto-fix cloudflared tunnel container \u2014 crash loop detection, diagnostics, recovery",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "container-watchdog",
+    "description": "Real-time container monitoring with Telegram alerts",
+    "version": "0.1.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "deploy",
+    "description": "Deploy claude-superpowers \u2014 pull latest, rebuild containers, run health checks",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "docker-monitor",
+    "description": "Monitor Docker container health and resources",
+    "version": "0.1.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "github-admin",
+    "description": "GitHub administration \u2014 auth, branch protection, repo audit",
+    "version": "1.0.0",
+    "author": "claude-superpowers"
+  },
+  {
+    "name": "heartbeat",
+    "description": "Ping key network services and report status",
+    "version": "0.1.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "infra-fixer",
+    "description": "General-purpose infrastructure health monitor \u2014 checks all Docker services, detects crash loops, auto-fixes common issues",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "network-scan",
+    "description": "Scan network hosts \u2014 ping sweep, port check, formatted status report. No nmap required.",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "ops-report",
+    "description": "Hourly operations status report sent to Telegram",
+    "version": "1.0",
+    "author": "claude-superpowers"
+  },
+  {
+    "name": "qa-guardian",
+    "description": "Autonomous code quality guardian \u2014 security, quality, test health, and efficiency checks",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "ssl-cert-check",
+    "description": "Check SSL certificate expiry for domains",
+    "version": "0.1.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "tunnel-setup",
+    "description": "Cloudflare tunnel setup helper \u2014 validates token, manages container, checks connectivity",
+    "version": "1.0.0",
+    "author": "DreDay"
+  },
+  {
+    "name": "workspace-intake-smoke",
+    "description": "workspace intake smoke",
+    "version": "0.1.0",
+    "author": "dre"
+  }
+]
