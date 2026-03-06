@@ -14,10 +14,10 @@ All user requests are logged here. Updated as work completes.
 - [x] **Demo/recording scripts** — scripted demo scenarios for terminal recording
 - [x] **GitHub issue/PR templates + good first issues** — `.github/ISSUE_TEMPLATE/`, PR template, starter issues created
 - [x] **Repo rename to smartmur-ai-core** — already renamed on GitHub remote
-- [ ] **GitHub Pages deployment** — MkDocs site needs `gh-pages` branch deploy (in progress)
-- [ ] **Terminal GIF recording** — needs asciinema installed to capture demo
-- [ ] **Dashboard screenshots** — needs running dashboard instance to capture
-- [ ] **Topic tags per naming map** — apply approved naming map v1 tags to all repos
+- [x] **GitHub Pages deployment** — deployed via `mkdocs gh-deploy --force` to gh-pages branch
+- [x] **Terminal GIF recording** — demo.cast + demo.svg created via asciinema + svg-term-cli (GIF needs `agg`/cargo)
+- [x] **Dashboard screenshots** — 12 PNGs captured: login, dashboard, all subsections
+- [x] **Topic tags per naming map** — all 22 SmartMur repos tagged per naming map v1
 
 ## Backlog
 
