@@ -1912,9 +1912,9 @@ curl -u "admin:pass" http://localhost:8200/api/inventory/
 |-------|----------|
 | Full config reference | [CONFIGURATION.md](CONFIGURATION.md) |
 | Security model and hardening | [SECURITY.md](SECURITY.md) |
-| Deployment guide | [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Upgrade procedures | [UPGRADE.md](UPGRADE.md) |
-| Operational runbooks | [RUNBOOKS.md](RUNBOOKS.md) |
+| Deployment guide | [DEPLOYMENT.md](../guides/DEPLOYMENT.md) |
+| Upgrade procedures | [UPGRADE.md](../guides/UPGRADE.md) |
+| Operational runbooks | [RUNBOOKS.md](../runbooks/RUNBOOKS.md) |
 | Skill system details | [skills.md](skills.md) |
 | Workflow engine | [workflows.md](workflows.md) |
 | Cron scheduler | [cron.md](cron.md) |

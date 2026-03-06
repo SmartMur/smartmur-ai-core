@@ -32,6 +32,9 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.3",
 ]
+docs = [
+    "mkdocs-material>=9.5",
+]
 
 [project.scripts]
 claw = "superpowers.cli:main"

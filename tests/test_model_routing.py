@@ -22,6 +22,7 @@ from superpowers.llm_provider import (
     ClaudeProvider,
     GenericProvider,
     LLMProvider,
+    OllamaProvider,
     get_default_provider,
     get_provider,
     register_provider,
@@ -417,7 +418,7 @@ class TestProviderFactory:
         with patch.dict(os.environ, {"JOB_MODEL": "ollama"}, clear=False):
             os.environ.pop("OPENAI_API_KEY", None)
             p = get_default_provider(role="job")
-        assert isinstance(p, GenericProvider)
+        assert isinstance(p, OllamaProvider)
         assert p.name == "ollama"
 
     def test_default_provider_fallback(self):

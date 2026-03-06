@@ -9,6 +9,7 @@ from superpowers.cli_cron import cron_group
 from superpowers.cli_dag import dag_group
 from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_intake import intake_group
+from superpowers.cli_llm import llm_group
 from superpowers.cli_jobs import jobs_group
 from superpowers.cli_launchd import daemon
 from superpowers.cli_memory import memory_group
@@ -52,6 +53,7 @@ main.add_command(dag_group)
 main.add_command(dashboard_cmd)
 main.add_command(intake_group)
 main.add_command(jobs_group)
+main.add_command(llm_group)
 main.add_command(daemon)
 main.add_command(memory_group)
 main.add_command(msg_group)

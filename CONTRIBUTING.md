@@ -26,7 +26,7 @@ Be respectful, constructive, and professional.
 
 ### Good First Issues
 
-Look for issues labeled `good first issue` or `help wanted`.
+Look for issues labeled `good first issue` or `help wanted`. We also maintain a curated list of approachable tasks in **[docs/good-first-issues.md](docs/good-first-issues.md)** -- 17 self-contained issues ranging from adding docstrings to writing new test files.
 
 ### Types of Contributions
 

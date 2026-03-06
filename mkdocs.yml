@@ -1,0 +1,114 @@
+site_name: Nexus Core
+site_description: Self-hosted AI operations platform — skills, scheduling, messaging, SSH, browser automation, workflows, memory, and vault.
+site_url: https://smartmur.github.io/claude-superpowers/
+repo_url: https://github.com/SmartMur/claude-superpowers
+repo_name: SmartMur/claude-superpowers
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.snippets
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Overview: getting-started/index.md
+      - Installation Guide: guides/getting-started.md
+      - Deployment: guides/DEPLOYMENT.md
+      - Upgrade Guide: guides/UPGRADE.md
+      - Configuration: reference/CONFIGURATION.md
+      - Setup Wizard: reference/setup-wizard.md
+      - Cloudflare Tunnel: guides/cloudflared-setup.md
+  - Guides:
+      - Customization: reference/CUSTOMIZATION.md
+      - Chat Integrations: reference/CHAT_INTEGRATIONS.md
+      - Model Routing: reference/model-routing.md
+      - Template Manager: reference/template-manager.md
+      - Release Process: reference/release-process.md
+      - CI/CD Pipeline: reference/ci-cd.md
+  - Reference:
+      - CLI Commands: reference/cli.md
+      - Skills: reference/skills.md
+      - Cron & Scheduling: reference/cron.md
+      - Messaging: reference/messaging.md
+      - SSH & Remote Execution: reference/ssh.md
+      - Browser Automation: reference/browser.md
+      - Workflows: reference/workflows.md
+      - Memory: reference/memory.md
+      - Watchers: reference/watchers.md
+      - Vault & Security: reference/vault.md
+      - Dashboard: reference/dashboard.md
+      - Telegram Bot: reference/telegram-bot.md
+      - Heartbeat Monitor: reference/heartbeat.md
+      - Job Runner: reference/job-runner.md
+      - Intake Pipeline: reference/intake.md
+      - MCP Server: reference/mcp-server.md
+      - Security Policy: reference/SECURITY.md
+  - Architecture:
+      - System Overview: architecture/index.md
+      - Component Reference: reference/architecture.md
+  - Reports:
+      - Competitive Analysis: reports/competitive-analysis.md
+      - Benchmark Baseline: reports/benchmark-baseline.md
+      - Security Audit: reports/security-audit-2026-03-04.md
+      - GitHub Audit: reports/github-audit-2026-03-02.md
+      - GitHub Issues Audit: reports/github-issues-audit.md
+      - Action Plan: reports/action-plan-defg.md
+      - Ecosystem Repositioning:
+          - Phase 1 - Identity: reports/ecosystem-reposition/phase1-identity.md
+          - Phase 2 - Architecture: reports/ecosystem-reposition/phase2-architecture.md
+          - Phase 3 - Repo Reorg: reports/ecosystem-reposition/phase3-repo-reorg.md
+          - Phase 4 - Messaging: reports/ecosystem-reposition/phase4-messaging.md
+          - Phase 5 - Star Strategy: reports/ecosystem-reposition/phase5-star-strategy.md
+          - Phase 6 - Competitive: reports/ecosystem-reposition/phase6-competitive.md
+          - Phase 7 - Roadmap: reports/ecosystem-reposition/phase7-roadmap.md
+          - Org Profile README: reports/ecosystem-reposition/org-profile-README.md
+          - Final Naming Map: reports/ecosystem-reposition/final-naming-map-v1.md
+  - Runbooks: runbooks/RUNBOOKS.md
+  - Contributing:
+      - Good First Issues: good-first-issues.md
+  - Session Notes:
+      - Work Queue: sessions/work-queue.md
+      - Telegram Reporting: sessions/telegram-reporting.md
+      - Night Ops (2026-03-01): sessions/2026-03-01-night-ops.md

@@ -1,8 +1,9 @@
 """LLM provider abstraction layer.
 
-Supports CLI-based providers (Claude, generic) and SDK-based providers (OpenAI).
-Includes a FallbackProvider that tries a primary provider first, then retries
-with a fallback on failure.
+Supports CLI-based providers (Claude, generic), SDK-based providers (OpenAI),
+and HTTP-based providers (Ollama).  Includes a FallbackProvider that tries a
+primary provider first, then retries with a fallback on failure, and a
+ProviderRegistry for configurable multi-provider fallback chains.
 
 Usage::
 
@@ -19,14 +20,22 @@ Usage::
     # With system prompt (for chat / telegram)
     p = get_default_provider(role="chat")
     answer = p.invoke("Hello", system_prompt="You are a helpful assistant.")
+
+    # Multi-provider fallback chain (via LLM_PROVIDERS env var)
+    from superpowers.llm_provider import ProviderRegistry
+    reg = ProviderRegistry()
+    p = reg.get()  # returns first available from the chain
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import shutil
 import subprocess
+import urllib.error
+import urllib.request
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
@@ -165,6 +174,83 @@ class OpenAIProvider(LLMProvider):
         return bool(self._api_key)
 
 
+class OllamaProvider(LLMProvider):
+    """Invokes Ollama's local HTTP API (``/api/generate``).
+
+    Communicates with the Ollama server via ``urllib.request`` (stdlib only).
+    Default base URL is ``http://localhost:11434``, overridable via
+    ``OLLAMA_BASE_URL`` env var or the *base_url* constructor argument.
+    Default model is ``llama3``, overridable via ``OLLAMA_MODEL`` env var.
+    """
+
+    def __init__(
+        self,
+        *,
+        base_url: str | None = None,
+        default_model: str | None = None,
+        timeout: int = 300,
+    ) -> None:
+        self._base_url = (
+            base_url or os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        ).rstrip("/")
+        self._default_model = default_model or os.environ.get("OLLAMA_MODEL", "llama3")
+        self._timeout = timeout
+
+    @property
+    def name(self) -> str:
+        return "ollama"
+
+    def invoke(
+        self,
+        prompt: str,
+        *,
+        model: str | None = None,
+        system_prompt: str | None = None,
+    ) -> str:
+        url = f"{self._base_url}/api/generate"
+        payload: dict = {
+            "model": model or self._default_model,
+            "prompt": prompt,
+            "stream": False,
+        }
+        if system_prompt:
+            payload["system"] = system_prompt
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=self._timeout) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"Ollama API request failed: {exc}") from exc
+        except urllib.error.HTTPError as exc:
+            raise RuntimeError(
+                f"Ollama API returned HTTP {exc.code}: {exc.read().decode('utf-8', errors='replace')}"
+            ) from exc
+        except TimeoutError as exc:
+            raise RuntimeError(f"Ollama API request timed out after {self._timeout}s") from exc
+
+        response_text = body.get("response", "")
+        if not response_text and body.get("error"):
+            raise RuntimeError(f"Ollama error: {body['error']}")
+        return response_text
+
+    def available(self) -> bool:
+        """Check if the Ollama server is reachable by hitting ``/api/tags``."""
+        url = f"{self._base_url}/api/tags"
+        req = urllib.request.Request(url, method="GET")
+        try:
+            with urllib.request.urlopen(req, timeout=5):
+                return True
+        except (urllib.error.URLError, urllib.error.HTTPError, OSError, TimeoutError):
+            return False
+
+
 class GenericProvider(LLMProvider):
     """Wraps any CLI that accepts a prompt argument.
 
@@ -277,6 +363,7 @@ _ALIASES: dict[str, str] = {
 # Registry of known provider names -> constructor callables
 _PROVIDERS: dict[str, type[LLMProvider] | callable] = {
     "claude": ClaudeProvider,
+    "ollama": OllamaProvider,
     "openai": OpenAIProvider,
 }
 
@@ -352,3 +439,134 @@ def get_default_provider(*, role: str = "chat") -> LLMProvider:
     else:
         model_name = os.environ.get("CHAT_MODEL", "claude")
     return get_provider_with_fallback(model_name)
+
+
+# ---------------------------------------------------------------------------
+# ProviderRegistry — configurable multi-provider fallback chain
+# ---------------------------------------------------------------------------
+
+
+class ProviderRegistry:
+    """Manages a named set of LLM providers with a configurable fallback chain.
+
+    The fallback order is read from ``LLM_PROVIDERS`` env var (comma-separated
+    provider names, e.g. ``"claude,ollama,openai"``).  When no env var is set
+    the default chain is ``["claude"]``.
+
+    Usage::
+
+        reg = ProviderRegistry()
+        reg.list_providers()        # [("claude", True), ("ollama", False), ...]
+        p = reg.get()               # first available provider from the chain
+        p = reg.get("ollama")       # explicit provider by name
+        reg.set_default("ollama")   # override default at runtime
+    """
+
+    def __init__(self, chain: list[str] | None = None) -> None:
+        if chain is not None:
+            self._chain = [normalise_provider_name(n) for n in chain if n.strip()]
+        else:
+            raw = os.environ.get("LLM_PROVIDERS", "claude")
+            self._chain = [
+                normalise_provider_name(n) for n in raw.split(",") if n.strip()
+            ]
+        self._providers: dict[str, LLMProvider] = {}
+        self._default: str | None = None
+        # Pre-instantiate known providers
+        for name in self._chain:
+            self._providers[name] = get_provider(name)
+
+    @property
+    def chain(self) -> list[str]:
+        """Return the current fallback chain order."""
+        return list(self._chain)
+
+    def add(self, name: str, provider: LLMProvider | None = None) -> None:
+        """Add a provider to the registry.
+
+        If *provider* is ``None``, instantiate from the global factory.
+        """
+        canonical = normalise_provider_name(name)
+        self._providers[canonical] = provider or get_provider(canonical)
+        if canonical not in self._chain:
+            self._chain.append(canonical)
+
+    def remove(self, name: str) -> None:
+        """Remove a provider from the registry and fallback chain."""
+        canonical = normalise_provider_name(name)
+        self._providers.pop(canonical, None)
+        if canonical in self._chain:
+            self._chain.remove(canonical)
+        if self._default == canonical:
+            self._default = None
+
+    def get(self, name: str | None = None) -> LLMProvider:
+        """Return a provider by *name*, or the first available from the chain.
+
+        Parameters
+        ----------
+        name:
+            Explicit provider name.  If ``None``, returns the configured
+            default (if set) or walks the fallback chain and returns the
+            first provider whose ``available()`` returns ``True``.
+
+        Raises
+        ------
+        RuntimeError
+            If no provider is available.
+        KeyError
+            If the named provider is not in the registry.
+        """
+        if name is not None:
+            canonical = normalise_provider_name(name)
+            if canonical not in self._providers:
+                raise KeyError(f"Provider not registered: {canonical}")
+            return self._providers[canonical]
+
+        # Default override
+        if self._default and self._default in self._providers:
+            return self._providers[self._default]
+
+        # Walk the chain, return first available
+        for pname in self._chain:
+            provider = self._providers.get(pname)
+            if provider and provider.available():
+                return provider
+
+        # Nothing available — return the first in the chain anyway
+        # (caller will get an error on invoke)
+        if self._chain and self._chain[0] in self._providers:
+            return self._providers[self._chain[0]]
+
+        raise RuntimeError("No LLM providers are registered")
+
+    def set_default(self, name: str) -> None:
+        """Override the default provider (bypasses availability check)."""
+        canonical = normalise_provider_name(name)
+        if canonical not in self._providers:
+            raise KeyError(f"Provider not registered: {canonical}")
+        self._default = canonical
+
+    def clear_default(self) -> None:
+        """Clear the default override — resume using the fallback chain."""
+        self._default = None
+
+    def list_providers(self) -> list[tuple[str, bool]]:
+        """Return ``(name, available)`` for every provider in chain order.
+
+        Providers registered but not in the chain are appended at the end.
+        """
+        seen: set[str] = set()
+        result: list[tuple[str, bool]] = []
+
+        for pname in self._chain:
+            provider = self._providers.get(pname)
+            avail = provider.available() if provider else False
+            result.append((pname, avail))
+            seen.add(pname)
+
+        for pname, provider in self._providers.items():
+            if pname not in seen:
+                result.append((pname, provider.available()))
+
+        return result

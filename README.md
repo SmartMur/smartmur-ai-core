@@ -1,105 +1,104 @@
-<p align="center">
-  <img src="assets/nexus-core-banner.svg" alt="Nexus Core" width="100%" />
-</p>
+![SmartMur AI Core](assets/nexus-banner.svg)
 
-<h1 align="center">Nexus Core</h1>
+<h1 align="center">SmartMur AI Core</h1>
 
 <p align="center">
-  <strong>Self-hosted AI operations platform.</strong><br/>
-  Skills. Scheduling. Messaging. SSH. Browser automation. Workflows. Memory. Vault.<br/>
-  Your infrastructure, your AI, your rules.
+  <strong>Self-hosted AI operations platform that runs your infrastructure.</strong><br/>
+  Your hardware. Your AI. Your rules.
 </p>
 
 <p align="center">
   <a href="https://github.com/SmartMur/claude-superpowers/actions/workflows/ci.yml"><img src="https://github.com/SmartMur/claude-superpowers/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/tests-982_passing-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-2159_passing-brightgreen" alt="Tests" />
   <img src="https://img.shields.io/badge/python-3.12+-blue" alt="Python" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/docker-compose-blue" alt="Docker" />
-  <img src="https://img.shields.io/badge/MCP_tools-43-purple" alt="MCP Tools" />
-  <img src="https://img.shields.io/badge/REST_endpoints-70-orange" alt="REST API" />
 </p>
 
 <p align="center">
-  <a href="#quickstart">Quickstart</a> |
-  <a href="#what-it-does">What It Does</a> |
-  <a href="#the-compound-workflow">The Compound Workflow</a> |
-  <a href="#comparison">Comparison</a> |
-  <a href="docs/guides/getting-started.md">Full Docs</a>
+  <a href="#quick-demo">Demo</a> &middot;
+  <a href="#features">Features</a> &middot;
+  <a href="#install">Install</a> &middot;
+  <a href="#cli-reference">CLI</a> &middot;
+  <a href="#comparison">Comparison</a> &middot;
+  <a href="#contributing">Contributing</a>
 </p>
 
 ---
 
-<!-- Hero screenshot or terminal GIF goes here -->
-<!-- <p align="center"><img src="assets/demo.gif" alt="Nexus Core demo" width="80%" /></p> -->
+### Why this?
 
-## Why?
-
-You run your own hardware. You use Claude Code. You want your AI to do more than write code -- you want it to **operate your infrastructure**: schedule jobs, SSH into servers, screenshot dashboards, send alerts, remember context, execute multi-step workflows.
-
-Nexus Core makes that real. One platform. Eight integrated subsystems. 982 tests. Zero cloud dependencies.
+- **Eight subsystems, one platform.** Skills, cron, messaging, SSH, browser automation, workflows, memory, and an encrypted vault -- integrated so a single YAML workflow can chain all of them.
+- **AI-native, not AI-bolted.** Built for Claude Code from day one. 42 MCP tools, an intake pipeline that decomposes requests into skill graphs, and a memory store that auto-injects context into prompts.
+- **Zero cloud dependencies.** Runs entirely on your hardware. No SaaS accounts required. Every credential stays in an age-encrypted local vault.
 
 ---
 
-## Quickstart
+## Quick Demo
 
-```bash
-# Clone and install
-git clone https://github.com/SmartMur/claude-superpowers.git
-cd claude-superpowers
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-# Configure
-cp .env.example .env   # Edit with your tokens
-
-# Run
-claw status            # Verify installation
-claw skill list        # See available skills
-claw skill run heartbeat  # Run your first skill
 ```
+$ claw status
+Subsystem        Status    Details
+───────────────  ────────  ──────────────────────────
+Skill Registry   OK        14 skills loaded
+Cron Engine      OK        3 jobs scheduled
+Messaging        OK        Telegram, Slack connected
+SSH Fabric       OK        4 hosts in pool
+Browser Engine   OK        Chromium headless ready
+Workflow Engine  OK        14 workflows available
+Memory Store     OK        127 facts, 24 preferences
+Vault            OK        age-encrypted, 8 secrets
 
-**With Docker** (recommended for full stack):
+$ claw skill run heartbeat
+[heartbeat] Pinging 6 hosts...
+  proxmox.local     OK   1.2ms
+  truenas.local     OK   0.8ms
+  docker01.local    OK   1.1ms
+  pihole.local      OK   0.9ms
+[heartbeat] Probing 3 HTTPS services...
+  grafana.local     OK   cert valid 142 days
+  homeassistant     OK   cert valid 89 days
+  proxmox:8006      OK   cert valid 364 days
+Exit code: 0
 
-```bash
-docker compose up -d   # Starts: Redis, message gateway, dashboard, browser engine, Telegram bot
+$ claw cron list
+ID   Schedule       Type    Name                  Last Run
+──   ──────────     ─────   ────────────────────  ──────────────
+1    0 7 * * *      skill   morning-brief         2026-03-06 07:00
+2    */15 * * * *   skill   heartbeat             2026-03-06 09:45
+3    0 2 * * 0      shell   backup-verify         2026-03-03 02:00
+
+$ claw ssh proxmox "qm list"
+VMID  NAME             STATUS   MEM(MB)  BOOTDISK(GB)
+100   docker01         running  16384    120
+101   truenas          running  32768    32
+102   k3s-master       running  8192     60
 ```
-
-Dashboard at `http://localhost:8200`. Browser engine at `http://localhost:8300`.
 
 ---
 
-## What It Does
+## Features
 
-### Eight Integrated Subsystems
+Eight integrated subsystems, 42 MCP tools, 86 REST endpoints, 25 CLI command groups.
 
-| Subsystem | Capability | CLI |
-|-----------|-----------|-----|
-| **Skill System** | 14 built-in skills. Registry, loader, auto-install from templates, SkillHub sync to shared repos. Sandboxed execution with vault access gating. | `claw skill list / run / create / sync` |
-| **Cron Engine** | APScheduler + SQLite. Four job types: `shell`, `claude`, `webhook`, `skill`. Cron expressions, intervals, daily-at. Output routing to files or messaging channels. | `claw cron add / list / remove / logs` |
-| **Messaging** | Telegram, Slack, Discord, email, iMessage. Notification profiles (`critical`, `info`, `daily-digest`) fan out to multiple channels. Inbound triggers route messages to skills. | `claw msg send / notify` |
-| **SSH Fabric** | Paramiko connection pool with lazy creation and liveness checks. Multi-host execution. Host groups. Health checks. Home Assistant REST bridge. | `claw ssh <host> "<command>"` |
-| **Browser Automation** | Playwright + headless Chromium. Persistent session profiles (cookies, localStorage). Navigate, screenshot, extract text/tables, fill forms, evaluate JS. | `claw browse open / screenshot / extract` |
-| **Workflow Engine** | YAML-defined pipelines. Step types: `shell`, `claude_prompt`, `skill`, `http`, `approval_gate`. Conditions, rollback actions, notifications. | `claw workflow run / list` |
-| **Memory Store** | SQLite-backed. Categories: fact, preference, project_context, conversation_summary. Full-text search. 90-day decay with auto-archive. Auto-context injection into Claude prompts. | `claw memory remember / search / context` |
-| **Encrypted Vault** | age-encrypted credential store. Atomic writes. Rotation policies with warning/expired thresholds. Audit-logged access. Sandboxed injection into skills. | `claw vault init / set / get / rotation` |
+| Subsystem | What it does |
+|-----------|-------------|
+| **Skill System** | 14 built-in skills. Registry, loader, auto-install from templates, SkillHub sync. Sandboxed execution with vault access control. |
+| **Cron Engine** | APScheduler + SQLite. Four job types: shell, claude, webhook, skill. Cron expressions, intervals, one-shot. Output routing to files or channels. |
+| **Messaging Gateway** | Telegram, Slack, Discord, email, iMessage. Notification profiles fan out to multiple channels. Inbound messages trigger skills. |
+| **SSH Fabric** | Paramiko connection pool with lazy creation and liveness probes. Multi-host execution, host groups, health checks. Home Assistant REST bridge. |
+| **Browser Automation** | Playwright + headless Chromium. Persistent session profiles. Navigate, screenshot, extract tables, fill forms, evaluate JS. |
+| **Workflow Engine** | YAML pipelines with five step types: shell, claude_prompt, skill, http, approval_gate. Conditions, rollback, notifications. 14 built-in workflows. |
+| **Memory Store** | SQLite-backed persistent memory. Categories: fact, preference, project_context, conversation_summary. Full-text search. 90-day auto-decay. Context auto-injection into Claude prompts. |
+| **Encrypted Vault** | age-encrypted credential store. Atomic writes. Rotation policies with warning/expired thresholds. Audit-logged. Sandboxed injection into skills. |
 
-### Plus
-
-| Component | Details |
-|-----------|---------|
-| **Dashboard** | FastAPI + HTMX. 70 REST endpoints across 17 routers. HTTP Basic authentication. Covers every subsystem. |
-| **MCP Server** | 43 native Claude Code tools via Model Context Protocol. Messaging, SSH, browser, workflows, cron, skills, memory, vault, audit -- callable directly from Claude Code. |
-| **Intake Pipeline** | Decomposes natural language requests into task graphs. Auto-maps to skills. Role-based dispatch (planner/executor/verifier). Parallel execution. Telegram status notifications. |
-| **File Watchers** | watchdog-based directory monitoring. Rules trigger actions: shell, skill, workflow, move, copy. |
-| **Audit Log** | Append-only JSONL. Every skill invocation, cron execution, message sent, SSH command run. Searchable via CLI and dashboard. |
-| **CI/CD** | GitHub Actions: ruff lint, pytest matrix (3.12 + 3.13), Docker build, deploy via SSH. |
+Plus: a FastAPI dashboard (86 REST endpoints, 21 routers, HTMX frontend), an MCP server (42 native Claude Code tools), an intake pipeline (natural language to skill graphs), file watchers, and an append-only audit log.
 
 ---
 
 ## The Compound Workflow
 
-This is what no single competitor can do. A single YAML workflow that chains all eight subsystems:
+One YAML file. All eight subsystems. No other tool does this:
 
 ```yaml
 name: morning-infrastructure-check
@@ -110,14 +109,14 @@ steps:
 
   - name: diagnose-issues
     type: claude_prompt
-    prompt: "Analyze this VM list. Are any VMs stopped that should be running?"
+    prompt: "Analyze this VM list. Flag any stopped VMs that should be running."
     input_from: check-vms
 
   - name: screenshot-dashboard
     type: shell
     command: "claw browse screenshot https://proxmox.local:8006 --output /tmp/pve.png"
 
-  - name: log-to-memory
+  - name: log-finding
     type: shell
     command: "claw memory remember 'morning-check' '{{ steps.diagnose-issues.output }}'"
 
@@ -137,44 +136,42 @@ steps:
     condition: "steps.approve-restart.approved"
 ```
 
-**Cron schedules it. SSH executes it. Claude reasons about it. The browser screenshots it. Memory stores it. Messaging delivers it. The approval gate pauses for human judgment. The vault secures every credential involved.**
-
-That is eight subsystems in one pipeline. Try doing that with n8n, OpenClaw, or a collection of shell scripts.
+SSH executes. Claude reasons. The browser screenshots. Memory stores. Messaging delivers. The approval gate waits for human judgment. The vault secures every credential. Cron runs it at 7 AM.
 
 ---
 
 ## Architecture
 
-```text
-                          You / Claude Code / Telegram Bot
-                                     |
-                          +----------+-----------+
-                          |     claw CLI (Click) |
-                          |  claw-mcp (MCP/stdio)|
-                          +----------+-----------+
-                                     |
-        +-------+--------+----------+----------+--------+-------+--------+
-        |       |        |          |          |        |       |        |
-        v       v        v          v          v        v       v        v
-   +--------+ +------+ +------+ +-------+ +------+ +------+ +------+ +-------+
-   | Vault  | |Skills| | Cron | |  Msg  | |  SSH | |Browse| |Work- | |Memory |
-   | (age)  | |Regis-| |Engine| |Gateway| |Fabric| |Engine| |flows | | Store |
-   |        | | try  | |      | | 5 ch. | | Pool | |Play- | | YAML | |SQLite |
-   +--------+ +------+ +------+ +-------+ +------+ +------+ +------+ +-------+
-        |       |        |          |          |        |       |        |
-        +-------+--------+----------+----------+--------+-------+--------+
-                                     |
-                          +----------+-----------+
-                          |   Settings / .env    |
-                          |   Audit Log (JSONL)  |
-                          |   File Watchers      |
-                          +----------------------+
-                                     |
-                    +----------------+----------------+
-                    |                |                |
-               Dashboard       Docker Compose    Telegram Bot
-             (FastAPI+HTMX)   (5 services)      (polling/webhook)
-              port 8200                           AI responses
+```
+                       You / Claude Code / Telegram Bot
+                                  |
+                       +----------+----------+
+                       |    claw CLI (Click)  |
+                       | claw-mcp (MCP/stdio) |
+                       +----------+----------+
+                                  |
+     +-------+-------+----------+----------+-------+-------+-------+
+     |       |       |          |          |       |       |       |
+     v       v       v          v          v       v       v       v
+  +------+ +-----+ +-----+ +------+ +-----+ +-----+ +-----+ +------+
+  |Vault | |Skill| |Cron | | Msg  | | SSH | |Brow-| |Work-| |Memory|
+  |(age) | |Reg. | |Eng. | |Gate- | |Fab- | |ser  | |flow | |Store |
+  |      | |     | |     | | way  | | ric | |Eng. | |     | |      |
+  +------+ +-----+ +-----+ +------+ +-----+ +-----+ +-----+ +------+
+     |       |       |          |          |       |       |       |
+     +-------+-------+----------+----------+-------+-------+-------+
+                                  |
+                       +----------+----------+
+                       |  Config / .env       |
+                       |  Audit log (JSONL)   |
+                       |  File watchers       |
+                       +---------------------+
+                                  |
+                  +---------------+---------------+
+                  |               |               |
+             Dashboard      Docker Compose   Telegram Bot
+           (FastAPI+HTMX)   (5 services)    (AI responses)
+            port 8200
 ```
 
 ### Docker Compose Stack
@@ -187,217 +184,134 @@ That is eight subsystems in one pipeline. Try doing that with n8n, OpenClaw, or 
 | `browser-engine` | 8300 | Playwright automation API |
 | `telegram-bot` | -- | Inbound message processing |
 
-### Runtime Data
+---
 
-All state at `~/.claude-superpowers/`:
+## Install
 
-```text
-vault.enc              # age-encrypted credentials
-memory.db              # SQLite memory store (WAL mode)
-audit.log              # Append-only JSONL audit trail
-profiles.yaml          # Notification profile definitions
-watchers.yaml          # File watcher rules
-cron/jobs.json         # Cron job manifest
-cron/scheduler.db      # APScheduler SQLite state
-browser/profiles/      # Chromium session data
+### Quick start
+
+```bash
+git clone https://github.com/SmartMur/claude-superpowers.git
+cd claude-superpowers
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env   # add your tokens
+claw status
 ```
+
+### Docker (full stack)
+
+```bash
+git clone https://github.com/SmartMur/claude-superpowers.git
+cd claude-superpowers
+cp .env.example .env   # add your tokens
+docker compose up -d
+```
+
+Dashboard at `http://localhost:8200`. Browser engine at `http://localhost:8300`.
+
+---
+
+## CLI Reference
+
+`claw` provides 25 command groups:
+
+| Category | Commands | Description |
+|----------|----------|-------------|
+| **Core** | `skill`, `workflow`, `cron`, `memory`, `vault` | The eight subsystems |
+| **Infrastructure** | `ssh`, `browse`, `msg`, `watcher` | Remote execution, browser, messaging, file monitoring |
+| **Orchestration** | `intake`, `agent`, `orchestrate`, `dag`, `jobs` | Multi-agent dispatch, DAG execution, job management |
+| **Operations** | `status`, `audit`, `report`, `benchmark`, `policy` | Monitoring, audit trail, reporting, safety policies |
+| **Management** | `pack`, `template`, `setup`, `release`, `dashboard` | Bundles, config templates, setup wizard, releases |
+| **System** | `daemon` | Cron daemon lifecycle (install/uninstall/status/logs) |
+
+Run `claw <command> --help` for subcommand details.
 
 ---
 
 ## Comparison
 
-### vs. OpenClaw
+### vs. Bare Scripts + Cron
 
-| Dimension | Nexus Core | OpenClaw |
-|-----------|-----------|----------|
-| **Focus** | Infrastructure operations | Personal AI assistant |
-| **SSH Fabric** | Paramiko pool, multi-host, health checks | Basic system access |
-| **Cron Engine** | APScheduler, 4 job types, SQLite store | Basic cron support |
-| **Browser Automation** | Playwright, session persistence, DOM extraction | Browser control |
-| **Encrypted Vault** | age encryption, rotation policies, audit | OS keychain |
-| **Workflow Engine** | YAML pipelines, approval gates, rollback | Skill chains |
-| **File Watchers** | watchdog, 5 action types, glob patterns | -- |
-| **Messaging Channels** | 5 (Telegram, Slack, Discord, email, iMessage) | 50+ |
-| **Test Suite** | 982 tests | Unknown |
-| **Positioning** | "Runs your infrastructure" | "Talks to you" |
-
-OpenClaw has broader channel support. Nexus Core has deeper infrastructure control. Different tools for different operators.
+| | SmartMur AI Core | Shell scripts |
+|---|---|---|
+| Credential management | age-encrypted vault with rotation | Plaintext in .env files |
+| Scheduling | APScheduler, 4 job types, output routing | System crontab |
+| Error handling | Rollback actions, approval gates | `set -e` and hope |
+| Observability | Audit log, dashboard, status command | `grep` through logs |
+| AI integration | Native Claude Code + MCP | None |
 
 ### vs. n8n
 
-| Dimension | Nexus Core | n8n |
-|-----------|-----------|-----|
-| **Interface** | CLI + YAML + Claude Code | Visual drag-and-drop |
-| **AI Integration** | Claude-native (skills, prompts, MCP) | AI nodes (bolt-on) |
-| **SSH** | Built-in pool with health checks | SSH node (per-execution) |
-| **Credential Management** | age-encrypted vault with rotation | Built-in credential store |
-| **Workflow Authoring** | YAML (AI generates them) | Visual editor |
-| **Integrations** | 5 messaging channels + SSH + browser | 400+ nodes |
-| **Target** | Power users who write code | Business users who drag nodes |
+| | SmartMur AI Core | n8n |
+|---|---|---|
+| Interface | CLI + YAML + Claude Code | Visual drag-and-drop |
+| AI integration | Claude-native (skills, MCP, prompts) | AI nodes (bolt-on) |
+| SSH | Built-in pool with health checks | Per-execution SSH node |
+| Credential management | age-encrypted vault with rotation | Built-in credential store |
+| Integrations | 5 messaging channels + SSH + browser | 400+ nodes |
+| Target user | Engineers who write code | Business users who drag nodes |
 
-n8n is click-first. Nexus Core is code-first. In a Claude Code workflow, the AI writes the YAML -- the visual editor is Claude itself.
+### vs. Ansible
 
-### vs. Agent Frameworks (LangChain, CrewAI, AutoGPT)
+| | SmartMur AI Core | Ansible |
+|---|---|---|
+| Scope | Full operations platform (SSH + cron + messaging + AI + browser) | Configuration management |
+| AI reasoning | Claude analyzes output, makes decisions | None |
+| Real-time response | Inbound message triggers, file watchers | Playbook runs only |
+| Browser automation | Playwright with session persistence | None |
+| Learning | Memory store retains context across runs | Stateless |
 
-| Dimension | Nexus Core | Agent Frameworks |
-|-----------|-----------|-----------------|
-| **Type** | Ready-to-run platform | Libraries for building agents |
-| **Time to first result** | `pip install && claw skill run heartbeat` | Write agent code, configure tools, deploy |
-| **Infrastructure awareness** | SSH, Docker, Proxmox, Home Assistant | None (cloud-agnostic abstractions) |
-| **Production runtime** | Cron, watchers, messaging, dashboard | You build the runtime |
+### vs. Agent Frameworks (LangChain, CrewAI)
 
-Nexus Core is the platform. Agent frameworks are the building blocks. Different layers.
+| | SmartMur AI Core | Agent frameworks |
+|---|---|---|
+| Type | Ready-to-run platform | Libraries for building agents |
+| Time to first result | `pip install && claw skill run heartbeat` | Write agent code, configure tools, deploy |
+| Infrastructure awareness | SSH, Docker, Proxmox, Home Assistant | Cloud-agnostic abstractions |
+| Production runtime | Cron, watchers, messaging, dashboard | You build the runtime |
 
 ---
 
 ## Built-in Skills
 
-| Skill | Type | Purpose |
-|-------|------|---------|
-| `heartbeat` | Shell | Ping hosts, probe HTTPS services, formatted status table |
-| `network-scan` | Shell | Network discovery and port scanning |
-| `ssl-cert-check` | Shell | TLS certificate expiry monitoring |
-| `docker-monitor` | Shell | Container health checks across Docker hosts |
-| `backup-status` | Shell | Backup job verification |
-| `container-watchdog` | Shell | Container restart loop detection and alerting |
-| `ops-report` | Shell | Operational status summary across all subsystems |
-| `deploy` | Python | Deployment pipeline: git pull, pip, docker build, health check |
-| `github-admin` | Python | Repository audit, branch protection, security scanning |
-| `tunnel-setup` | Python | Cloudflare tunnel token management |
-| `qa-guardian` | Python | Code quality scanner: 12 checks, 4 categories |
-| `infra-fixer` | Python | Docker infrastructure auto-remediation (40+ containers) |
-| `cloudflared-fixer` | Python | Tunnel crash-loop detection and recovery |
-| `workspace-intake-smoke` | Shell | Intake pipeline smoke test |
+| Skill | Purpose |
+|-------|---------|
+| `heartbeat` | Ping hosts, probe HTTPS services, formatted status table |
+| `network-scan` | Network discovery and port scanning |
+| `ssl-cert-check` | TLS certificate expiry monitoring |
+| `docker-monitor` | Container health checks across Docker hosts |
+| `backup-status` | Backup job verification |
+| `container-watchdog` | Container restart loop detection and alerting |
+| `ops-report` | Operational status summary across all subsystems |
+| `deploy` | Deployment pipeline: git pull, pip install, docker build, health check |
+| `github-admin` | Repository audit, branch protection, security scanning |
+| `tunnel-setup` | Cloudflare tunnel token management |
+| `qa-guardian` | Code quality scanner: 12 checks across 4 categories |
+| `infra-fixer` | Docker infrastructure auto-remediation (40+ containers) |
+| `cloudflared-fixer` | Tunnel crash-loop detection and recovery |
+| `workspace-intake-smoke` | Intake pipeline smoke test |
 
-Create new skills in seconds:
-
-```bash
-claw skill create --name my-tool --type python
-# Generates: skills/my-tool/skill.yaml + skills/my-tool/run.py + skills/my-tool/command.md
-```
-
----
-
-## Documentation
-
-### Guides
-
-| Document | Description |
-|----------|-------------|
-| [Getting Started](docs/guides/getting-started.md) | Installation and first-skill walkthrough |
-| [Deployment](docs/guides/DEPLOYMENT.md) | Docker Compose, systemd, reverse proxy, TLS |
-| [Upgrade](docs/guides/UPGRADE.md) | Version migration, breaking changes, rollback |
-
-### Reference
-
-| Document | Description |
-|----------|-------------|
-| [Architecture](docs/reference/architecture.md) | Component diagram, data flow, tech stack |
-| [Configuration](docs/reference/CONFIGURATION.md) | Every env var, config file, and schema |
-| [Security](docs/reference/SECURITY.md) | Auth model, vault, sandboxing, hardening |
-| [Skills](docs/reference/skills.md) | Skill system, manifests, loader, sandboxing |
-| [Cron](docs/reference/cron.md) | Scheduler, job types, daemon management |
-| [Messaging](docs/reference/messaging.md) | Multi-channel messaging, notification profiles |
-| [SSH](docs/reference/ssh.md) | SSH fabric, hosts, health checks |
-| [Browser](docs/reference/browser.md) | Playwright engine, profiles, DOM toolkit |
-| [Workflows](docs/reference/workflows.md) | YAML workflows, step types, rollback |
-| [Memory](docs/reference/memory.md) | Persistent memory, categories, decay |
-| [Dashboard](docs/reference/dashboard.md) | Web UI, REST API, authentication |
-| [MCP Server](docs/reference/mcp-server.md) | 43 MCP tools for Claude Code |
-
-### Operations
-
-| Document | Description |
-|----------|-------------|
-| [Runbooks](docs/runbooks/RUNBOOKS.md) | Deploy, rollback, incident triage, backup/restore |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Language | Python 3.12+ |
-| CLI | Click 8.x, Rich 13.x |
-| Encryption | age (subprocess) |
-| Scheduling | APScheduler 3.x + SQLite |
-| HTTP | FastAPI, uvicorn, aiohttp |
-| Browser | Playwright (Chromium) |
-| SSH | Paramiko 3.x |
-| Messaging | slack_sdk, Telegram Bot API, Discord API, smtplib |
-| Storage | SQLite (WAL), Redis |
-| Frontend | Alpine.js, htmx |
-| Testing | pytest 8.x (982 tests) |
-| Linting | ruff |
-| MCP | FastMCP |
-| Containers | Docker Compose |
-
----
-
-## Project Structure
-
-```text
-claude-superpowers/
-  superpowers/            # Core Python package
-    cli.py                #   Click entry point (claw)
-    vault.py              #   age-encrypted vault
-    skill_registry.py     #   Skill discovery
-    cron_engine.py        #   APScheduler setup
-    config.py             #   Settings loader
-    audit.py              #   Audit log
-    intake.py             #   Request orchestration
-    channels/             #   Messaging adapters
-    memory/               #   SQLite memory store
-    browser/              #   Playwright wrappers
-    ssh_fabric/           #   SSH connection pool
-    workflow/             #   YAML workflow engine
-    watcher/              #   File watcher daemon
-    mcp_server.py         #   MCP tool server
-  skills/                 # Skill directories
-  workflows/              # YAML workflow definitions
-  msg_gateway/            # FastAPI messaging service
-  dashboard/              # FastAPI web dashboard
-  telegram-bot/           # Telegram bot service
-  browser_engine/         # Playwright Docker service
-  tests/                  # 982 tests
-  docs/                   # Documentation
-  docker-compose.yaml     # 5-service stack
-  pyproject.toml          # Package metadata
-```
-
----
-
-## Part of the Nexus Platform
-
-Nexus Core is the brain of the [Nexus ecosystem](https://github.com/SmartMur). It orchestrates and monitors:
-
-- [**Nexus Cluster**](https://github.com/SmartMur/k3s-cluster) -- K3s on Proxmox via Ansible + Terraform
-- [**Nexus Infra**](https://github.com/SmartMur/homelab) -- 90+ self-hosted service blueprints
-- [**Nexus Media**](https://github.com/SmartMur/home_media) -- Media automation stack
-- [**Nexus Bootstrap**](https://github.com/SmartMur/dotfiles) -- Developer environment provisioning
-
-Extended by:
-
-- [**Nexus Vault Agent**](https://github.com/SmartMur/claude-code-tresor) -- Agent orchestration
-- [**Nexus Skill Factory**](https://github.com/SmartMur/claude-code-skill-factory) -- Skill creation framework
-- [**Nexus Agent OS**](https://github.com/SmartMur/agent-os) -- Agent runtime environment
+Create new skills: `claw skill create --name my-tool --type python`
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). In short:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding standards, and PR process.
 
-1. Fork the repo
-2. Create a feature branch
-3. Run tests: `PYTHONPATH=. pytest --ignore=tests/test_telegram_concurrency.py`
-4. Submit a pull request
+```bash
+# Run the test suite
+PYTHONPATH=. pytest --ignore=tests/test_telegram_concurrency.py
+```
+
+Security issues: see [SECURITY.md](SECURITY.md).
 
 ---
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+[MIT](LICENSE)
 
 ---
 
