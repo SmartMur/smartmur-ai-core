@@ -59,7 +59,7 @@ def status_dashboard():
         from superpowers.skill_registry import SkillRegistry
 
         sr = SkillRegistry()
-        skills = sr.list()
+        skills = sr.list_skills()
         sections.append(f"[cyan]Skills:[/cyan] {len(skills)} installed")
     except (ImportError, OSError, RuntimeError):
         sections.append("[cyan]Skills:[/cyan] [dim]unavailable[/dim]")
