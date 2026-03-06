@@ -8,14 +8,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SmartMur/claude-superpowers/actions/workflows/ci.yml"><img src="https://github.com/SmartMur/claude-superpowers/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <img src="https://img.shields.io/badge/tests-2159_passing-brightgreen" alt="Tests" />
+  <a href="https://github.com/SmartMur/smartmur-ai-core/actions/workflows/ci.yml"><img src="https://github.com/SmartMur/smartmur-ai-core/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <img src="https://img.shields.io/badge/tests-2331_passing-brightgreen" alt="Tests" />
   <img src="https://img.shields.io/badge/python-3.12+-blue" alt="Python" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>
   <img src="https://img.shields.io/badge/docker-compose-blue" alt="Docker" />
 </p>
 
 <p align="center">
+  <a href="https://smartmur.github.io/smartmur-ai-core/">Docs</a> &middot;
   <a href="#quick-demo">Demo</a> &middot;
   <a href="#features">Features</a> &middot;
   <a href="#install">Install</a> &middot;
