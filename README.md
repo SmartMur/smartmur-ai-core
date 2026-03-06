@@ -1,4 +1,4 @@
-![SmartMur AI Core](assets/nexus-banner.svg)
+![SmartMur AI Core](assets/smartmur-banner.svg)
 
 <h1 align="center">SmartMur AI Core</h1>
 
