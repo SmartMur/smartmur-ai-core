@@ -3,6 +3,7 @@ import click
 from superpowers import __version__
 from superpowers.cli_agent import agent_group
 from superpowers.cli_audit import audit_group
+from superpowers.cli_benchmark import benchmark_group
 from superpowers.cli_browse import browse_group
 from superpowers.cli_cron import cron_group
 from superpowers.cli_dag import dag_group
@@ -15,6 +16,7 @@ from superpowers.cli_msg import msg_group
 from superpowers.cli_orchestrate import orchestrate_group
 from superpowers.cli_pack import pack_group
 from superpowers.cli_policy import policy_group
+from superpowers.cli_release import release_group
 from superpowers.cli_report import report_group
 from superpowers.cli_setup import setup_group
 from superpowers.cli_skill import (
@@ -43,6 +45,7 @@ def main():
 
 main.add_command(agent_group)
 main.add_command(audit_group)
+main.add_command(benchmark_group)
 main.add_command(browse_group)
 main.add_command(cron_group)
 main.add_command(dag_group)
@@ -61,6 +64,7 @@ main.add_command(template_group)
 main.add_command(vault_group)
 main.add_command(watcher_group)
 main.add_command(workflow_group)
+main.add_command(release_group)
 main.add_command(report_group)
 main.add_command(status_dashboard)
 
