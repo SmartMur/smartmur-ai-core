@@ -179,6 +179,54 @@ The dashboard is protected by HTTP Basic authentication. All `/api/*` endpoints 
    curl -u "admin:<your-new-password>" http://localhost:8200/api/status
    ```
 
+## Troubleshooting
+
+### Login fails with 401 Unauthorized
+
+**Symptom:** You enter correct credentials but the dashboard keeps returning 401.
+
+**Cause:** `docker compose restart` does NOT re-read `.env` files. The container has stale credentials.
+
+**Fix:**
+
+```bash
+cd /home/ray/Projects/claude-superpowers
+docker compose up -d dashboard --force-recreate
+
+# Verify credentials reached the container
+docker exec claude-superpowers-dashboard-1 env | grep DASHBOARD
+```
+
+### Credentials not set
+
+```bash
+# Generate a strong password
+PASS=$(python3 -c "import secrets; print(secrets.token_urlsafe(24))")
+echo "DASHBOARD_USER=ray" >> .env
+echo "DASHBOARD_PASS=$PASS" >> .env
+echo "Your password: $PASS"
+
+# Recreate container
+docker compose up -d dashboard --force-recreate
+```
+
+### Dashboard loads but all panels show errors
+
+**Cause:** The HTML page loads without auth, but `/api/*` endpoints require Basic Auth. Your browser may not be sending the `Authorization` header.
+
+**Fix:** Clear browser cache and re-enter credentials. If behind a reverse proxy, ensure it forwards the `Authorization` header.
+
+### Cannot reach dashboard from another machine
+
+Check port binding:
+
+```bash
+docker port claude-superpowers-dashboard-1
+# Should show: 8200/tcp -> 0.0.0.0:8200
+```
+
+If bound to `127.0.0.1`, update `docker-compose.yaml` ports to `"8200:8200"` (without the `127.0.0.1:` prefix).
+
 ## Security Notes
 
 - Vault endpoint exposes key **names** only, never secret values

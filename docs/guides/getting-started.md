@@ -175,3 +175,22 @@ Run `claw skill sync` to regenerate symlinks. Verify the symlink exists:
 ```bash
 ls -la ~/.claude/commands/
 ```
+
+### Dashboard login fails (401 Unauthorized)
+
+After setting `DASHBOARD_USER` and `DASHBOARD_PASS` in `.env`, you must **recreate** the container — `docker compose restart` does NOT re-read `.env`:
+
+```bash
+docker compose up -d dashboard --force-recreate
+docker exec claude-superpowers-dashboard-1 env | grep DASHBOARD
+```
+
+### Setting dashboard credentials for the first time
+
+```bash
+PASS=$(python3 -c "import secrets; print(secrets.token_urlsafe(24))")
+echo "DASHBOARD_USER=ray" >> .env
+echo "DASHBOARD_PASS=$PASS" >> .env
+echo "Your password: $PASS"
+docker compose up -d dashboard --force-recreate
+```
