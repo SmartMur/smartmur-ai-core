@@ -1,8 +1,8 @@
 site_name: Nexus Core
 site_description: Self-hosted AI operations platform — skills, scheduling, messaging, SSH, browser automation, workflows, memory, and vault.
-site_url: https://smartmur.github.io/claude-superpowers/
-repo_url: https://github.com/SmartMur/claude-superpowers
-repo_name: SmartMur/claude-superpowers
+site_url: https://smartmur.github.io/smartmur-ai-core/
+repo_url: https://github.com/SmartMur/smartmur-ai-core
+repo_name: SmartMur/smartmur-ai-core
 
 theme:
   name: material
