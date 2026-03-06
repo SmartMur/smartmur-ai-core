@@ -1,0 +1,28 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Circle -->
+  <circle cx="100" cy="90" r="72" fill="none" stroke="#e0e0e0" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- "Smart" script text inside circle -->
+  <text x="100" y="105"
+        font-family="'Dancing Script', cursive, 'Segoe Script', 'Apple Chancery', sans-serif"
+        font-size="58"
+        font-weight="700"
+        fill="#e0e0e0"
+        text-anchor="middle"
+        dominant-baseline="middle">Smart</text>
+
+  <!-- "MUR" block text below circle -->
+  <text x="100" y="180"
+        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+        font-size="30"
+        font-weight="600"
+        letter-spacing="12"
+        fill="#e0e0e0"
+        text-anchor="middle">MUR</text>
+</svg>

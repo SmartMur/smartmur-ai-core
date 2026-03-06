@@ -21,7 +21,7 @@ All user requests are logged here. Updated as work completes.
 
 ## Backlog
 
-- [ ] **Provide Cloudflare tunnel token** — run `/tunnel-setup set-token <token>` after getting from Cloudflare dashboard
+- [x] **Provide Cloudflare tunnel token** — saved to `.env`; needs `sudo chown ray:ray /home/ray/docker/cloudflared` for skill to manage directly
 
 ## Completed (Beat Tresor — 2026-03-04)
 
