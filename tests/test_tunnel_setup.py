@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "skills" / "tunnel-setup"))
+sys.modules.pop("run", None)  # Prevent collision with other skill run.py modules
 
 import run as tunnel_setup
 
