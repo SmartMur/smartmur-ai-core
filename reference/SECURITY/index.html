@@ -1,0 +1,3798 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self-hosted AI operations platform — skills, scheduling, messaging, SSH, browser automation, workflows, memory, and vault.">
+      
+      
+      
+        <link rel="canonical" href="https://smartmur.github.io/claude-superpowers/reference/SECURITY/">
+      
+      
+        <link rel="prev" href="../mcp-server/">
+      
+      
+        <link rel="next" href="../../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>Security Policy - Nexus Core</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Nexus Core" class="md-header__button md-logo" aria-label="Nexus Core" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nexus Core
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Policy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SmartMur/claude-superpowers" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/claude-superpowers
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CUSTOMIZATION/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../cli/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reports/competitive-analysis/" class="md-tabs__link">
+          
+  
+  
+  Reports
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../runbooks/RUNBOOKS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Runbooks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../good-first-issues/" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sessions/work-queue/" class="md-tabs__link">
+          
+  
+  
+  Session Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Nexus Core" class="md-nav__button md-logo" aria-label="Nexus Core" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nexus Core
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SmartMur/claude-superpowers" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/claude-superpowers
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/UPGRADE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upgrade Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup-wizard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup Wizard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/cloudflared-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloudflare Tunnel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CUSTOMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHAT_INTEGRATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chat Integrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../template-manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skills
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cron & Scheduling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ssh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SSH & Remote Execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../watchers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Watchers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vault & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telegram-bot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Bot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heartbeat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heartbeat Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../job-runner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Runner
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../intake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intake Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mcp-server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Policy
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-http-basic-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard (HTTP Basic Auth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telegram-bot-chat-id-allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telegram Bot (Chat ID Allowlist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-signature-validation-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook Signature Validation (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#startup-security-validation-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup Security Validation (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channel-adapter-interface-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel Adapter Interface (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-api-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook / API Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vault-encrypted-credential-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vault (Encrypted Credential Store)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vault (Encrypted Credential Store)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credential Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skill-sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill Sandboxing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Skill Sandboxing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-mode-loaderrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Mode (loader.run())
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandboxed-mode-loaderrun_sandboxed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxed Mode (loader.run_sandboxed())
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-gating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Gating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Log
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Log">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-logged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Logged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-the-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardening-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hardening Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-security-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook Security (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-phase-g_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credentials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#https-transport-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTPS / Transport (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skills
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-disclosures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Disclosures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Risk Disclosures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-protected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is NOT Protected
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/competitive-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competitive Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/benchmark-baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/security-audit-2026-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/github-audit-2026-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/github-issues-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Issues Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/action-plan-defg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Action Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_7" id="__nav_6_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecosystem Repositioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ecosystem Repositioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase1-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 - Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase2-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2 - Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase3-repo-reorg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3 - Repo Reorg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase4-messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4 - Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase5-star-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 5 - Star Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase6-competitive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 6 - Competitive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/phase7-roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 7 - Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/org-profile-README/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Org Profile README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/ecosystem-reposition/final-naming-map-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Naming Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/RUNBOOKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../good-first-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Good First Issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Session Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sessions/work-queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Work Queue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sessions/telegram-reporting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Reporting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sessions/2026-03-01-night-ops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Night Ops (2026-03-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-http-basic-auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard (HTTP Basic Auth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telegram-bot-chat-id-allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telegram Bot (Chat ID Allowlist)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-signature-validation-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook Signature Validation (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#startup-security-validation-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Startup Security Validation (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channel-adapter-interface-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel Adapter Interface (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-api-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook / API Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vault-encrypted-credential-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vault (Encrypted Credential Store)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vault (Encrypted Credential Store)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credential Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skill-sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill Sandboxing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Skill Sandboxing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-mode-loaderrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Mode (loader.run())
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandboxed-mode-loaderrun_sandboxed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxed Mode (loader.run_sandboxed())
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-gating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Gating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Log
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Log">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-logged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Logged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-the-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardening-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hardening Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-security-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhook Security (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-phase-g_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credentials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#https-transport-phase-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTPS / Transport (Phase G)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skills
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-disclosures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Disclosures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Risk Disclosures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-protected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is NOT Protected
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h1>
+<p>Authentication, encryption, sandboxing, and risk disclosures for claude-superpowers.</p>
+<hr />
+<h2 id="authentication-model">Authentication Model<a class="headerlink" href="#authentication-model" title="Permanent link">&para;</a></h2>
+<h3 id="dashboard-http-basic-auth">Dashboard (HTTP Basic Auth)<a class="headerlink" href="#dashboard-http-basic-auth" title="Permanent link">&para;</a></h3>
+<p>The web dashboard at port 8200 requires HTTP Basic authentication on all <code>/api/*</code> endpoints.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Source</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DASHBOARD_USER</code></td>
+<td><code>.env</code></td>
+<td>Username (code default is empty string -- must be set in <code>.env</code>)</td>
+</tr>
+<tr>
+<td><code>DASHBOARD_PASS</code></td>
+<td><code>.env</code></td>
+<td>Password (no default -- must be set)</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>/health</code> endpoint is unauthenticated (used by Docker health checks and monitoring tools).</p>
+<p><strong>Changing credentials:</strong></p>
+<ol>
+<li>Edit <code>.env</code> and update <code>DASHBOARD_USER</code> / <code>DASHBOARD_PASS</code></li>
+<li>Recreate the container: <code>docker compose up -d dashboard</code> (a <code>restart</code> will NOT re-read <code>.env</code>)</li>
+<li>Verify: <code>curl -u "user:pass" http://localhost:8200/api/status</code></li>
+</ol>
+<p>Generate a strong password:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import secrets; print(secrets.token_urlsafe(24))&quot;</span>
+</span></code></pre></div>
+<h3 id="telegram-bot-chat-id-allowlist">Telegram Bot (Chat ID Allowlist)<a class="headerlink" href="#telegram-bot-chat-id-allowlist" title="Permanent link">&para;</a></h3>
+<p>The Telegram bot uses a secure-by-default authorization model.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Source</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ALLOWED_CHAT_IDS</code></td>
+<td><code>.env</code></td>
+<td>Comma-separated list of permitted chat IDs</td>
+</tr>
+</tbody>
+</table>
+<p>Behavior:
+- If <code>ALLOWED_CHAT_IDS</code> is empty or not set, <strong>all messages are rejected</strong>
+- Unauthorized attempts are logged (once per chat ID to prevent log spam)
+- The allowlist can be modified at runtime via the <code>AuthGate.add()</code> / <code>AuthGate.remove()</code> methods</p>
+<p>Finding your chat ID: Send any message to the bot and check the application logs for the rejected chat ID.</p>
+<h3 id="webhook-signature-validation-phase-g">Webhook Signature Validation (Phase G)<a class="headerlink" href="#webhook-signature-validation-phase-g" title="Permanent link">&para;</a></h3>
+<p>Inbound webhooks are validated using <strong>fail-closed</strong> middleware (<code>msg_gateway/middleware.py</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Mechanism</th>
+<th>Env Variable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Telegram</td>
+<td><code>X-Telegram-Bot-Api-Secret-Token</code> header</td>
+<td><code>TELEGRAM_WEBHOOK_SECRET</code></td>
+</tr>
+<tr>
+<td>Slack</td>
+<td>HMAC-SHA256 (<code>v0</code> signing)</td>
+<td><code>SLACK_SIGNING_SECRET</code></td>
+</tr>
+<tr>
+<td>Discord</td>
+<td>Ed25519 signature (via PyNaCl)</td>
+<td><code>DISCORD_PUBLIC_KEY</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong>
+- All POST requests to <code>/webhook/*</code> paths MUST carry a valid signature
+- If the corresponding env var is not set, the request is <strong>rejected</strong> (not allowed through)
+- Set <code>WEBHOOK_REQUIRE_SIGNATURE=false</code> to disable validation (not recommended; for debugging only)
+- Health endpoints (<code>/health</code>, <code>/api/health</code>) are always exempt</p>
+<h3 id="rate-limiting-phase-g">Rate Limiting (Phase G)<a class="headerlink" href="#rate-limiting-phase-g" title="Permanent link">&para;</a></h3>
+<p>Both the message gateway and the dashboard enforce per-IP rate limiting via token-bucket middleware.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RATE_LIMIT_PER_IP</code></td>
+<td><code>60</code></td>
+<td>Max requests per minute per IP address</td>
+</tr>
+<tr>
+<td><code>RATE_LIMIT_PER_USER</code></td>
+<td><code>120</code></td>
+<td>Max requests per minute per authenticated user</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong>
+- Returns <code>429 Too Many Requests</code> with <code>Retry-After: 60</code> header when exceeded
+- Health endpoints are exempt from rate limiting
+- Token buckets refill continuously (not in fixed windows)
+- Stale buckets are cleaned up after 10 minutes of inactivity</p>
+<p>Middleware files:
+- <code>msg_gateway/middleware.py</code> -- webhook validation + rate limiting for the message gateway
+- <code>dashboard/middleware.py</code> -- rate limiting for the dashboard</p>
+<h3 id="startup-security-validation-phase-g">Startup Security Validation (Phase G)<a class="headerlink" href="#startup-security-validation-phase-g" title="Permanent link">&para;</a></h3>
+<p><code>Settings.validate_security()</code> checks configuration at startup and logs warnings for:</p>
+<ul>
+<li>Missing <code>DASHBOARD_USER</code> or <code>DASHBOARD_PASS</code></li>
+<li>Insecure default credential values (e.g., "admin", "password", "changeme")</li>
+<li><code>ENVIRONMENT=production</code> without <code>FORCE_HTTPS=true</code></li>
+<li><code>WEBHOOK_REQUIRE_SIGNATURE</code> disabled</li>
+</ul>
+<p>Call <code>settings.validate_security()</code> in your app startup to surface issues early.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FORCE_HTTPS</code></td>
+<td><code>false</code> (dev) / <code>true</code> (production)</td>
+<td>Enforce HTTPS transport</td>
+</tr>
+<tr>
+<td><code>ENVIRONMENT</code></td>
+<td><code>development</code></td>
+<td>Set to <code>production</code> to auto-enable HTTPS enforcement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="channel-adapter-interface-phase-g">Channel Adapter Interface (Phase G)<a class="headerlink" href="#channel-adapter-interface-phase-g" title="Permanent link">&para;</a></h3>
+<p>A new abstract base class (<code>msg_gateway/channels/base.py</code>) defines the contract for inbound channel adapters:</p>
+<ul>
+<li><code>name: str</code> -- channel identifier</li>
+<li><code>receive(request) -&gt; Message</code> -- parse inbound webhook payload</li>
+<li><code>acknowledge(message) -&gt; None</code> -- send read receipt or reaction</li>
+<li><code>start_processing_indicator(message) -&gt; None</code> -- show typing indicator</li>
+<li><code>send_response(message, response) -&gt; None</code> -- send reply</li>
+<li><code>supports_streaming: bool</code> -- whether the adapter supports streaming responses</li>
+</ul>
+<p>This is separate from the simpler <code>superpowers/channels/base.py::Channel</code> class (outbound-only). Existing adapters can migrate to this interface incrementally.</p>
+<h3 id="webhook-api-security">Webhook / API Security<a class="headerlink" href="#webhook-api-security" title="Permanent link">&para;</a></h3>
+<p>The message gateway (<code>msg-gateway</code>) at port 8100 now includes webhook signature validation and rate limiting middleware. It should still be run on localhost or behind a reverse proxy for additional protection.</p>
+<p>The MCP server (<code>claw-mcp</code>) communicates over stdio and inherits the security context of the calling process (Claude Code).</p>
+<hr />
+<h2 id="vault-encrypted-credential-store">Vault (Encrypted Credential Store)<a class="headerlink" href="#vault-encrypted-credential-store" title="Permanent link">&para;</a></h2>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<p>The vault stores all credentials in a single age-encrypted file at <code>~/.claude-superpowers/vault.enc</code>.</p>
+<ol>
+<li><strong>Keypair</strong>: <code>claw vault init</code> generates an X25519 keypair via <code>age-keygen</code></li>
+<li><strong>Identity file</strong>: Private key stored at <code>~/.claude-superpowers/age-identity.txt</code> (chmod 600)</li>
+<li><strong>Encryption</strong>: <code>age -r &lt;public-key&gt;</code> encrypts the JSON blob</li>
+<li><strong>Decryption</strong>: <code>age -d -i &lt;identity-file&gt;</code> decrypts it</li>
+<li><strong>Atomic writes</strong>: Set/delete operations decrypt to memory, modify, re-encrypt to a temp file, then <code>os.replace()</code> to the vault path</li>
+</ol>
+<p>The <code>age</code> and <code>age-keygen</code> CLI binaries are called as subprocesses. No age library is linked.</p>
+<h3 id="key-management">Key Management<a class="headerlink" href="#key-management" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Permissions</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.claude-superpowers/age-identity.txt</code></td>
+<td><code>600</code></td>
+<td>age private key (X25519)</td>
+</tr>
+<tr>
+<td><code>~/.claude-superpowers/vault.enc</code></td>
+<td><code>600</code></td>
+<td>Encrypted credential store</td>
+</tr>
+</tbody>
+</table>
+<p>On macOS, the identity file path is optionally cached in Keychain (service: <code>claude-superpowers-vault</code>, account: <code>age-identity</code>). This stores the <em>path</em>, not the key itself.</p>
+<h3 id="credential-rotation">Credential Rotation<a class="headerlink" href="#credential-rotation" title="Permanent link">&para;</a></h3>
+<p>The <code>CredentialRotationChecker</code> (<code>superpowers/credential_rotation.py</code>) tracks secret ages:</p>
+<ul>
+<li>Policies defined in <code>~/.claude-superpowers/rotation_policies.yaml</code></li>
+<li>Default max age: 90 days</li>
+<li>Warning threshold: 80% of max age (72 days at default)</li>
+<li>Statuses: <code>ok</code>, <code>warning</code>, <code>expired</code></li>
+<li>Check with: <code>claw vault rotation check</code></li>
+</ul>
+<hr />
+<h2 id="skill-sandboxing">Skill Sandboxing<a class="headerlink" href="#skill-sandboxing" title="Permanent link">&para;</a></h2>
+<p>Skills execute via two modes in <code>SkillLoader</code>:</p>
+<h3 id="standard-mode-loaderrun">Standard Mode (<code>loader.run()</code>)<a class="headerlink" href="#standard-mode-loaderrun" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Inherits the full parent process environment</li>
+<li>Skill runs in its own directory as cwd</li>
+<li>5-minute execution timeout</li>
+</ul>
+<h3 id="sandboxed-mode-loaderrun_sandboxed">Sandboxed Mode (<code>loader.run_sandboxed()</code>)<a class="headerlink" href="#sandboxed-mode-loaderrun_sandboxed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Minimal environment</strong>: Only <code>PATH</code>, <code>HOME</code>, <code>LANG</code>, <code>TERM</code> are passed</li>
+<li><strong>Vault exception</strong>: Skills with <code>vault</code> in their <code>permissions</code> list receive the full environment including vault-injected secrets</li>
+<li>Same 5-minute timeout</li>
+<li>Used by the intake pipeline for automatic skill execution</li>
+</ul>
+<h3 id="dependency-gating">Dependency Gating<a class="headerlink" href="#dependency-gating" title="Permanent link">&para;</a></h3>
+<p>Before execution, the loader checks all entries in the skill's <code>dependencies</code> list against <code>which</code>. Missing dependencies cause the skill to fail with a clear error, preventing partial execution.</p>
+<hr />
+<h2 id="audit-log">Audit Log<a class="headerlink" href="#audit-log" title="Permanent link">&para;</a></h2>
+<h3 id="format">Format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h3>
+<p>Append-only JSON Lines file at <code>~/.claude-superpowers/audit.log</code>.</p>
+<p>Each line is a JSON object:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;ts&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-02T14:30:00.123456+00:00&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;skill.run&quot;</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Executed network-scan&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cli&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">&quot;skill&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;network-scan&quot;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">&quot;exit_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">&quot;duration_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4200</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><strong>Fields:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ts</code></td>
+<td>string (ISO 8601)</td>
+<td>UTC timestamp</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>string</td>
+<td>Action identifier (e.g., <code>skill.run</code>, <code>vault.set</code>, <code>cron.execute</code>, <code>intake.task_completed</code>)</td>
+</tr>
+<tr>
+<td><code>detail</code></td>
+<td>string</td>
+<td>Human-readable description</td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>string</td>
+<td>Origin component (e.g., <code>cli</code>, <code>intake</code>, <code>cron</code>, <code>dashboard</code>)</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>object</td>
+<td>Optional structured data specific to the action</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-is-logged">What Is Logged<a class="headerlink" href="#what-is-logged" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Action Pattern</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>skill.*</code></td>
+<td>Skill execution (start, complete, fail)</td>
+</tr>
+<tr>
+<td><code>vault.*</code></td>
+<td>Vault init, set, get, delete</td>
+</tr>
+<tr>
+<td><code>cron.*</code></td>
+<td>Job add, remove, enable, disable, execute</td>
+</tr>
+<tr>
+<td><code>msg.*</code></td>
+<td>Message send, test, notify</td>
+</tr>
+<tr>
+<td><code>ssh.*</code></td>
+<td>Remote command execution</td>
+</tr>
+<tr>
+<td><code>workflow.*</code></td>
+<td>Workflow run, step execution</td>
+</tr>
+<tr>
+<td><code>intake.*</code></td>
+<td>Context clear, plan, skill map, task start/complete, session save</td>
+</tr>
+<tr>
+<td><code>watcher.*</code></td>
+<td>File events and triggered actions</td>
+</tr>
+<tr>
+<td><code>dashboard.*</code></td>
+<td>API calls (when instrumented)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="accessing-the-log">Accessing the Log<a class="headerlink" href="#accessing-the-log" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># CLI</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>claw<span class="w"> </span>audit<span class="w"> </span>tail<span class="w">              </span><span class="c1"># Last 20 entries</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>claw<span class="w"> </span>audit<span class="w"> </span>search<span class="w"> </span><span class="s2">&quot;vault&quot;</span><span class="w">    </span><span class="c1"># Search by keyword</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># Dashboard API</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>GET<span class="w"> </span>/api/audit/tail?limit<span class="o">=</span><span class="m">50</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>GET<span class="w"> </span>/api/audit/search?query<span class="o">=</span>skill<span class="p">&amp;</span><span class="nv">limit</span><span class="o">=</span><span class="m">20</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># MCP</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>audit_tail<span class="o">(</span><span class="nv">limit</span><span class="o">=</span><span class="m">20</span><span class="o">)</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>audit_search<span class="o">(</span><span class="nv">query</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span>,<span class="w"> </span><span class="nv">limit</span><span class="o">=</span><span class="m">50</span><span class="o">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="hardening-checklist">Hardening Checklist<a class="headerlink" href="#hardening-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="network">Network<a class="headerlink" href="#network" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Bind the dashboard to <code>127.0.0.1</code> or use a reverse proxy with TLS</li>
+<li>[ ] Do not expose port 8100 (msg-gateway) to untrusted networks</li>
+<li>[ ] Use Cloudflare Tunnel or VPN for remote access (see <code>docs/guides/cloudflared-setup.md</code>)</li>
+<li>[ ] Restrict Redis to localhost (<code>bind 127.0.0.1</code> in redis.conf or Docker network isolation)</li>
+</ul>
+<h3 id="webhook-security-phase-g">Webhook Security (Phase G)<a class="headerlink" href="#webhook-security-phase-g" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Set <code>TELEGRAM_WEBHOOK_SECRET</code> for Telegram webhook validation</li>
+<li>[ ] Set <code>SLACK_SIGNING_SECRET</code> for Slack webhook validation</li>
+<li>[ ] Set <code>DISCORD_PUBLIC_KEY</code> for Discord webhook validation</li>
+<li>[ ] Verify <code>WEBHOOK_REQUIRE_SIGNATURE=true</code> (default) is not overridden</li>
+<li>[ ] Test webhook rejection by sending unsigned requests</li>
+</ul>
+<h3 id="rate-limiting-phase-g_1">Rate Limiting (Phase G)<a class="headerlink" href="#rate-limiting-phase-g_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Verify rate limiting is active on both dashboard and msg-gateway</li>
+<li>[ ] Tune <code>RATE_LIMIT_PER_IP</code> if needed (default: 60 req/min)</li>
+<li>[ ] Tune <code>RATE_LIMIT_PER_USER</code> if needed (default: 120 req/min)</li>
+<li>[ ] Monitor 429 responses in logs for false positives</li>
+</ul>
+<h3 id="credentials">Credentials<a class="headerlink" href="#credentials" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Set strong <code>DASHBOARD_PASS</code> (use <code>python3 -c "import secrets; print(secrets.token_urlsafe(24))"</code>)</li>
+<li>[ ] Avoid insecure defaults ("admin", "password", "changeme", etc.) for DASHBOARD_USER/DASHBOARD_PASS</li>
+<li>[ ] Run <code>settings.validate_security()</code> at startup to detect misconfigurations</li>
+<li>[ ] Set <code>ALLOWED_CHAT_IDS</code> for the Telegram bot (empty = all messages rejected)</li>
+<li>[ ] Store sensitive tokens in the vault, not in <code>.env</code> where possible</li>
+<li>[ ] Review <code>~/.claude-superpowers/age-identity.txt</code> permissions: must be <code>600</code></li>
+<li>[ ] Review <code>~/.claude-superpowers/vault.enc</code> permissions: must be <code>600</code></li>
+<li>[ ] Set up credential rotation policies (<code>claw vault rotation policy</code>)</li>
+</ul>
+<h3 id="https-transport-phase-g">HTTPS / Transport (Phase G)<a class="headerlink" href="#https-transport-phase-g" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Set <code>ENVIRONMENT=production</code> in production deployments (auto-enables FORCE_HTTPS)</li>
+<li>[ ] Or explicitly set <code>FORCE_HTTPS=true</code></li>
+<li>[ ] Use a TLS-terminating reverse proxy (nginx, Caddy, or Cloudflare Tunnel)</li>
+</ul>
+<h3 id="skills">Skills<a class="headerlink" href="#skills" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Review <code>permissions</code> in <code>skill.yaml</code> before granting <code>vault</code> access</li>
+<li>[ ] Audit third-party skills before installing</li>
+<li>[ ] Use sandboxed execution (<code>run_sandboxed()</code>) for untrusted skills</li>
+<li>[ ] Check <code>dependencies</code> lists for unexpected binary requirements</li>
+</ul>
+<h3 id="ssh">SSH<a class="headerlink" href="#ssh" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Use key-based authentication instead of passwords where possible</li>
+<li>[ ] Store SSH passwords/passphrases in the vault, not in config files</li>
+<li>[ ] Limit <code>hosts.yaml</code> to hosts you actually need to manage</li>
+<li>[ ] Use specific host groups instead of <code>all</code> for destructive commands</li>
+</ul>
+<h3 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Keep the dashboard volume mount read-only (<code>:ro</code> in docker-compose.yaml)</li>
+<li>[ ] Use Docker network isolation between services</li>
+<li>[ ] Pin image versions instead of using <code>latest</code> in production</li>
+</ul>
+<h3 id="filesystem">Filesystem<a class="headerlink" href="#filesystem" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] The <code>~/.claude-superpowers/</code> directory should be owned by the running user</li>
+<li>[ ] The audit log (<code>audit.log</code>) should be append-only where the OS supports it</li>
+<li>[ ] Rotate or compress old audit logs periodically</li>
+</ul>
+<hr />
+<h2 id="risk-disclosures">Risk Disclosures<a class="headerlink" href="#risk-disclosures" title="Permanent link">&para;</a></h2>
+<h3 id="what-is-not-protected">What Is NOT Protected<a class="headerlink" href="#what-is-not-protected" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Identity file on disk</strong>: The age private key at <code>~/.claude-superpowers/age-identity.txt</code> is a plaintext file. Anyone with filesystem access to this file can decrypt the vault. The vault's security depends entirely on filesystem permissions and user account security.</p>
+</li>
+<li>
+<p><strong>Secrets in memory</strong>: During vault decrypt/encrypt cycles, secrets are briefly held in process memory. There is no secure memory wiping.</p>
+</li>
+<li>
+<p><strong>Dashboard transport</strong>: The dashboard serves over HTTP by default. Credentials are sent as Base64-encoded Basic auth headers. Without TLS (reverse proxy or Cloudflare Tunnel), credentials are visible on the network.</p>
+</li>
+<li>
+<p><strong>Message gateway</strong>: The <code>msg-gateway</code> service now validates webhook signatures (Phase G) but the <code>/send</code> endpoint has no authentication. Anyone who can reach port 8100 can send messages through configured channels unless network-level restrictions are in place.</p>
+</li>
+<li>
+<p><strong>Cron job environment</strong>: Shell-type cron jobs inherit the daemon's environment, which may include secrets loaded from <code>.env</code>. Job output logs may contain sensitive output.</p>
+</li>
+<li>
+<p><strong>SSH credentials in vault</strong>: While encrypted at rest, SSH passwords are decrypted and passed to paramiko at connection time. They exist in memory during the SSH session.</p>
+</li>
+<li>
+<p><strong>Audit log contents</strong>: The audit log records actions and metadata but does not redact sensitive values from detail strings. Review what your skills and commands write to the log.</p>
+</li>
+<li>
+<p><strong>Browser profiles</strong>: Playwright profiles at <code>~/.claude-superpowers/browser/profiles/</code> contain cookies, localStorage, and session data in plaintext on disk.</p>
+</li>
+<li>
+<p><strong>Telegram bot session history</strong>: When Redis is unavailable, conversation history is stored in-memory only and lost on restart. When Redis is available, history is stored in Redis without encryption.</p>
+</li>
+<li>
+<p><strong>Claude-type cron jobs</strong>: Jobs that run <code>claude -p</code> pass prompts and receive responses through subprocess. Prompts may contain sensitive context. Responses are written to log files.</p>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

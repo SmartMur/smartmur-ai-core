@@ -1,0 +1,6117 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self-hosted AI operations platform — skills, scheduling, messaging, SSH, browser automation, workflows, memory, and vault.">
+      
+      
+      
+        <link rel="canonical" href="https://smartmur.github.io/claude-superpowers/reports/ecosystem-reposition/phase7-roadmap/">
+      
+      
+        <link rel="prev" href="../phase6-competitive/">
+      
+      
+        <link rel="next" href="../org-profile-README/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.4">
+    
+    
+      
+        <title>Phase 7 - Roadmap - Nexus Core</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-7-12-month-roadmap-long-term-vision" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Nexus Core" class="md-header__button md-logo" aria-label="Nexus Core" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nexus Core
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 7 - Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SmartMur/claude-superpowers" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/claude-superpowers
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../getting-started/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/CUSTOMIZATION/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/cli/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../competitive-analysis/" class="md-tabs__link">
+          
+  
+  
+  Reports
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../runbooks/RUNBOOKS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Runbooks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../good-first-issues/" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../sessions/work-queue/" class="md-tabs__link">
+          
+  
+  
+  Session Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Nexus Core" class="md-nav__button md-logo" aria-label="Nexus Core" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nexus Core
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SmartMur/claude-superpowers" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SmartMur/claude-superpowers
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/UPGRADE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upgrade Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/CONFIGURATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/setup-wizard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup Wizard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/cloudflared-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloudflare Tunnel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/CUSTOMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/CHAT_INTEGRATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chat Integrations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/model-routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Routing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/template-manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/release-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skills
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/cron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cron & Scheduling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/ssh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SSH & Remote Execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/browser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/watchers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Watchers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/vault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vault & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/telegram-bot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Bot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/heartbeat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heartbeat Monitor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/job-runner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Runner
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/intake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intake Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/mcp-server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Component Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../competitive-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competitive Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmark-baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security-audit-2026-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../github-audit-2026-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../github-issues-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Issues Audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../action-plan-defg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Action Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6_7" id="__nav_6_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecosystem Repositioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ecosystem Repositioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase1-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 - Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase2-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 2 - Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase3-repo-reorg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 3 - Repo Reorg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase4-messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 4 - Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase5-star-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 5 - Star Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phase6-competitive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 6 - Competitive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 7 - Roadmap
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 7 - Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-12-month-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 12-Month Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 12-Month Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-foundation-launch-months-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: Foundation &amp; Launch (Months 1-3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q1: Foundation &amp; Launch (Months 1-3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-1-pre-launch-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 1: Pre-Launch Preparation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-2-public-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 2: Public Launch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-3-post-launch-momentum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 3: Post-Launch Momentum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-growth-features-months-4-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Growth &amp; Features (Months 4-6)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q2: Growth &amp; Features (Months 4-6)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-4-visual-workflow-builder-mvp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 4: Visual Workflow Builder (MVP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-5-agent-orchestration-beat-tresor-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 5: Agent Orchestration (Beat Tresor Sprint)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-6-community-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 6: Community &amp; RAG
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-scale-community-months-7-9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: Scale &amp; Community (Months 7-9)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q3: Scale &amp; Community (Months 7-9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-7-plugin-architecture-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 7: Plugin Architecture &amp; SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-8-mobile-notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 8: Mobile &amp; Notifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-9-stability-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 9: Stability &amp; Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-authority-enterprise-months-10-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: Authority &amp; Enterprise (Months 10-12)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q4: Authority &amp; Enterprise (Months 10-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-10-enterprise-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 10: Enterprise Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-11-kubernetes-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 11: Kubernetes &amp; Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-12-authority-sustainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 12: Authority &amp; Sustainability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-core-feature-milestones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Core Feature Milestones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Core Feature Milestones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#priority-1-multi-llm-support-q1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 1: Multi-LLM Support (Q1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-2-visual-workflow-builder-q2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 2: Visual Workflow Builder (Q2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-3-agent-orchestration-q2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 3: Agent Orchestration (Q2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-4-plugin-marketplace-q3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 4: Plugin Marketplace (Q3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-5-mobile-dashboard-q3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 5: Mobile Dashboard (Q3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-6-enterprise-features-q4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 6: Enterprise Features (Q4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-ecosystem-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Ecosystem Expansion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Ecosystem Expansion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-repositories-to-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Repositories to Build
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New Repositories to Build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-nexus-recipes-nexus-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Nexus Recipes (nexus-recipes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-nexus-helm-chart-nexus-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Nexus Helm Chart (nexus-helm)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-nexus-desktop-nexus-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Nexus Desktop (nexus-desktop)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-vs-code-extension-nexus-vscode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 VS Code Extension (nexus-vscode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-nexus-ansible-collection-nexus-ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Nexus Ansible Collection (nexus-ansible)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-awesome-nexus-awesome-nexus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Awesome Nexus (awesome-nexus)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-makes-this-10k-star-worthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What Makes This 10k-Star Worthy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What Makes This 10k-Star Worthy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-star-feature-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k-Star Feature Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-star-positioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k-Star Positioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-makes-this-conference-talk-worthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What Makes This Conference-Talk Worthy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What Makes This Conference-Talk Worthy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proposed-talks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed Talks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Talks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#talk-1-ai-that-runs-your-infrastructure-building-a-sovereign-ai-operations-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 1: "AI That Runs Your Infrastructure: Building a Sovereign AI Operations Platform"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-2-from-homelab-to-platform-how-982-tests-and-zero-stars-became-an-open-source-movement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 2: "From Homelab to Platform: How 982 Tests and Zero Stars Became an Open-Source Movement"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-3-approval-gates-the-missing-safety-layer-for-ai-agents-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 3: "Approval Gates: The Missing Safety Layer for AI Agents in Production"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-4-building-a-plugin-sdk-for-an-automation-platform-lessons-from-nexus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 4: "Building a Plugin SDK for an Automation Platform: Lessons from Nexus"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conference-calendar-12-month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conference Calendar (12-month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-makes-this-enterprise-relevant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What Makes This Enterprise-Relevant
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What Makes This Enterprise-Relevant">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features-enterprises-would-pay-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features Enterprises Would Pay For
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Features Enterprises Would Pay For">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-enterprise-core-500-2000month-per-team" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Enterprise Core ($500-2,000/month per team)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-enterprise-scale-2000-5000month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Enterprise Scale ($2,000-5,000/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-enterprise-premium-5000-15000month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Enterprise Premium ($5,000-15,000/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enterprise-sales-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enterprise Sales Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-enterprises-would-choose-nexus-over-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Enterprises Would Choose Nexus Over Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-risk-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Risk Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Risk Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#market-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Market Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operational-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-success-metrics-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Success Metrics &amp; KPIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Success Metrics &amp; KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-foundation-launch-months-1-3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: Foundation &amp; Launch (Months 1-3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-growth-features-months-4-6_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Growth &amp; Features (Months 4-6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-scale-community-months-7-9_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: Scale &amp; Community (Months 7-9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-authority-enterprise-months-10-12_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: Authority &amp; Enterprise (Months 10-12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trailing-indicators-measured-monthly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trailing Indicators (Measured Monthly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-dependency-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Dependency Graph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Dependency Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallelization-opportunities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelization Opportunities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../org-profile-README/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Org Profile README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../final-naming-map-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Final Naming Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/RUNBOOKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../good-first-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Good First Issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Session Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sessions/work-queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Work Queue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sessions/telegram-reporting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Reporting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sessions/2026-03-01-night-ops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Night Ops (2026-03-01)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-12-month-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 12-Month Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 12-Month Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-foundation-launch-months-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: Foundation &amp; Launch (Months 1-3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q1: Foundation &amp; Launch (Months 1-3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-1-pre-launch-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 1: Pre-Launch Preparation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-2-public-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 2: Public Launch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-3-post-launch-momentum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 3: Post-Launch Momentum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-growth-features-months-4-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Growth &amp; Features (Months 4-6)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q2: Growth &amp; Features (Months 4-6)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-4-visual-workflow-builder-mvp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 4: Visual Workflow Builder (MVP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-5-agent-orchestration-beat-tresor-sprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 5: Agent Orchestration (Beat Tresor Sprint)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-6-community-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 6: Community &amp; RAG
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-scale-community-months-7-9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: Scale &amp; Community (Months 7-9)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q3: Scale &amp; Community (Months 7-9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-7-plugin-architecture-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 7: Plugin Architecture &amp; SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-8-mobile-notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 8: Mobile &amp; Notifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-9-stability-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 9: Stability &amp; Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-authority-enterprise-months-10-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: Authority &amp; Enterprise (Months 10-12)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Q4: Authority &amp; Enterprise (Months 10-12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#month-10-enterprise-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 10: Enterprise Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-11-kubernetes-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 11: Kubernetes &amp; Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#month-12-authority-sustainability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Month 12: Authority &amp; Sustainability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-core-feature-milestones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Core Feature Milestones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Core Feature Milestones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#priority-1-multi-llm-support-q1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 1: Multi-LLM Support (Q1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-2-visual-workflow-builder-q2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 2: Visual Workflow Builder (Q2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-3-agent-orchestration-q2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 3: Agent Orchestration (Q2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-4-plugin-marketplace-q3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 4: Plugin Marketplace (Q3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-5-mobile-dashboard-q3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 5: Mobile Dashboard (Q3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-6-enterprise-features-q4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 6: Enterprise Features (Q4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-ecosystem-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Ecosystem Expansion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Ecosystem Expansion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-repositories-to-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Repositories to Build
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="New Repositories to Build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-nexus-recipes-nexus-recipes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Nexus Recipes (nexus-recipes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-nexus-helm-chart-nexus-helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Nexus Helm Chart (nexus-helm)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-nexus-desktop-nexus-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Nexus Desktop (nexus-desktop)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-vs-code-extension-nexus-vscode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 VS Code Extension (nexus-vscode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-nexus-ansible-collection-nexus-ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Nexus Ansible Collection (nexus-ansible)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-awesome-nexus-awesome-nexus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Awesome Nexus (awesome-nexus)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-makes-this-10k-star-worthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What Makes This 10k-Star Worthy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. What Makes This 10k-Star Worthy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-star-feature-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k-Star Feature Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-star-positioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k-Star Positioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-10k-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 10k Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-makes-this-conference-talk-worthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What Makes This Conference-Talk Worthy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. What Makes This Conference-Talk Worthy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proposed-talks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed Talks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Talks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#talk-1-ai-that-runs-your-infrastructure-building-a-sovereign-ai-operations-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 1: "AI That Runs Your Infrastructure: Building a Sovereign AI Operations Platform"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-2-from-homelab-to-platform-how-982-tests-and-zero-stars-became-an-open-source-movement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 2: "From Homelab to Platform: How 982 Tests and Zero Stars Became an Open-Source Movement"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-3-approval-gates-the-missing-safety-layer-for-ai-agents-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 3: "Approval Gates: The Missing Safety Layer for AI Agents in Production"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#talk-4-building-a-plugin-sdk-for-an-automation-platform-lessons-from-nexus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Talk 4: "Building a Plugin SDK for an Automation Platform: Lessons from Nexus"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conference-calendar-12-month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conference Calendar (12-month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-makes-this-enterprise-relevant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What Makes This Enterprise-Relevant
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. What Makes This Enterprise-Relevant">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features-enterprises-would-pay-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features Enterprises Would Pay For
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Features Enterprises Would Pay For">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tier-1-enterprise-core-500-2000month-per-team" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 1: Enterprise Core ($500-2,000/month per team)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-2-enterprise-scale-2000-5000month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 2: Enterprise Scale ($2,000-5,000/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tier-3-enterprise-premium-5000-15000month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier 3: Enterprise Premium ($5,000-15,000/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enterprise-sales-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enterprise Sales Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-enterprises-would-choose-nexus-over-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Enterprises Would Choose Nexus Over Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-risk-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Risk Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Risk Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#market-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Market Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operational-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-success-metrics-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Success Metrics &amp; KPIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Success Metrics &amp; KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-foundation-launch-months-1-3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1: Foundation &amp; Launch (Months 1-3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-growth-features-months-4-6_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2: Growth &amp; Features (Months 4-6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-scale-community-months-7-9_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3: Scale &amp; Community (Months 7-9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-authority-enterprise-months-10-12_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4: Authority &amp; Enterprise (Months 10-12)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trailing-indicators-measured-monthly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trailing Indicators (Measured Monthly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-dependency-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Dependency Graph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Dependency Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallelization-opportunities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelization Opportunities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="phase-7-12-month-roadmap-long-term-vision">Phase 7: 12-Month Roadmap &amp; Long-Term Vision<a class="headerlink" href="#phase-7-12-month-roadmap-long-term-vision" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-03-03
+<strong>Author</strong>: SmartMur Strategic Planning
+<strong>Status</strong>: Roadmap Approved
+<strong>Prerequisite</strong>: Phases 1 (Identity), 2 (Architecture), 5 (Star Strategy), 6 (Competitive) complete</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-executive-summary">Executive Summary</a></li>
+<li><a href="#2-12-month-roadmap">12-Month Roadmap (Quarterly Breakdown)</a></li>
+<li><a href="#3-core-feature-milestones">Core Feature Milestones</a></li>
+<li><a href="#4-ecosystem-expansion">Ecosystem Expansion</a></li>
+<li><a href="#5-what-makes-this-10k-star-worthy">What Makes This 10k-Star Worthy</a></li>
+<li><a href="#6-what-makes-this-conference-talk-worthy">What Makes This Conference-Talk Worthy</a></li>
+<li><a href="#7-what-makes-this-enterprise-relevant">What Makes This Enterprise-Relevant</a></li>
+<li><a href="#8-risk-analysis">Risk Analysis</a></li>
+<li><a href="#9-success-metrics--kpis">Success Metrics &amp; KPIs</a></li>
+<li><a href="#appendix-dependency-graph">Appendix: Dependency Graph</a></li>
+</ol>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary<a class="headerlink" href="#1-executive-summary" title="Permanent link">&para;</a></h2>
+<p>Nexus is a self-hosted AI operations platform that combines 8 integrated subsystems (cron, messaging, SSH fabric, browser automation, workflow engine, memory store, file watchers, encrypted vault) into a single platform controlled via CLI, dashboard, Telegram, and MCP. It has 982 tests, a Docker Compose stack, and all core features operational. It has zero public users, zero stars, and zero community.</p>
+<p>This roadmap transforms Nexus from a working private project into a recognized open-source platform over 12 months. The plan is organized into four quarters, each with a theme, concrete deliverables, and measurable outcomes.</p>
+<p><strong>The strategic bet</strong>: Nexus will not beat OpenClaw (130k stars) or n8n (177k stars) on breadth. It will beat them on depth -- becoming the definitive platform for AI-powered infrastructure operations. The niche is "people who run their own servers and want AI to help manage them." That niche contains every r/selfhosted subscriber (2M+), every Claude Code power user, and every DevOps engineer tired of writing one-off scripts.</p>
+<p><strong>12-month target</strong>: 5,000-10,000 GitHub stars, 50+ contributors, 3 conference appearances, 1 enterprise pilot.</p>
+<hr />
+<h2 id="2-12-month-roadmap">2. 12-Month Roadmap<a class="headerlink" href="#2-12-month-roadmap" title="Permanent link">&para;</a></h2>
+<h3 id="q1-foundation-launch-months-1-3">Q1: Foundation &amp; Launch (Months 1-3)<a class="headerlink" href="#q1-foundation-launch-months-1-3" title="Permanent link">&para;</a></h3>
+<p><strong>Theme</strong>: "Make it real. Make it public. Make first impressions count."</p>
+<p>The entire quarter is about removing every reason someone would NOT star the repo (see Phase 5 analysis) and creating the minimum viable launch package.</p>
+<h4 id="month-1-pre-launch-preparation">Month 1: Pre-Launch Preparation<a class="headerlink" href="#month-1-pre-launch-preparation" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1</td>
+<td><strong>License selection and application</strong></td>
+<td>MIT LICENSE file in repo root. "All rights reserved" removed from README. License badge added.</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>W1</td>
+<td><strong>Repo rename to <code>nexus</code></strong></td>
+<td>GitHub repo renamed from <code>claude-superpowers</code> to <code>nexus</code>. Old name redirects. pyproject.toml <code>name</code> updated. CLI remains <code>claw</code> (brand asset).</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>W1</td>
+<td><strong>GitHub org profile</strong></td>
+<td>SmartMur org README with Nexus branding, pinned repos (6), GitHub Topics on all 10 repos. Org bio: "Nexus -- self-hosted AI operations platform."</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>W2</td>
+<td><strong>Visual identity: logo + banner</strong></td>
+<td>Text-based logo (monospace font, accent color). Hero banner (1280x640) with logo + tagline + one dashboard screenshot. Social preview image set on repo.</td>
+<td>Design</td>
+</tr>
+<tr>
+<td>W2</td>
+<td><strong>README rewrite (killer README)</strong></td>
+<td>New README following Phase 5 proven structure: hero banner, one-line value prop, GIF/screenshot in first viewport, 3-bullet "Why?", 3-step quickstart, feature highlights with images, graphical architecture diagram, comparison table, docs links, contributing link, license.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W2</td>
+<td><strong>Badges</strong></td>
+<td>CI status, Python 3.12+, tests (982 passing), license (MIT), Docker Compose, MCP tools (43). All green. All linking to relevant resources.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W3</td>
+<td><strong>Terminal recording</strong></td>
+<td>30-second VHS/asciinema GIF showing: <code>claw skill run heartbeat</code>, <code>claw cron list</code>, <code>claw msg telegram "hello"</code>. Embedded in README.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W3</td>
+<td><strong>Dashboard screenshot</strong></td>
+<td>Real screenshot of running dashboard showing status page, skill list, cron jobs. Annotated with callouts. Embedded in README.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W3</td>
+<td><strong>One-line install</strong></td>
+<td><code>curl -fsSL https://nexus.sh/install | sh</code> or <code>docker compose up -d</code> -- both paths documented and tested. Install script handles venv, pip, system deps.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W4</td>
+<td><strong>Documentation site</strong></td>
+<td>MkDocs Material hosted on GitHub Pages at <code>docs.nexus.sh</code> (or <code>smartmur.github.io/nexus</code>). All existing <code>docs/</code> content migrated. Search enabled.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W4</td>
+<td><strong>CONTRIBUTING.md + issue templates</strong></td>
+<td>Contribution guide, PR template, bug/feature issue templates. Code of conduct. "Good first issues" labeled (minimum 10).</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W4</td>
+<td><strong>Ollama integration (multi-LLM, phase 1)</strong></td>
+<td><code>LLMProvider</code> updated to support Ollama as a backend. <code>NEXUS_LLM_PROVIDER=ollama</code> env var. Local models (llama3, mistral) work for all <code>claude-prompt</code> workflow steps and chat. Tests added.</td>
+<td>Dev</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 1 Exit Criteria</strong>: Repo is public, visually polished, installable in &lt; 5 minutes, documented, and supports at least 2 LLM backends (Claude + Ollama).</p>
+<h4 id="month-2-public-launch">Month 2: Public Launch<a class="headerlink" href="#month-2-public-launch" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W5</td>
+<td><strong>OpenAI integration</strong></td>
+<td><code>LLMProvider</code> supports OpenAI API (GPT-4o, GPT-4o-mini). <code>NEXUS_LLM_PROVIDER=openai</code> env var. Automatic fallback chain: Claude -&gt; OpenAI -&gt; Ollama. Per-task model routing config. Tests added.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W5</td>
+<td><strong>Quick-start video</strong></td>
+<td>3-minute YouTube video: "Your first AI-powered server automation in 3 minutes." Shows install, heartbeat skill, Telegram notification.</td>
+<td>Content</td>
+</tr>
+<tr>
+<td>W6</td>
+<td><strong>Hacker News launch</strong></td>
+<td>"Show HN: Nexus -- self-hosted AI that manages your infrastructure" post. Timed for Tuesday 10am ET. Author available for 8 hours of comment response.</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>W6</td>
+<td><strong>Reddit launch (simultaneous)</strong></td>
+<td>Posts to r/selfhosted, r/homelab, r/devops, r/claudeai, r/LocalLLaMA. Each post tailored to subreddit audience.</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>W6</td>
+<td><strong>awesome-selfhosted submission</strong></td>
+<td>PR to awesome-selfhosted with Nexus in "Automation" or "Software Development - IDE" category.</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>W7</td>
+<td><strong>Post-launch fixes</strong></td>
+<td>Triage all GitHub issues from launch week. Fix top 5 bugs. Respond to every issue within 24h.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W7</td>
+<td><strong>Discord server</strong></td>
+<td>Community Discord with channels: general, support, showcase, contributing, announcements. Invite link in README and docs.</td>
+<td>Community</td>
+</tr>
+<tr>
+<td>W8</td>
+<td><strong>Blog post: architecture deep-dive</strong></td>
+<td>"How Nexus Connects 8 Subsystems into One Platform" -- published on dev.to, hashnode, and personal blog. Cross-posted to HN.</td>
+<td>Content</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 2 Exit Criteria</strong>: Public launch complete. Hacker News posted. 50+ GitHub stars. Discord community active. All launch-week bugs triaged.</p>
+<h4 id="month-3-post-launch-momentum">Month 3: Post-Launch Momentum<a class="headerlink" href="#month-3-post-launch-momentum" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W9</td>
+<td><strong>Webhook inbound triggers</strong></td>
+<td>New trigger type in workflow engine: <code>webhook</code>. External services can POST to <code>/api/webhooks/{id}</code> to trigger workflows. Auth via HMAC signature.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W9</td>
+<td><strong>WhatsApp channel adapter</strong></td>
+<td>WhatsApp Business API adapter in <code>msg_gateway/channels/</code>. Requires user to provide their own WhatsApp Business API credentials. Send + receive.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W10</td>
+<td><strong>Skill browser web UI</strong></td>
+<td><code>/skills</code> page on dashboard showing browsable, searchable catalog of installed skills. One-click run. Install from SkillHub.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W10</td>
+<td><strong>Submit to product directories</strong></td>
+<td>Product Hunt launch, AlternativeTo listing, StackShare listing, ToolJet alternatives pages.</td>
+<td>Marketing</td>
+</tr>
+<tr>
+<td>W11</td>
+<td><strong>Publish 5 skills to external catalogs</strong></td>
+<td>Publish heartbeat, network-scan, ssl-cert-check, deploy, and docker-monitor skills to ClawHub and Tresor as distribution channels.</td>
+<td>Dev</td>
+</tr>
+<tr>
+<td>W11</td>
+<td><strong>First community blog roundup</strong></td>
+<td>"Week 4: What the community built with Nexus" -- showcase 3-5 user-contributed workflows or skills.</td>
+<td>Content</td>
+</tr>
+<tr>
+<td>W12</td>
+<td><strong>Interactive onboarding wizard</strong></td>
+<td><code>claw setup init</code> guides new users through: LLM provider selection, channel configuration, first skill run, first cron job. Step-by-step with validation at each step.</td>
+<td>Dev</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 3 / Q1 Exit Criteria</strong>: 150+ GitHub stars. 3+ external contributors. Webhook triggers working. WhatsApp channel live. Onboarding wizard shipped. Documentation site stable with analytics.</p>
+<hr />
+<h3 id="q2-growth-features-months-4-6">Q2: Growth &amp; Features (Months 4-6)<a class="headerlink" href="#q2-growth-features-months-4-6" title="Permanent link">&para;</a></h3>
+<p><strong>Theme</strong>: "Close the gaps. Build the moat deeper. Earn the community."</p>
+<p>Q2 focuses on the three features identified in Phase 6 as critical gaps: multi-model support (completed in Q1), visual workflow builder, and agent orchestration.</p>
+<h4 id="month-4-visual-workflow-builder-mvp">Month 4: Visual Workflow Builder (MVP)<a class="headerlink" href="#month-4-visual-workflow-builder-mvp" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workflow visualization (read-only)</strong></td>
+<td>Dashboard page at <code>/workflows/{name}</code> renders any YAML workflow as a visual DAG using a JavaScript library (Dagre, ELK, or ReactFlow via CDN). Nodes show step type, name, status. Edges show dependencies and conditions.</td>
+<td>2 weeks</td>
+</tr>
+<tr>
+<td><strong>Workflow run visualization</strong></td>
+<td>Active/completed workflow runs overlay status (pending/running/passed/failed) on each node in real time via WebSocket or SSE polling. Click a node to see its output.</td>
+<td>1 week</td>
+</tr>
+<tr>
+<td><strong>Workflow editor (basic)</strong></td>
+<td>Add/remove/reorder steps via drag-and-drop on the visual DAG. Changes serialize back to YAML. Save button writes to disk. Does NOT require implementing a full node editor -- this is structural editing of existing step types.</td>
+<td>2 weeks</td>
+</tr>
+<tr>
+<td><strong>Workflow templates gallery</strong></td>
+<td>Dashboard page showing 10+ starter workflow templates (deploy, backup, morning-brief, cert-renewal, security-scan, etc.) with "Use This Template" button that clones to user's workflow directory.</td>
+<td>1 week</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 4 Acceptance</strong>: Any YAML workflow can be viewed, run, and monitored visually. Basic structural editing works. 10+ templates available. This is NOT a full n8n-style node editor -- it is a visualization and management layer on top of YAML workflows.</p>
+<h4 id="month-5-agent-orchestration-beat-tresor-sprint">Month 5: Agent Orchestration (Beat Tresor Sprint)<a class="headerlink" href="#month-5-agent-orchestration-beat-tresor-sprint" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent registry</strong> (<code>superpowers/agent_registry.py</code>)</td>
+<td>Agent manifests load from <code>subagents/**/agent.md</code>. <code>claw agent list</code> shows all agents with descriptions. <code>claw agent run &lt;name&gt;</code> executes. <code>claw agent recommend</code> suggests agents based on task context.</td>
+<td>12h</td>
+</tr>
+<tr>
+<td><strong>DAG executor</strong> (<code>superpowers/orchestrator.py</code>)</td>
+<td>Dependency-aware parallel execution for multi-agent and multi-step orchestrations. Topological sort, conflict detection, safe parallelization. Proven by tests with fan-out/fan-in patterns.</td>
+<td>16h</td>
+</tr>
+<tr>
+<td><strong>Orchestration command pack</strong> (10 commands)</td>
+<td><code>claw</code> commands for: <code>audit</code>, <code>vuln-scan</code>, <code>compliance</code>, <code>profile</code>, <code>benchmark</code>, <code>deploy-validate</code>, <code>health-check</code>, <code>incident</code>, <code>code-health</code>, <code>debt-analysis</code>. Each produces structured JSON + markdown output.</td>
+<td>16h</td>
+</tr>
+<tr>
+<td><strong>Reporting module</strong> (<code>superpowers/reporting.py</code>)</td>
+<td>Every orchestration command emits a structured artifact (JSON) + summary (Markdown). Reports stored in <code>~/.claude-superpowers/reports/</code>. Dashboard page at <code>/reports</code>.</td>
+<td>14h</td>
+</tr>
+<tr>
+<td><strong>Auto agent selection</strong></td>
+<td>Workflows and jobs auto-pick agents by analyzing task description and repo context. Override via <code>--agent</code> flag.</td>
+<td>10h</td>
+</tr>
+<tr>
+<td><strong>Dashboard orchestration monitor</strong></td>
+<td><code>/orchestrations</code> page showing run queue, DAG execution graph, artifact links, status per node.</td>
+<td>12h</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 5 Acceptance</strong>: Tresor parity achieved. Agent registry operational. DAG executor proven with tests. 10 orchestration commands runnable. Competitive benchmark published.</p>
+<h4 id="month-6-community-rag">Month 6: Community &amp; RAG<a class="headerlink" href="#month-6-community-rag" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RAG pipeline (basic)</strong></td>
+<td><code>claw memory ingest &lt;file&gt;</code> processes PDF, Markdown, and plain text into chunked embeddings stored in SQLite (using sqlite-vec or similar). <code>claw memory search "query"</code> returns semantically relevant chunks. Works with local embedding models (via Ollama) or OpenAI embeddings.</td>
+<td>3 weeks</td>
+</tr>
+<tr>
+<td><strong>Community skill marketplace (v1)</strong></td>
+<td>Web page (GitHub Pages or dashboard) showing community-contributed skills with: name, description, author, install count, one-click install command. Skills hosted as Git repos. Index maintained as a JSON manifest.</td>
+<td>2 weeks</td>
+</tr>
+<tr>
+<td><strong>Pack installer</strong></td>
+<td><code>claw setup install-pack &lt;name&gt;</code> installs curated bundles of skills + workflows + agent configs. Built-in packs: <code>homelab-essentials</code>, <code>security-ops</code>, <code>devops-toolkit</code>, <code>media-manager</code>. Checksum validation, rollback on failure.</td>
+<td>1 week</td>
+</tr>
+<tr>
+<td><strong>Awesome Nexus list</strong></td>
+<td>Curated list repo (<code>awesome-nexus</code>) with community workflows, skills, integrations, blog posts, videos, and deployment guides. Submit to awesome-list ecosystem.</td>
+<td>3 days</td>
+</tr>
+<tr>
+<td><strong>Monthly community call</strong></td>
+<td>First monthly community call on Discord. Agenda: roadmap update, contributor spotlight, live demo of new features, Q&amp;A. Recorded and posted to YouTube.</td>
+<td>Ongoing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month 6 / Q2 Exit Criteria</strong>: 500+ GitHub stars. Visual workflow viewer shipped. Agent orchestration operational. RAG pipeline working. Community marketplace launched. 10+ external contributors. First community call held.</p>
+<hr />
+<h3 id="q3-scale-community-months-7-9">Q3: Scale &amp; Community (Months 7-9)<a class="headerlink" href="#q3-scale-community-months-7-9" title="Permanent link">&para;</a></h3>
+<p><strong>Theme</strong>: "Let others build on the platform. Make Nexus self-sustaining."</p>
+<h4 id="month-7-plugin-architecture-sdk">Month 7: Plugin Architecture &amp; SDK<a class="headerlink" href="#month-7-plugin-architecture-sdk" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plugin SDK</strong></td>
+<td>Python package (<code>nexus-sdk</code>) that third-party developers use to build skills, channel adapters, workflow step types, and dashboard widgets. Typed interfaces, auto-discovery, versioned compatibility. Published to PyPI.</td>
+</tr>
+<tr>
+<td><strong>Channel plugin interface</strong></td>
+<td>Any messaging channel can be added as a pip-installable plugin. Interface: <code>NexusChannel</code> base class with <code>send()</code>, <code>receive()</code>, <code>health()</code> methods. Existing 5 channels refactored to use this interface.</td>
+</tr>
+<tr>
+<td><strong>Workflow step plugin interface</strong></td>
+<td>Custom step types can be registered via plugins. Interface: <code>NexusStep</code> base class with <code>execute()</code>, <code>validate()</code>, <code>rollback()</code> methods.</td>
+</tr>
+<tr>
+<td><strong>Matrix channel adapter</strong></td>
+<td>Matrix/Element messaging channel as the first community-contributed channel plugin. Validates the plugin interface works for external developers.</td>
+</tr>
+<tr>
+<td><strong>Signal channel adapter</strong></td>
+<td>Signal messaging via signal-cli or signal-api as a plugin. Covers the #2 most-requested messaging channel after WhatsApp.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="month-8-mobile-notifications">Month 8: Mobile &amp; Notifications<a class="headerlink" href="#month-8-mobile-notifications" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Mobile-responsive dashboard</strong></td>
+<td>Dashboard works on phones and tablets. Responsive CSS, touch-friendly controls, simplified navigation. PWA manifest for "Add to Home Screen."</td>
+</tr>
+<tr>
+<td><strong>Push notifications</strong></td>
+<td>Web push notifications from dashboard for: workflow completions, alert escalations, approval gates, cron failures. Service worker + push API.</td>
+</tr>
+<tr>
+<td><strong>Notification center</strong></td>
+<td>Dashboard widget showing all recent notifications with read/unread status, filtering by type, and bulk actions. API endpoint for external consumption.</td>
+</tr>
+<tr>
+<td><strong>Telegram mini-app</strong></td>
+<td>Telegram bot enhanced with inline keyboards for: skill execution, workflow triggering, cron management, status checks. No need to remember commands -- interactive menus.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="month-9-stability-documentation">Month 9: Stability &amp; Documentation<a class="headerlink" href="#month-9-stability-documentation" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1,500+ test suite</strong></td>
+<td>Test coverage expanded from 982 to 1,500+ tests. New tests for: plugin SDK, channel plugins, DAG executor edge cases, RAG pipeline, webhook triggers, mobile views.</td>
+</tr>
+<tr>
+<td><strong>Soak testing harness</strong></td>
+<td>Automated 24-hour soak test that runs the full stack under load: cron jobs firing, workflows executing, messages routing, browser automating, SSH commands running. Zero crash loops, zero memory leaks, &lt; 5% error rate.</td>
+</tr>
+<tr>
+<td><strong>Cookbook site</strong></td>
+<td>30+ cookbook recipes at <code>cookbook.nexus.sh</code>: "Monitor SSL certs and alert on Telegram," "Auto-restart crashed Docker containers," "Morning briefing with weather + server status + calendar," "Deploy from GitHub webhook." Each recipe is copy-paste-ready.</td>
+</tr>
+<tr>
+<td><strong>Contributor documentation</strong></td>
+<td>Architecture guide for contributors: how to add a skill, how to add a channel, how to add a workflow step type, how to write tests. Video walkthrough.</td>
+</tr>
+<tr>
+<td><strong>Internationalization (i18n)</strong></td>
+<td>CLI and dashboard support English and one additional language (Spanish or Chinese, based on community interest). Framework for adding more languages.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Q3 Exit Criteria</strong>: 1,500+ GitHub stars. Plugin SDK on PyPI. 7+ messaging channels. Mobile dashboard functional. 20+ contributors. 30+ cookbook recipes.</p>
+<hr />
+<h3 id="q4-authority-enterprise-months-10-12">Q4: Authority &amp; Enterprise (Months 10-12)<a class="headerlink" href="#q4-authority-enterprise-months-10-12" title="Permanent link">&para;</a></h3>
+<p><strong>Theme</strong>: "Establish authority. Attract enterprises. Prepare for sustainability."</p>
+<h4 id="month-10-enterprise-features">Month 10: Enterprise Features<a class="headerlink" href="#month-10-enterprise-features" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RBAC (Role-Based Access Control)</strong></td>
+<td>Dashboard and API support multiple users with roles: <code>admin</code>, <code>operator</code>, <code>viewer</code>. Admins manage users. Operators can execute skills/workflows. Viewers can only read status. SSO integration via OIDC (Keycloak, Authentik, Okta).</td>
+</tr>
+<tr>
+<td><strong>Audit compliance module</strong></td>
+<td>Enhanced audit log with: tamper detection (hash chaining), export to SIEM (syslog, JSON, CEF), retention policies, compliance report generation (SOC 2 controls mapping).</td>
+</tr>
+<tr>
+<td><strong>Policy engine</strong></td>
+<td>YAML-defined policies that gate operations: "require approval for any SSH command to production hosts," "block workflows that touch vault secrets without MFA," "rate-limit skill executions per user."</td>
+</tr>
+<tr>
+<td><strong>Multi-tenant namespaces</strong></td>
+<td>Logical separation of skills, workflows, cron jobs, and vault entries by namespace. Teams can share a Nexus instance without seeing each other's data.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="month-11-kubernetes-scale">Month 11: Kubernetes &amp; Scale<a class="headerlink" href="#month-11-kubernetes-scale" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Helm chart</strong></td>
+<td><code>nexus-helm</code> repo with production-grade Helm chart. Values for: replicas, resource limits, ingress, TLS, PVC, secrets management. Tested on K3s, K8s (EKS/GKE/AKS). Published to Artifact Hub.</td>
+</tr>
+<tr>
+<td><strong>Horizontal scaling</strong></td>
+<td>Message gateway and browser engine support multiple replicas behind a load balancer. Redis used for session affinity and job distribution. Cron engine uses distributed locking (Redis) to prevent duplicate execution.</td>
+</tr>
+<tr>
+<td><strong>Prometheus metrics</strong></td>
+<td>All services expose <code>/metrics</code> endpoints. Grafana dashboard template included. Alerts for: high error rate, cron failure, channel delivery failure, memory store growth.</td>
+</tr>
+<tr>
+<td><strong>Backup and restore</strong></td>
+<td><code>claw backup create</code> exports all state (SQLite DBs, vault, workflows, skills, cron jobs, reports) to an encrypted tarball. <code>claw backup restore</code> imports. Scheduled via cron.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="month-12-authority-sustainability">Month 12: Authority &amp; Sustainability<a class="headerlink" href="#month-12-authority-sustainability" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Conference talk delivered</strong></td>
+<td>At least one conference talk delivered (KubeCon, FOSDEM, All Things Open, or equivalent). See Section 6 for proposed talks.</td>
+</tr>
+<tr>
+<td><strong>Enterprise pilot</strong></td>
+<td>At least one organization (startup, SMB, or team within a company) running Nexus in a non-hobby capacity. Documented case study.</td>
+</tr>
+<tr>
+<td><strong>Sustainability model</strong></td>
+<td>One of: (a) GitHub Sponsors active with 10+ sponsors, (b) Nexus Pro license for enterprise features (RBAC, audit compliance, multi-tenant), (c) Consulting/support offering documented.</td>
+</tr>
+<tr>
+<td><strong>v1.0 release</strong></td>
+<td>Semantic versioning adopted. v1.0 tagged with: stability guarantees, migration guide from 0.x, changelog, release notes. Published to PyPI. Docker images on Docker Hub and GHCR.</td>
+</tr>
+<tr>
+<td><strong>Roadmap for year 2</strong></td>
+<td>Community-driven roadmap for year 2 published. Voted on by contributors. Includes: Nexus Desktop, visual DAG editor v2, AI agent marketplace, native Windows support.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Q4 / Year 1 Exit Criteria</strong>: 5,000+ GitHub stars. 50+ contributors. Helm chart on Artifact Hub. Enterprise features available. Conference talk delivered. v1.0 released. Sustainability model in place.</p>
+<hr />
+<h2 id="3-core-feature-milestones">3. Core Feature Milestones<a class="headerlink" href="#3-core-feature-milestones" title="Permanent link">&para;</a></h2>
+<h3 id="priority-1-multi-llm-support-q1">Priority 1: Multi-LLM Support (Q1)<a class="headerlink" href="#priority-1-multi-llm-support-q1" title="Permanent link">&para;</a></h3>
+<p><strong>Why first</strong>: Phase 6 identified Claude-only LLM lock-in as the single most damaging competitive gap. Every major competitor supports 10+ providers. Users of GPT, Gemini, Ollama, and Mistral are locked out entirely.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ollama backend</td>
+<td>Q1M1</td>
+<td>Local models via Ollama API. Zero cloud dependency for AI features.</td>
+</tr>
+<tr>
+<td>OpenAI backend</td>
+<td>Q1M2</td>
+<td>GPT-4o, GPT-4o-mini via OpenAI SDK.</td>
+</tr>
+<tr>
+<td>Automatic fallback chain</td>
+<td>Q1M2</td>
+<td>Claude -&gt; OpenAI -&gt; Ollama. Configurable priority.</td>
+</tr>
+<tr>
+<td>Per-task model routing</td>
+<td>Q1M2</td>
+<td>Config to route <code>chat</code> tasks to fast models, <code>job</code> tasks to capable models.</td>
+</tr>
+<tr>
+<td>Google Gemini backend</td>
+<td>Q2</td>
+<td>Gemini Pro/Flash via Google AI SDK.</td>
+</tr>
+<tr>
+<td>Anthropic direct API</td>
+<td>Q2</td>
+<td>Anthropic SDK without Claude CLI dependency.</td>
+</tr>
+<tr>
+<td>Custom endpoint support</td>
+<td>Q3</td>
+<td>Any OpenAI-compatible API (vLLM, LMStudio, text-generation-webui).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance criteria for "multi-LLM complete"</strong>: A user can install Nexus, configure <code>NEXUS_LLM_PROVIDER=ollama</code>, and use every feature (workflows, intake, chat, cron jobs with claude-prompt steps) without any cloud API key. This is the "sovereign" promise fulfilled.</p>
+<h3 id="priority-2-visual-workflow-builder-q2">Priority 2: Visual Workflow Builder (Q2)<a class="headerlink" href="#priority-2-visual-workflow-builder-q2" title="Permanent link">&para;</a></h3>
+<p><strong>Why second</strong>: Phase 6 analysis shows visual builders are the #1 adoption driver for automation tools. n8n (177k stars) and Dify (130k stars) both attribute a significant portion of their growth to visual interfaces. YAML-only workflow definition is a hard ceiling on non-developer adoption.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read-only DAG visualization</td>
+<td>Q2M4</td>
+<td>Any YAML workflow renders as a visual graph on the dashboard.</td>
+</tr>
+<tr>
+<td>Live run monitoring</td>
+<td>Q2M4</td>
+<td>Running workflows show real-time status per node.</td>
+</tr>
+<tr>
+<td>Structural editing</td>
+<td>Q2M4</td>
+<td>Add, remove, reorder steps via drag-and-drop. Serializes to YAML.</td>
+</tr>
+<tr>
+<td>Template gallery</td>
+<td>Q2M4</td>
+<td>10+ starter templates with one-click clone.</td>
+</tr>
+<tr>
+<td>Condition editor</td>
+<td>Q3</td>
+<td>Visual editor for step conditions (if/else branching).</td>
+</tr>
+<tr>
+<td>Full node editor (v2)</td>
+<td>Year 2</td>
+<td>ReactFlow-based full drag-and-drop workflow builder. New step creation from canvas.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Strategic note</strong>: The Q2 visual builder is intentionally NOT a full n8n-style node editor. Building a competitive visual workflow editor is a multi-year effort. Instead, Nexus will ship a visualization and management layer on top of YAML -- which is achievable in 4-6 weeks -- and position it as "visual monitoring with AI-powered workflow generation." The pitch: "You don't need to drag and drop. Tell Claude what you want and it writes the workflow." This reframes the lack of a GUI as a feature, not a gap.</p>
+<h3 id="priority-3-agent-orchestration-q2">Priority 3: Agent Orchestration (Q2)<a class="headerlink" href="#priority-3-agent-orchestration-q2" title="Permanent link">&para;</a></h3>
+<p><strong>Why third</strong>: This is the "Beat Tresor" sprint. Tresor is a direct competitor in the Claude Code ecosystem with growing traction. Nexus must demonstrate superior agent orchestration to claim the "platform, not a skill collection" position.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent registry + CLI</td>
+<td>Q2M5</td>
+<td><code>claw agent list/run/recommend</code>. Manifests in <code>subagents/</code>.</td>
+</tr>
+<tr>
+<td>DAG executor</td>
+<td>Q2M5</td>
+<td>Dependency-aware parallel execution with topological sort.</td>
+</tr>
+<tr>
+<td>10 orchestration commands</td>
+<td>Q2M5</td>
+<td>audit, vuln-scan, compliance, profile, benchmark, deploy-validate, health-check, incident, code-health, debt-analysis.</td>
+</tr>
+<tr>
+<td>Structured reporting</td>
+<td>Q2M5</td>
+<td>JSON + Markdown artifacts for every orchestration run.</td>
+</tr>
+<tr>
+<td>Auto agent selection</td>
+<td>Q2M5</td>
+<td>Context-aware agent recommendation.</td>
+</tr>
+<tr>
+<td>Dashboard monitor</td>
+<td>Q2M5</td>
+<td>Run queue, DAG graph, artifact viewer.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="priority-4-plugin-marketplace-q3">Priority 4: Plugin Marketplace (Q3)<a class="headerlink" href="#priority-4-plugin-marketplace-q3" title="Permanent link">&para;</a></h3>
+<p><strong>Why fourth</strong>: Once the platform is stable and has users (Q1-Q2), the growth multiplier shifts from features to ecosystem. A plugin marketplace enables community contributions without gating on core team bandwidth.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plugin SDK (<code>nexus-sdk</code> on PyPI)</td>
+<td>Q3M7</td>
+<td>Typed interfaces for skills, channels, step types, widgets.</td>
+</tr>
+<tr>
+<td>Community skill browser (web)</td>
+<td>Q2M6</td>
+<td>Browsable catalog with search, categories, install commands.</td>
+</tr>
+<tr>
+<td>Ratings and reviews</td>
+<td>Q3</td>
+<td>Users can rate skills. Sorted by popularity.</td>
+</tr>
+<tr>
+<td>One-click install from browser</td>
+<td>Q3</td>
+<td>"Install" button on skill page runs <code>claw skill install &lt;name&gt;</code>.</td>
+</tr>
+<tr>
+<td>Verified publisher program</td>
+<td>Q4</td>
+<td>Trusted contributors get a verified badge on their plugins.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="priority-5-mobile-dashboard-q3">Priority 5: Mobile Dashboard (Q3)<a class="headerlink" href="#priority-5-mobile-dashboard-q3" title="Permanent link">&para;</a></h3>
+<p><strong>Why fifth</strong>: Mobile access matters for operations (you get paged at 2am, you check your phone). But it is not a launch blocker -- Telegram and Slack already provide mobile access to core functions.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Responsive CSS</td>
+<td>Q3M8</td>
+<td>Dashboard usable on phones. Touch targets, simplified nav.</td>
+</tr>
+<tr>
+<td>PWA manifest</td>
+<td>Q3M8</td>
+<td>"Add to Home Screen" on iOS and Android.</td>
+</tr>
+<tr>
+<td>Push notifications</td>
+<td>Q3M8</td>
+<td>Web push for alerts, completions, approvals.</td>
+</tr>
+<tr>
+<td>Offline status cache</td>
+<td>Q4</td>
+<td>Service worker caches last-known status for offline viewing.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="priority-6-enterprise-features-q4">Priority 6: Enterprise Features (Q4)<a class="headerlink" href="#priority-6-enterprise-features-q4" title="Permanent link">&para;</a></h3>
+<p><strong>Why last</strong>: Enterprise features are not star drivers. They are revenue drivers. Building them before having a community would be premature. But having them ready by month 10-12 enables the sustainability model.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Quarter</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RBAC</td>
+<td>Q4M10</td>
+<td>Admin, operator, viewer roles. OIDC SSO.</td>
+</tr>
+<tr>
+<td>Audit compliance</td>
+<td>Q4M10</td>
+<td>Hash-chained audit log, SIEM export, SOC 2 mapping.</td>
+</tr>
+<tr>
+<td>Policy engine</td>
+<td>Q4M10</td>
+<td>YAML-defined operation gates with approval workflows.</td>
+</tr>
+<tr>
+<td>Multi-tenancy</td>
+<td>Q4M10</td>
+<td>Namespace isolation for teams.</td>
+</tr>
+<tr>
+<td>Helm chart</td>
+<td>Q4M11</td>
+<td>Production K8s deployment. Artifact Hub published.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-ecosystem-expansion">4. Ecosystem Expansion<a class="headerlink" href="#4-ecosystem-expansion" title="Permanent link">&para;</a></h2>
+<h3 id="new-repositories-to-build">New Repositories to Build<a class="headerlink" href="#new-repositories-to-build" title="Permanent link">&para;</a></h3>
+<p>Each repo below serves a specific function in the Nexus ecosystem. They should only be created when the feature they represent is ready -- empty repos with READMEs are worse than no repo.</p>
+<h4 id="41-nexus-recipes-nexus-recipes">4.1 Nexus Recipes (<code>nexus-recipes</code>)<a class="headerlink" href="#41-nexus-recipes-nexus-recipes" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: Community-contributed workflow library. Curated, tested, categorized.</p>
+<p><strong>Structure</strong>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nexus-recipes/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  homelab/
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    morning-briefing.yaml
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ssl-cert-monitor.yaml
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    backup-verify.yaml
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  devops/
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    deploy-pipeline.yaml
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    rollback-on-failure.yaml
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    pr-review-bot.yaml
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  security/
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    vuln-scan-weekly.yaml
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    credential-rotation.yaml
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    intrusion-response.yaml
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  media/
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    download-monitor.yaml
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    transcode-notify.yaml
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  README.md        # browsable index with categories
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  CONTRIBUTING.md  # how to submit a recipe
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  test/            # CI that validates all YAML workflows parse correctly
+</span></code></pre></div></p>
+<p><strong>When to create</strong>: Q2M6, alongside the community marketplace launch.</p>
+<p><strong>Star potential</strong>: High. Recipe repos are inherently bookmarkable. <code>awesome-selfhosted</code> (276k stars) proves curated lists attract stars even without executable code.</p>
+<h4 id="42-nexus-helm-chart-nexus-helm">4.2 Nexus Helm Chart (<code>nexus-helm</code>)<a class="headerlink" href="#42-nexus-helm-chart-nexus-helm" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: Production-grade Kubernetes deployment for Nexus.</p>
+<p><strong>Contents</strong>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nexus-helm/
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  charts/nexus/
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    Chart.yaml
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    values.yaml          # all configurable knobs
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    templates/
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      deployment.yaml    # nexus-core (dashboard + CLI)
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>      statefulset.yaml   # redis
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>      deployment.yaml    # browser-engine
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>      deployment.yaml    # msg-gateway
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>      deployment.yaml    # telegram-bot
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>      configmap.yaml     # env config
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>      secret.yaml        # vault identity, API keys
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>      ingress.yaml       # TLS termination
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>      pvc.yaml           # persistent volumes for SQLite, vault, skills
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>      hpa.yaml           # horizontal pod autoscaler
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>      networkpolicy.yaml # pod-to-pod restrictions
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    tests/
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>      test-connection.yaml
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>  README.md
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  INSTALL.md
+</span></code></pre></div></p>
+<p><strong>When to create</strong>: Q4M11, after horizontal scaling is proven.</p>
+<p><strong>Strategic value</strong>: Kubernetes is the deployment target for any serious infrastructure. A Helm chart on Artifact Hub is discoverable by the entire K8s ecosystem. It also unlocks enterprise adoption -- teams running K8s will not adopt a Docker-Compose-only tool.</p>
+<h4 id="43-nexus-desktop-nexus-desktop">4.3 Nexus Desktop (<code>nexus-desktop</code>)<a class="headerlink" href="#43-nexus-desktop-nexus-desktop" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: Electron wrapper around the Nexus dashboard + embedded Nexus runtime. One-click install on macOS, Windows, Linux.</p>
+<p><strong>Why</strong>: Eliminates the Docker/Python/venv setup barrier entirely. Downloads as a .dmg/.exe/.AppImage, starts Nexus locally with SQLite + embedded browser engine. The "Obsidian model" -- a powerful local app with optional sync.</p>
+<p><strong>When to create</strong>: Year 2 (not in 12-month roadmap). Building a desktop app before the web experience is polished is a mistake.</p>
+<p><strong>Star potential</strong>: Very high. Desktop apps with download buttons convert visitors to users at dramatically higher rates than "clone + docker compose up" workflows.</p>
+<h4 id="44-vs-code-extension-nexus-vscode">4.4 VS Code Extension (<code>nexus-vscode</code>)<a class="headerlink" href="#44-vs-code-extension-nexus-vscode" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: VS Code extension that integrates Nexus into the editor sidebar: skill browser, workflow runner, cron manager, memory search, SSH terminal, status dashboard.</p>
+<p><strong>Why</strong>: VS Code has 14M+ monthly active users. An extension in the VS Code Marketplace is discoverable by the entire developer population. It also provides a natural bridge from "VS Code user" to "Nexus user."</p>
+<p><strong>When to create</strong>: Q3-Q4, after the Plugin SDK is stable.</p>
+<p><strong>Contents</strong>:
+- Sidebar panel: Nexus status, skill list, cron jobs
+- Command palette: <code>Nexus: Run Skill</code>, <code>Nexus: Create Workflow</code>, <code>Nexus: Remember</code>
+- Status bar: connection status, last cron run
+- Terminal integration: <code>claw</code> commands with output in VS Code terminal
+- Webview: embedded dashboard panels</p>
+<h4 id="45-nexus-ansible-collection-nexus-ansible">4.5 Nexus Ansible Collection (<code>nexus-ansible</code>)<a class="headerlink" href="#45-nexus-ansible-collection-nexus-ansible" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: Ansible Galaxy collection with modules for managing Nexus programmatically: <code>nexus_skill</code>, <code>nexus_cron</code>, <code>nexus_workflow</code>, <code>nexus_vault</code>, <code>nexus_channel</code>.</p>
+<p><strong>Why</strong>: Bridges the gap between traditional infrastructure automation (Ansible) and AI-native automation (Nexus). Allows existing Ansible users to incorporate Nexus into their playbooks without rewriting everything.</p>
+<p><strong>When to create</strong>: Q3, after the REST API is stable and documented.</p>
+<h4 id="46-awesome-nexus-awesome-nexus">4.6 Awesome Nexus (<code>awesome-nexus</code>)<a class="headerlink" href="#46-awesome-nexus-awesome-nexus" title="Permanent link">&para;</a></h4>
+<p><strong>What</strong>: Curated list of Nexus resources: skills, workflows, channel adapters, blog posts, videos, deployment guides, community projects.</p>
+<p><strong>When to create</strong>: Q2M6, as a seed for community discovery.</p>
+<p><strong>Star potential</strong>: Moderate as a standalone, but serves as a community hub and SEO anchor.</p>
+<hr />
+<h2 id="5-what-makes-this-10k-star-worthy">5. What Makes This 10k-Star Worthy<a class="headerlink" href="#5-what-makes-this-10k-star-worthy" title="Permanent link">&para;</a></h2>
+<p>10,000 stars on GitHub requires a specific combination of factors. Based on analysis of 50+ projects that crossed this threshold (detailed in Phase 5), here is the concrete feature set and positioning that would earn Nexus 10k stars.</p>
+<h3 id="the-10k-star-feature-set">The 10k-Star Feature Set<a class="headerlink" href="#the-10k-star-feature-set" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Why It Matters for Stars</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>One-line install</strong></td>
+<td>Removes adoption friction. Every 10k+ project installs in &lt; 2 minutes.</td>
+<td>Needed Q1</td>
+</tr>
+<tr>
+<td><strong>Visual dashboard with screenshots</strong></td>
+<td>"I can see what it does before I install it." Every 10k+ project has at least 3 screenshots in the README.</td>
+<td>Needed Q1</td>
+</tr>
+<tr>
+<td><strong>Multi-LLM support</strong></td>
+<td>Unlocks the entire AI community, not just Claude users. OpenAI alone adds 100M potential users.</td>
+<td>Needed Q1</td>
+</tr>
+<tr>
+<td><strong>30-second demo GIF</strong></td>
+<td>The single highest-impact visual asset. Repos with animated demos get 3x more stars per visitor.</td>
+<td>Needed Q1</td>
+</tr>
+<tr>
+<td><strong>10+ working integrations</strong></td>
+<td>Each integration is a new keyword, a new audience, a new reason to bookmark. 7 channels + 5 step types + N skills = compound discoverability.</td>
+<td>Partial (need more channels)</td>
+</tr>
+<tr>
+<td><strong>Plugin/skill marketplace</strong></td>
+<td>Transforms from "a tool" to "an ecosystem." Ecosystems attract stars exponentially.</td>
+<td>Needed Q2-Q3</td>
+</tr>
+<tr>
+<td><strong>Cookbook with 30+ recipes</strong></td>
+<td>Each recipe is independently shareable and searchable. "Nexus recipe for monitoring SSL certs" becomes its own traffic source.</td>
+<td>Needed Q3</td>
+</tr>
+<tr>
+<td><strong>Kubernetes deployment</strong></td>
+<td>Unlocks the DevOps/platform engineering audience. K8s users expect Helm charts.</td>
+<td>Needed Q4</td>
+</tr>
+<tr>
+<td><strong>1,500+ tests</strong></td>
+<td>Signals exceptional quality. Most projects at this scale have &lt; 200 tests.</td>
+<td>Need to grow</td>
+</tr>
+<tr>
+<td><strong>Active community</strong> (50+ contributors)</td>
+<td>Social proof cascade. Contributors attract more contributors.</td>
+<td>Need to build</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-10k-star-positioning">The 10k-Star Positioning<a class="headerlink" href="#the-10k-star-positioning" title="Permanent link">&para;</a></h3>
+<p>Feature set alone does not reach 10k. Positioning matters equally.</p>
+<p><strong>Nexus must own a category</strong>. The category is: <strong>"AI-Native Infrastructure Automation."</strong></p>
+<p>This means:</p>
+<ol>
+<li>
+<p><strong>Every Google search for "self-hosted AI automation"</strong> should return Nexus in the top 5 results. This requires: SEO-optimized docs site, blog posts on target keywords, awesome-list presence, Stack Overflow answers referencing Nexus.</p>
+</li>
+<li>
+<p><strong>Every conference talk about AI + DevOps</strong> should mention Nexus as a reference. This requires: speaking at 2-3 conferences per year, publishing case studies, engaging with the DevOps/SRE community.</p>
+</li>
+<li>
+<p><strong>Every homelab enthusiast considering "how do I add AI to my lab"</strong> should find Nexus. This requires: presence on r/selfhosted, r/homelab, awesome-selfhosted, YouTube tutorials by homelab creators.</p>
+</li>
+<li>
+<p><strong>Every Claude Code power user</strong> should know Nexus exists. This requires: Anthropic developer community engagement, Claude Code forum posts, MCP tool listings, skill marketplace presence.</p>
+</li>
+</ol>
+<h3 id="the-10k-timeline">The 10k Timeline<a class="headerlink" href="#the-10k-timeline" title="Permanent link">&para;</a></h3>
+<p>Reaching 10k stars in 12 months is aggressive but not unprecedented. Dify went from 0 to 130k in 18 months. Uptime Kuma went from 0 to 50k in 2 years. OpenClaw hit 130k in 6 weeks (extreme outlier with celebrity founder + viral timing).</p>
+<p>For a solo/small-team project without an existing audience, realistic benchmarks from comparable projects (Dockge, Homepage, Liam ERD) suggest:</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Typical Timeline</th>
+<th>Accelerators</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100 stars</td>
+<td>1-2 weeks post-launch</td>
+<td>HN front page, viral Reddit post</td>
+</tr>
+<tr>
+<td>500 stars</td>
+<td>2-3 months</td>
+<td>Sustained content marketing, awesome-list inclusion</td>
+</tr>
+<tr>
+<td>1,000 stars</td>
+<td>4-6 months</td>
+<td>Product Hunt launch, YouTube coverage, conference mention</td>
+</tr>
+<tr>
+<td>2,500 stars</td>
+<td>6-9 months</td>
+<td>Plugin ecosystem attracting contributors, organic SEO</td>
+</tr>
+<tr>
+<td>5,000 stars</td>
+<td>9-12 months</td>
+<td>Category authority, repeat HN appearances, enterprise interest</td>
+</tr>
+<tr>
+<td>10,000 stars</td>
+<td>12-18 months</td>
+<td>All of the above + community self-sustaining growth</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conservative 12-month target</strong>: 5,000 stars.
+<strong>Stretch target</strong>: 10,000 stars (requires at least one viral moment + sustained community growth).</p>
+<hr />
+<h2 id="6-what-makes-this-conference-talk-worthy">6. What Makes This Conference-Talk Worthy<a class="headerlink" href="#6-what-makes-this-conference-talk-worthy" title="Permanent link">&para;</a></h2>
+<h3 id="proposed-talks">Proposed Talks<a class="headerlink" href="#proposed-talks" title="Permanent link">&para;</a></h3>
+<h4 id="talk-1-ai-that-runs-your-infrastructure-building-a-sovereign-ai-operations-platform">Talk 1: "AI That Runs Your Infrastructure: Building a Sovereign AI Operations Platform"<a class="headerlink" href="#talk-1-ai-that-runs-your-infrastructure-building-a-sovereign-ai-operations-platform" title="Permanent link">&para;</a></h4>
+<p><strong>Target conferences</strong>: KubeCon (Operations track), FOSDEM (Infra devroom), All Things Open, DevOpsDays
+<strong>Duration</strong>: 30 minutes
+<strong>Abstract</strong>:</p>
+<blockquote>
+<p>What happens when you give an AI agent SSH access, a cron scheduler, browser automation, and multi-channel messaging -- and tell it to manage your infrastructure? This talk presents Nexus, an open-source platform that turns Claude, GPT, and local LLMs into autonomous infrastructure operators. We will demonstrate a real workflow where an AI agent detects a failed container, diagnoses the issue using logs and screenshots, proposes a fix, waits for human approval via Telegram, executes the remediation, and documents the incident -- all without a human touching a keyboard. We will discuss the architecture (6-layer stack, 982 tests), the security model (encrypted vault, sandboxed execution, approval gates), and the hard lessons learned about giving AI agents access to production systems.</p>
+</blockquote>
+<p><strong>Why it gets accepted</strong>: The "AI + infrastructure" intersection is the hottest topic in DevOps. Conference organizers are desperate for talks that go beyond chatbot demos into real operational use cases.</p>
+<h4 id="talk-2-from-homelab-to-platform-how-982-tests-and-zero-stars-became-an-open-source-movement">Talk 2: "From Homelab to Platform: How 982 Tests and Zero Stars Became an Open-Source Movement"<a class="headerlink" href="#talk-2-from-homelab-to-platform-how-982-tests-and-zero-stars-became-an-open-source-movement" title="Permanent link">&para;</a></h4>
+<p><strong>Target conferences</strong>: Open Source Summit, SCALE (Southern California Linux Expo), PyCon
+<strong>Duration</strong>: 25 minutes
+<strong>Abstract</strong>:</p>
+<blockquote>
+<p>This is a talk about what happens when a homelab project gets serious. It started as personal automation scripts. It became a platform with 8 integrated subsystems, a 982-test suite, Docker Compose deployment, and multi-model AI support. But it had zero stars and zero users. This talk covers the strategic repositioning from "my homelab scripts" to "the sovereign AI operations platform" -- including the competitive analysis, the README rewrite, the launch strategy, and the hard truths about what actually earns GitHub stars (hint: it is not code quality). We will share real numbers: star growth curves, traffic sources, conversion rates, and what worked vs. what wasted time.</p>
+</blockquote>
+<p><strong>Why it gets accepted</strong>: Conference audiences love "zero to hero" stories with real numbers. The meta-narrative (how to position open-source projects) is universally relevant.</p>
+<h4 id="talk-3-approval-gates-the-missing-safety-layer-for-ai-agents-in-production">Talk 3: "Approval Gates: The Missing Safety Layer for AI Agents in Production"<a class="headerlink" href="#talk-3-approval-gates-the-missing-safety-layer-for-ai-agents-in-production" title="Permanent link">&para;</a></h4>
+<p><strong>Target conferences</strong>: MLOps World, AI Engineer Summit, Anthropic Dev Day (if exists)
+<strong>Duration</strong>: 20 minutes
+<strong>Abstract</strong>:</p>
+<blockquote>
+<p>Most AI agent frameworks assume full autonomy or nothing. In production infrastructure, neither extreme works. You cannot let an AI agent restart production servers without approval, and you cannot require manual approval for every log query. This talk presents the approval gate pattern implemented in Nexus: workflow steps that pause execution, send a notification to Telegram/Slack/email with context and options, wait for human confirmation, and resume or abort based on the response. We will show real examples, discuss the UX of "AI asking permission," and present a taxonomy of when to gate vs. when to let agents act autonomously.</p>
+</blockquote>
+<p><strong>Why it gets accepted</strong>: AI safety in production is a growing concern. This talk offers a concrete, implemented solution rather than theoretical hand-waving.</p>
+<h4 id="talk-4-building-a-plugin-sdk-for-an-automation-platform-lessons-from-nexus">Talk 4: "Building a Plugin SDK for an Automation Platform: Lessons from Nexus"<a class="headerlink" href="#talk-4-building-a-plugin-sdk-for-an-automation-platform-lessons-from-nexus" title="Permanent link">&para;</a></h4>
+<p><strong>Target conferences</strong>: PyCon, EuroPython, PyTexas
+<strong>Duration</strong>: 30 minutes
+<strong>Abstract</strong>:</p>
+<blockquote>
+<p>When we built Nexus, we needed third-party developers to extend it with new messaging channels, workflow step types, and skills -- without touching core code. This talk covers the design and implementation of the Nexus Plugin SDK: typed interfaces with <code>Protocol</code> classes, auto-discovery via entry points, sandboxed execution, version compatibility contracts, and the testing infrastructure that lets plugin authors validate their code against any Nexus version. Includes live demo of building a plugin from scratch.</p>
+</blockquote>
+<p><strong>Why it gets accepted</strong>: Plugin architecture is a perennial PyCon topic. Concrete implementation details from a real project are more valuable than abstract patterns.</p>
+<h3 id="conference-calendar-12-month">Conference Calendar (12-month)<a class="headerlink" href="#conference-calendar-12-month" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Conference</th>
+<th>Date (approximate)</th>
+<th>Talk Submitted</th>
+<th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FOSDEM</td>
+<td>Feb 2027</td>
+<td>Talk 1 or Talk 2</td>
+<td>Infrastructure devroom, massive European audience</td>
+</tr>
+<tr>
+<td>PyCon US</td>
+<td>May 2027</td>
+<td>Talk 4</td>
+<td>Python community, plugin architecture</td>
+</tr>
+<tr>
+<td>KubeCon NA</td>
+<td>Nov 2026 or May 2027</td>
+<td>Talk 1</td>
+<td>Operations track, K8s audience</td>
+</tr>
+<tr>
+<td>All Things Open</td>
+<td>Oct 2026</td>
+<td>Talk 2</td>
+<td>Broad open-source audience</td>
+</tr>
+<tr>
+<td>DevOpsDays (local)</td>
+<td>Various</td>
+<td>Talk 1 or Talk 3</td>
+<td>Regional DevOps community</td>
+</tr>
+<tr>
+<td>SCALE</td>
+<td>Mar 2027</td>
+<td>Talk 2</td>
+<td>Linux/self-hosted community</td>
+</tr>
+<tr>
+<td>AI Engineer Summit</td>
+<td>2027</td>
+<td>Talk 3</td>
+<td>AI engineering audience</td>
+</tr>
+<tr>
+<td>Anthropic community event</td>
+<td>TBD</td>
+<td>Talk 1</td>
+<td>Claude Code ecosystem</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Minimum viable conference presence</strong>: 1 talk accepted and delivered within 12 months. Target: 3 talks across different conferences.</p>
+<hr />
+<h2 id="7-what-makes-this-enterprise-relevant">7. What Makes This Enterprise-Relevant<a class="headerlink" href="#7-what-makes-this-enterprise-relevant" title="Permanent link">&para;</a></h2>
+<h3 id="features-enterprises-would-pay-for">Features Enterprises Would Pay For<a class="headerlink" href="#features-enterprises-would-pay-for" title="Permanent link">&para;</a></h3>
+<p>Enterprises do not pay for features they can build themselves in a weekend. They pay for features that reduce risk, prove compliance, and save operational time. Here is what Nexus can offer.</p>
+<h4 id="tier-1-enterprise-core-500-2000month-per-team">Tier 1: Enterprise Core ($500-2,000/month per team)<a class="headerlink" href="#tier-1-enterprise-core-500-2000month-per-team" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Enterprise Need</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RBAC with SSO</strong></td>
+<td>"Who can run commands on production servers?" Enterprises need user isolation and audit trails per user. They need OIDC integration with existing identity providers (Okta, Azure AD, Keycloak).</td>
+<td>Q4M10</td>
+</tr>
+<tr>
+<td><strong>Audit compliance reporting</strong></td>
+<td>"Show me every action taken on infrastructure in the last 90 days, in a format my auditor accepts." SOC 2 Type II requires tamper-evident logs, access controls, and change management records.</td>
+<td>Q4M10</td>
+</tr>
+<tr>
+<td><strong>Policy engine</strong></td>
+<td>"No SSH command to production without manager approval." "No vault secret access without MFA." Enterprises need configurable guardrails that prevent AI agents from taking dangerous actions without oversight.</td>
+<td>Q4M10</td>
+</tr>
+<tr>
+<td><strong>SLA monitoring</strong></td>
+<td>"Alert me if any workflow takes longer than its SLA." Workflow execution time tracking with SLA thresholds and escalation chains.</td>
+<td>Q4</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tier-2-enterprise-scale-2000-5000month">Tier 2: Enterprise Scale ($2,000-5,000/month)<a class="headerlink" href="#tier-2-enterprise-scale-2000-5000month" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Enterprise Need</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multi-tenancy</strong></td>
+<td>"3 teams share one Nexus instance. Team A cannot see Team B's vault secrets, skills, or workflows." Namespace isolation with configurable sharing.</td>
+<td>Q4M10</td>
+</tr>
+<tr>
+<td><strong>High availability</strong></td>
+<td>"Nexus cannot be a single point of failure." Redis Sentinel/Cluster for cache HA. Distributed cron locking. Multi-replica message gateway. Automated failover.</td>
+<td>Q4M11</td>
+</tr>
+<tr>
+<td><strong>Priority support</strong></td>
+<td>"When Nexus breaks at 2am, I need someone to respond." Guaranteed response times, dedicated Slack/email channel, quarterly architecture review.</td>
+<td>Q4M12</td>
+</tr>
+<tr>
+<td><strong>Custom integrations</strong></td>
+<td>"We use ServiceNow for ticketing and PagerDuty for alerting. Build us adapters." Professional services for custom channel adapters, workflow integrations, and skill development.</td>
+<td>Ongoing</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tier-3-enterprise-premium-5000-15000month">Tier 3: Enterprise Premium ($5,000-15,000/month)<a class="headerlink" href="#tier-3-enterprise-premium-5000-15000month" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Enterprise Need</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Air-gapped deployment</strong></td>
+<td>"Our production environment has no internet access." Full offline installation with local LLM (Ollama), no external API calls, bundled dependencies.</td>
+<td>Requires multi-LLM + Helm</td>
+</tr>
+<tr>
+<td><strong>FedRAMP / HIPAA compliance assistance</strong></td>
+<td>Documentation and configuration guidance for deploying Nexus in regulated environments. Encrypted at rest, encrypted in transit, audit trail.</td>
+<td>Docs + hardening guide</td>
+</tr>
+<tr>
+<td><strong>Custom training</strong></td>
+<td>On-site or remote training for DevOps teams on building skills, workflows, and agent orchestrations.</td>
+<td>Professional services</td>
+</tr>
+<tr>
+<td><strong>Dedicated instance management</strong></td>
+<td>Nexus-as-a-Service: we run and manage a Nexus instance for the customer on their infrastructure.</td>
+<td>MSP model</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enterprise-sales-strategy">Enterprise Sales Strategy<a class="headerlink" href="#enterprise-sales-strategy" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Open-core model</strong>: Core platform remains MIT/Apache 2.0 open source. Enterprise features (RBAC, compliance, multi-tenancy, HA) available under a commercial license.</li>
+<li><strong>Self-service trial</strong>: Enterprises can deploy Nexus via Helm chart and evaluate all features for 30 days. Enterprise features degrade gracefully (RBAC falls back to single-admin, audit log continues without compliance export).</li>
+<li><strong>Land-and-expand</strong>: One team adopts Nexus for homelab/dev. They demonstrate value. Other teams request access. The "multi-tenancy" requirement emerges naturally. Enterprise license follows.</li>
+<li><strong>Channel partners</strong>: Partner with managed hosting providers (Elest.io, PikaPods, Railway) to offer one-click Nexus deployment with enterprise features enabled.</li>
+</ol>
+<h3 id="why-enterprises-would-choose-nexus-over-alternatives">Why Enterprises Would Choose Nexus Over Alternatives<a class="headerlink" href="#why-enterprises-would-choose-nexus-over-alternatives" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Alternative</th>
+<th>Why Nexus Wins</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>n8n</strong></td>
+<td>Nexus has SSH fabric, browser automation, encrypted vault, and AI-native workflows. n8n is workflow-only with no infrastructure management.</td>
+</tr>
+<tr>
+<td><strong>Ansible Tower / AWX</strong></td>
+<td>Nexus adds AI reasoning to every workflow. Ansible is static playbooks; Nexus workflows include <code>claude-prompt</code> steps that dynamically adapt.</td>
+</tr>
+<tr>
+<td><strong>Backstage</strong></td>
+<td>Nexus is lighter, faster to deploy, and AI-native. Backstage requires a dedicated team to maintain. Nexus runs on a single Docker Compose.</td>
+</tr>
+<tr>
+<td><strong>DIY scripts</strong></td>
+<td>Nexus provides the tested, audited, production-ready platform that enterprises cannot build themselves (or maintain) with a collection of scripts.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-risk-analysis">8. Risk Analysis<a class="headerlink" href="#8-risk-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="technical-risks">Technical Risks<a class="headerlink" href="#technical-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claude Code API/skill format changes</strong></td>
+<td>High (Anthropic iterates fast)</td>
+<td>High -- could break MCP integration, skill format, CLI hooks</td>
+<td>Abstraction layers already exist. Pin to Claude Code versions. Maintain compatibility tests. Budget 1 week per quarter for upstream compatibility.</td>
+</tr>
+<tr>
+<td><strong>Playwright/browser engine instability</strong></td>
+<td>Medium</td>
+<td>Medium -- browser automation is a differentiator</td>
+<td>Pin Playwright versions. Run browser tests in CI. Fall back to screenshot-only mode if full automation fails.</td>
+</tr>
+<tr>
+<td><strong>SQLite scaling limits</strong></td>
+<td>Medium (at &gt;10k cron jobs or &gt;1M memory entries)</td>
+<td>Medium -- performance degradation</td>
+<td>Migration path to PostgreSQL documented. SQLite WAL mode handles most workloads. Only migrate when benchmarks prove necessity.</td>
+</tr>
+<tr>
+<td><strong>Security vulnerability in exposed services</strong></td>
+<td>Medium</td>
+<td>Critical -- dashboard, webhook endpoint, Telegram bot are attack surfaces</td>
+<td>Rate limiting implemented. JWT auth on dashboard. HMAC on webhooks. Regular dependency audits. Bug bounty program (future).</td>
+</tr>
+<tr>
+<td><strong>Ollama/local model quality insufficient</strong></td>
+<td>Medium</td>
+<td>Medium -- users expecting GPT-4 quality from local models will be disappointed</td>
+<td>Document model quality expectations clearly. Recommend model sizes per use case. Maintain Claude/OpenAI as primary paths.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="community-risks">Community Risks<a class="headerlink" href="#community-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Launch fails to gain traction</strong></td>
+<td>Medium</td>
+<td>High -- without initial momentum, the project stalls</td>
+<td>Multiple launch vectors (HN, Reddit, Product Hunt, awesome-lists). If first launch underperforms, iterate on README/messaging and relaunch 30 days later. Projects often have 2-3 "launches."</td>
+</tr>
+<tr>
+<td><strong>Contributors submit low-quality PRs</strong></td>
+<td>High (common for popular repos)</td>
+<td>Low-Medium -- review burden</td>
+<td>Comprehensive contributing guide. PR template with checklist. CI that blocks merge without tests. "Good first issues" that channel new contributors to well-scoped tasks.</td>
+</tr>
+<tr>
+<td><strong>Fork with better marketing</strong></td>
+<td>Low-Medium</td>
+<td>High -- someone forks Nexus, adds a visual editor, and markets it better</td>
+<td>Maintain velocity. Ship the visual builder before someone else does. Build community loyalty through responsiveness and quality. The 982+ test suite is a moat against low-effort forks.</td>
+</tr>
+<tr>
+<td><strong>Key maintainer burnout</strong></td>
+<td>High (single-maintainer risk)</td>
+<td>Critical -- project dies</td>
+<td>Actively cultivate 3+ co-maintainers by Q3. Delegate review, release, and community management. Set boundaries on response times. Automate everything automatable.</td>
+</tr>
+<tr>
+<td><strong>Community toxicity</strong></td>
+<td>Low-Medium</td>
+<td>Medium -- drives away contributors</td>
+<td>Code of conduct enforced from day 1. Moderation in Discord. Block/ban policy. Welcoming first-contribution experience.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="market-risks">Market Risks<a class="headerlink" href="#market-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenClaw adds infrastructure management</strong></td>
+<td>Low (different focus)</td>
+<td>High -- eliminates key differentiator</td>
+<td>Move fast on SSH fabric, cron, and browser automation integrations. Establish "AI-native infra" as Nexus's category before competitors enter.</td>
+</tr>
+<tr>
+<td><strong>Anthropic ships "Claude DevOps"</strong></td>
+<td>Low-Medium</td>
+<td>Critical -- upstream competition</td>
+<td>Position Nexus as the open-source, model-agnostic, self-hosted alternative. If Anthropic ships a proprietary DevOps product, Nexus becomes the sovereign alternative.</td>
+</tr>
+<tr>
+<td><strong>AI agent hype cycle crashes</strong></td>
+<td>Medium (hype cycles are real)</td>
+<td>Medium -- reduced interest in AI automation tools</td>
+<td>Nexus has value independent of AI: cron engine, SSH fabric, workflow engine, vault are useful without LLM features. Position as "automation platform with optional AI" not "AI platform."</td>
+</tr>
+<tr>
+<td><strong>Self-hosted movement loses momentum</strong></td>
+<td>Low</td>
+<td>Medium -- smaller addressable market</td>
+<td>Self-hosting is growing, not shrinking. Privacy regulations (GDPR, CCPA) push more organizations toward self-hosted solutions.</td>
+</tr>
+<tr>
+<td><strong>License complications</strong></td>
+<td>Low</td>
+<td>Medium -- legal friction for enterprise adoption</td>
+<td>Choose MIT or Apache 2.0 (both well-understood). Document license compatibility for all dependencies. Enterprise tier uses a separate commercial license.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="operational-risks">Operational Risks<a class="headerlink" href="#operational-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Infrastructure costs for docs/CI/community</strong></td>
+<td>Medium</td>
+<td>Low-Medium</td>
+<td>GitHub Pages (free), GitHub Actions (free for public repos), Discord (free). Total operational cost &lt; $50/month for the first year.</td>
+</tr>
+<tr>
+<td><strong>Domain/branding conflict</strong></td>
+<td>Low-Medium ("Nexus" is a common word)</td>
+<td>Medium -- forced rebrand is expensive</td>
+<td>Check trademark databases before committing. Register <code>nexus.sh</code> or <code>nexus-ai.sh</code> domain early. Consider <code>nexus-ops.dev</code> if primary domain unavailable.</td>
+</tr>
+<tr>
+<td><strong>Test suite maintenance burden</strong></td>
+<td>Medium (982 tests is a lot)</td>
+<td>Low-Medium -- slow CI, flaky tests</td>
+<td>Parallelize test execution. Mark slow tests. Fix flaky tests immediately (never skip). Target &lt; 3 minute CI time.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-success-metrics-kpis">9. Success Metrics &amp; KPIs<a class="headerlink" href="#9-success-metrics-kpis" title="Permanent link">&para;</a></h2>
+<h3 id="q1-foundation-launch-months-1-3_1">Q1: Foundation &amp; Launch (Months 1-3)<a class="headerlink" href="#q1-foundation-launch-months-1-3_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub stars</strong></td>
+<td>150+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>GitHub forks</strong></td>
+<td>20+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>Unique cloners</strong></td>
+<td>100+</td>
+<td>GitHub Traffic insights</td>
+</tr>
+<tr>
+<td><strong>README views</strong></td>
+<td>5,000+</td>
+<td>GitHub Traffic insights</td>
+</tr>
+<tr>
+<td><strong>External contributors</strong></td>
+<td>3+</td>
+<td>GitHub contributor graph</td>
+</tr>
+<tr>
+<td><strong>Open issues</strong></td>
+<td>20+ (healthy signal of usage)</td>
+<td>GitHub Issues</td>
+</tr>
+<tr>
+<td><strong>Closed issues</strong></td>
+<td>15+ (healthy signal of maintenance)</td>
+<td>GitHub Issues</td>
+</tr>
+<tr>
+<td><strong>Documentation site visitors</strong></td>
+<td>500+ unique</td>
+<td>Analytics</td>
+</tr>
+<tr>
+<td><strong>Discord members</strong></td>
+<td>50+</td>
+<td>Discord server stats</td>
+</tr>
+<tr>
+<td><strong>Test count</strong></td>
+<td>1,100+ (from 982 baseline)</td>
+<td>CI output</td>
+</tr>
+<tr>
+<td><strong>LLM backends supported</strong></td>
+<td>3 (Claude, OpenAI, Ollama)</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>Install-to-first-skill time</strong></td>
+<td>&lt; 5 minutes</td>
+<td>Manual testing</td>
+</tr>
+<tr>
+<td><strong>HN launch</strong></td>
+<td>1 post, 50+ upvotes</td>
+<td>HN</td>
+</tr>
+<tr>
+<td><strong>Awesome-list inclusion</strong></td>
+<td>1+ lists</td>
+<td>PR merged</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q2-growth-features-months-4-6_1">Q2: Growth &amp; Features (Months 4-6)<a class="headerlink" href="#q2-growth-features-months-4-6_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub stars</strong></td>
+<td>500+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>GitHub forks</strong></td>
+<td>60+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>External contributors</strong></td>
+<td>10+</td>
+<td>GitHub contributor graph</td>
+</tr>
+<tr>
+<td><strong>PyPI downloads</strong></td>
+<td>500+ monthly</td>
+<td>PyPI stats</td>
+</tr>
+<tr>
+<td><strong>Docker Hub pulls</strong></td>
+<td>1,000+</td>
+<td>Docker Hub stats</td>
+</tr>
+<tr>
+<td><strong>Community skills published</strong></td>
+<td>5+ (not by core team)</td>
+<td>Marketplace index</td>
+</tr>
+<tr>
+<td><strong>Workflow templates</strong></td>
+<td>10+</td>
+<td>Template gallery</td>
+</tr>
+<tr>
+<td><strong>Blog posts (external, about Nexus)</strong></td>
+<td>3+</td>
+<td>Google Alerts</td>
+</tr>
+<tr>
+<td><strong>Discord members</strong></td>
+<td>150+</td>
+<td>Discord server stats</td>
+</tr>
+<tr>
+<td><strong>Test count</strong></td>
+<td>1,300+</td>
+<td>CI output</td>
+</tr>
+<tr>
+<td><strong>Visual workflow builder</strong></td>
+<td>Shipped (read + edit)</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>Agent orchestration commands</strong></td>
+<td>10 operational</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>RAG pipeline</strong></td>
+<td>Working with local models</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>Product Hunt launch</strong></td>
+<td>1 launch, top-10 daily</td>
+<td>Product Hunt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q3-scale-community-months-7-9_1">Q3: Scale &amp; Community (Months 7-9)<a class="headerlink" href="#q3-scale-community-months-7-9_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub stars</strong></td>
+<td>1,500+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>External contributors</strong></td>
+<td>20+</td>
+<td>GitHub contributor graph</td>
+</tr>
+<tr>
+<td><strong>PyPI downloads</strong></td>
+<td>2,000+ monthly</td>
+<td>PyPI stats</td>
+</tr>
+<tr>
+<td><strong>Plugin SDK installs</strong></td>
+<td>100+</td>
+<td>PyPI stats</td>
+</tr>
+<tr>
+<td><strong>Community plugins</strong></td>
+<td>10+</td>
+<td>Marketplace index</td>
+</tr>
+<tr>
+<td><strong>Messaging channels</strong></td>
+<td>7+ (add Matrix, Signal)</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>Cookbook recipes</strong></td>
+<td>30+</td>
+<td>Cookbook site</td>
+</tr>
+<tr>
+<td><strong>Conference CFPs submitted</strong></td>
+<td>3+</td>
+<td>Submission tracker</td>
+</tr>
+<tr>
+<td><strong>YouTube tutorials (external)</strong></td>
+<td>3+</td>
+<td>YouTube search</td>
+</tr>
+<tr>
+<td><strong>Discord members</strong></td>
+<td>300+</td>
+<td>Discord server stats</td>
+</tr>
+<tr>
+<td><strong>Test count</strong></td>
+<td>1,500+</td>
+<td>CI output</td>
+</tr>
+<tr>
+<td><strong>Mobile dashboard</strong></td>
+<td>Shipped (responsive + PWA)</td>
+<td>Feature checklist</td>
+</tr>
+<tr>
+<td><strong>i18n languages</strong></td>
+<td>2+</td>
+<td>Feature checklist</td>
+</tr>
+</tbody>
+</table>
+<h3 id="q4-authority-enterprise-months-10-12_1">Q4: Authority &amp; Enterprise (Months 10-12)<a class="headerlink" href="#q4-authority-enterprise-months-10-12_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+<th>Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub stars</strong></td>
+<td>5,000+</td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><strong>External contributors</strong></td>
+<td>50+</td>
+<td>GitHub contributor graph</td>
+</tr>
+<tr>
+<td><strong>PyPI downloads</strong></td>
+<td>5,000+ monthly</td>
+<td>PyPI stats</td>
+</tr>
+<tr>
+<td><strong>Docker Hub pulls</strong></td>
+<td>10,000+</td>
+<td>Docker Hub stats</td>
+</tr>
+<tr>
+<td><strong>Helm chart installs</strong></td>
+<td>100+</td>
+<td>Artifact Hub stats</td>
+</tr>
+<tr>
+<td><strong>Enterprise pilots</strong></td>
+<td>1+</td>
+<td>Sales pipeline</td>
+</tr>
+<tr>
+<td><strong>Conference talks delivered</strong></td>
+<td>1+</td>
+<td>Conference programs</td>
+</tr>
+<tr>
+<td><strong>Conference talks accepted</strong></td>
+<td>2+</td>
+<td>Acceptance notifications</td>
+</tr>
+<tr>
+<td><strong>Blog posts (external)</strong></td>
+<td>10+ total</td>
+<td>Google Alerts</td>
+</tr>
+<tr>
+<td><strong>Discord members</strong></td>
+<td>500+</td>
+<td>Discord server stats</td>
+</tr>
+<tr>
+<td><strong>Test count</strong></td>
+<td>1,800+</td>
+<td>CI output</td>
+</tr>
+<tr>
+<td><strong>v1.0 released</strong></td>
+<td>Yes</td>
+<td>GitHub Releases</td>
+</tr>
+<tr>
+<td><strong>Revenue (if applicable)</strong></td>
+<td>$1,000+ MRR</td>
+<td>Payment processor</td>
+</tr>
+<tr>
+<td><strong>GitHub Sponsors</strong></td>
+<td>10+ sponsors</td>
+<td>GitHub Sponsors dashboard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="trailing-indicators-measured-monthly">Trailing Indicators (Measured Monthly)<a class="headerlink" href="#trailing-indicators-measured-monthly" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>What It Tells You</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Star velocity</strong> (stars/week)</td>
+<td>Overall growth momentum. Declining velocity = content/marketing needs refresh.</td>
+</tr>
+<tr>
+<td><strong>Issue close time</strong> (median)</td>
+<td>Maintainer responsiveness. Target &lt; 48h for bugs, &lt; 1 week for features.</td>
+</tr>
+<tr>
+<td><strong>PR merge time</strong> (median)</td>
+<td>Contributor experience. Target &lt; 72h for clean PRs.</td>
+</tr>
+<tr>
+<td><strong>Returning visitors</strong> (docs site)</td>
+<td>Whether users stick around. Target 30%+ return rate.</td>
+</tr>
+<tr>
+<td><strong>Skill install count</strong></td>
+<td>Whether the ecosystem is growing. Each skill install is a deeper engagement.</td>
+</tr>
+<tr>
+<td><strong>Discord active users</strong> (weekly)</td>
+<td>Community health. Target 20%+ of total members active weekly.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-dependency-graph">Appendix: Dependency Graph<a class="headerlink" href="#appendix-dependency-graph" title="Permanent link">&para;</a></h2>
+<p>The following diagram shows the dependency relationships between major roadmap items. Items must be completed in dependency order; items at the same level can be parallelized.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>                        LICENSE + RENAME
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                             |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                    VISUAL IDENTITY + README
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                             |
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                   +---------+---------+
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                   |                   |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>              DOCS SITE          MULTI-LLM
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>              (MkDocs)        (Ollama+OpenAI)
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                   |                   |
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                   +---------+---------+
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                             |
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                        PUBLIC LAUNCH
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                        (HN + Reddit)
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                             |
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>              +--------------+--------------+
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>              |              |              |
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>        WEBHOOK         WHATSAPP      ONBOARDING
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>        TRIGGERS        CHANNEL        WIZARD
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>              |              |              |
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>              +--------------+--------------+
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>                             |
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>              +--------------+--------------+
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>              |              |              |
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>         VISUAL          AGENT          RAG
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>         WORKFLOW      ORCHESTRATION   PIPELINE
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>         BUILDER       (Beat Tresor)
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>              |              |              |
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>              +--------------+--------------+
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>                             |
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>              +--------------+--------------+
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>              |              |              |
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>         PLUGIN SDK    COMMUNITY       COOKBOOK
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>         (PyPI)        MARKETPLACE     (30 recipes)
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>              |              |              |
+</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>              +--------------+--------------+
+</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>                             |
+</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>              +--------------+--------------+
+</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>              |              |              |
+</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>         MOBILE          MATRIX +       i18n
+</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>         DASHBOARD       SIGNAL
+</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>              |              |
+</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>              +--------------+
+</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>                             |
+</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>              +--------------+--------------+
+</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>              |              |              |
+</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>          RBAC +         HELM CHART     POLICY
+</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>          SSO            (K8s)          ENGINE
+</span><span id="__span-2-48"><a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>              |              |              |
+</span><span id="__span-2-49"><a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>              +--------------+--------------+
+</span><span id="__span-2-50"><a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a>                             |
+</span><span id="__span-2-51"><a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>                          v1.0
+</span><span id="__span-2-52"><a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>                        RELEASE
+</span></code></pre></div>
+<h3 id="critical-path">Critical Path<a class="headerlink" href="#critical-path" title="Permanent link">&para;</a></h3>
+<p>The longest dependency chain determines the minimum time to v1.0:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>License (W1) -&gt; Visual Identity (W2) -&gt; README (W2) -&gt; Docs Site (W4) -&gt;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Public Launch (M2W6) -&gt; Visual Workflow (M4) -&gt; Plugin SDK (M7) -&gt;
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>RBAC (M10) -&gt; Helm Chart (M11) -&gt; v1.0 Release (M12)
+</span></code></pre></div>
+<p>This critical path has zero slack. Any delay on the critical path delays v1.0. Non-critical-path items (WhatsApp, RAG, cookbook, i18n) can slip without affecting the release date.</p>
+<h3 id="parallelization-opportunities">Parallelization Opportunities<a class="headerlink" href="#parallelization-opportunities" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Time Period</th>
+<th>Parallel Workstreams</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Visual identity + Ollama integration + docs site (3 parallel)</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>OpenAI integration + launch prep + community setup (3 parallel)</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Webhook triggers + WhatsApp + onboarding wizard (3 parallel)</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Visual workflow builder + cookbook writing (2 parallel)</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Agent orchestration + community marketplace prep (2 parallel)</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>RAG pipeline + awesome-nexus + community call setup (3 parallel)</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Plugin SDK + Matrix adapter + contributor docs (3 parallel)</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>Mobile dashboard + Signal adapter + push notifications (3 parallel)</td>
+</tr>
+<tr>
+<td>M9</td>
+<td>Soak testing + cookbook expansion + i18n (3 parallel)</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>RBAC + audit compliance + policy engine (3 parallel)</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>Helm chart + horizontal scaling + Prometheus metrics (3 parallel)</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>Conference prep + enterprise pilot + v1.0 packaging (3 parallel)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This roadmap is designed to be executable by a small team (1-3 people) with clear priorities: launch first (Q1), build the moat deeper (Q2), let the community multiply the effort (Q3), and monetize for sustainability (Q4).</p>
+<p>The single most important insight from the competitive analysis is this: <strong>Nexus does not need to be the biggest AI automation platform. It needs to be the best one for people who run their own infrastructure.</strong> That niche is large enough for 10k+ stars, conference talks, and enterprise revenue -- but small enough that a focused team can own it before anyone else does.</p>
+<p>The clock starts when the repo goes public. Every week of delay is a week where the "AI-native infrastructure automation" category remains unclaimed.</p>
+<hr />
+<p><em>Document generated as part of the SmartMur Ecosystem Repositioning initiative.</em>
+<em>Phases completed: 1 (Identity), 2 (Architecture), 5 (Star Strategy), 6 (Competitive), 7 (Roadmap).</em>
+<em>Remaining phases: 3 (Repo Reorganization), 4 (Messaging Upgrade).</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
