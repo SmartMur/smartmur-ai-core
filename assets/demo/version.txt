@@ -1,0 +1,4 @@
+# CLI version
+# Command: /home/ray/claude-superpowers/.venv/bin/claw --version
+#------------------------------------------------------------
+claw, version 0.1.0

@@ -1,0 +1,12 @@
+# Orchestration benchmarks
+# Command: /home/ray/claude-superpowers/.venv/bin/claw benchmark list
+#------------------------------------------------------------
+Available Benchmark Scenarios                  
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Scenario          ┃ Thresholds                                ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ dag_throughput    │ duration_ms=10000.0, memory_peak_mb=100.0 │
+│ orchestration_e2e │ duration_ms=5000.0                        │
+│ policy_evaluation │ duration_ms=5000.0, ops_per_sec=100.0     │
+│ report_generation │ duration_ms=5000.0, ops_per_sec=10.0      │
+└───────────────────┴───────────────────────────────────────────┘

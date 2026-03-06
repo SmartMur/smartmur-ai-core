@@ -1,0 +1,8 @@
+# DAG tasks
+# Command: /home/ray/claude-superpowers/.venv/bin/claw dag list
+#------------------------------------------------------------
+--- stderr ---
+Usage: claw dag [OPTIONS] COMMAND [ARGS]...
+Try 'claw dag --help' for help.
+
+Error: No such command 'list'.

@@ -1,0 +1,11 @@
+# LLM providers
+# Command: /home/ray/claude-superpowers/.venv/bin/claw llm list
+#------------------------------------------------------------
+LLM Providers           
+┏━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓
+┃ Provider ┃  Status   ┃ Position ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩
+│ claude   │ available │        1 │
+└──────────┴───────────┴──────────┘
+
+Fallback chain: claude

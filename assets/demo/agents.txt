@@ -1,0 +1,32 @@
+# Available agents
+# Command: /home/ray/claude-superpowers/.venv/bin/claw agent list
+#------------------------------------------------------------
+Agents                                     
+┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Name             ┃ Description       ┃ Tags              ┃ Skills            ┃
+┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ code-reviewer    │ Reviews code for  │ code, review,     │ qa-guardian       │
+│                  │ quality, style,   │ quality, style,   │                   │
+│                  │ best practices,   │ refactor, lint    │                   │
+│                  │ and maintai       │                   │                   │
+│ devops-engineer  │ Manages Docker,   │ devops, docker,   │ deploy,           │
+│                  │ CI/CD pipelines,  │ ci, cd, deploy,   │ infra-fixer,      │
+│                  │ deployment, and   │ infrastructure,   │ container-watchd… │
+│                  │ infrastruct       │ kubernetes,       │ tunnel-setup      │
+│                  │                   │ pipeline          │                   │
+│ docs-writer      │ Writes and        │ docs,             │ -                 │
+│                  │ maintains         │ documentation,    │                   │
+│                  │ documentation,    │ readme, api,      │                   │
+│                  │ READMEs, API      │ guide, tutorial,  │                   │
+│                  │ docs, and t       │ reference         │                   │
+│ security-auditor │ Scans code for    │ security, audit,  │ qa-guardian       │
+│                  │ security          │ vulnerability,    │                   │
+│                  │ vulnerabilities,  │ OWASP             │                   │
+│                  │ OWASP top 10,     │                   │                   │
+│                  │ crede             │                   │                   │
+│ test-writer      │ Writes            │ test, testing,    │ qa-guardian       │
+│                  │ comprehensive     │ coverage, pytest, │                   │
+│                  │ tests, analyzes   │ unittest, tdd, qa │                   │
+│                  │ coverage, and     │                   │                   │
+│                  │ improves          │                   │                   │
+└──────────────────┴───────────────────┴───────────────────┴───────────────────┘

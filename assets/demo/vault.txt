@@ -1,0 +1,8 @@
+# Vault status
+# Command: /home/ray/claude-superpowers/.venv/bin/claw vault status
+#------------------------------------------------------------
+--- stderr ---
+Usage: claw vault [OPTIONS] COMMAND [ARGS]...
+Try 'claw vault --help' for help.
+
+Error: No such command 'status'.

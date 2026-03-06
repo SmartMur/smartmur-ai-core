@@ -1,0 +1,4 @@
+# Installed packs
+# Command: /home/ray/claude-superpowers/.venv/bin/claw pack list
+#------------------------------------------------------------
+No packs installed.

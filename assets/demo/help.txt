@@ -1,0 +1,38 @@
+# CLI help
+# Command: /home/ray/claude-superpowers/.venv/bin/claw --help
+#------------------------------------------------------------
+Usage: claw [OPTIONS] COMMAND [ARGS]...
+
+  Claude Superpowers — autonomous skill execution and orchestration.
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  agent        Discover and run subagents.
+  audit        View the audit log.
+  benchmark    Run and report on orchestration performance benchmarks.
+  browse       Browser automation — navigate, screenshot, extract data.
+  cron         Manage scheduled jobs.
+  daemon       Manage the cron daemon service.
+  dag          DAG-based parallel task execution.
+  dashboard    Launch the Claw web dashboard.
+  intake       Clear context, plan requirements, and dispatch skills.
+  jobs         Git-branch job orchestration.
+  llm          Manage LLM providers (list, test, set-default).
+  memory       Persistent memory store — remember, recall, search.
+  msg          Send messages via Slack, Telegram, Discord, email.
+  orchestrate  Run orchestration commands (security audit, health check,...
+  pack         Manage skill/workflow/agent packs.
+  policy       Manage orchestration safety policies.
+  release      Manage releases, changelogs, and migrations.
+  report       View, list, and export saved reports.
+  setup        First-run setup and configuration wizard.
+  skill        Manage and execute skills.
+  ssh          Execute commands on remote hosts, health checks, Home...
+  status       Show system status across all subsystems.
+  template     Manage shipped configuration templates.
+  vault        Manage encrypted secrets.
+  watcher      Manage file watchers.
+  workflow     Run multi-step workflows.

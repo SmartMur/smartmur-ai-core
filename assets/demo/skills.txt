@@ -1,0 +1,81 @@
+# Registered skills
+# Command: /home/ray/claude-superpowers/.venv/bin/claw skill list
+#------------------------------------------------------------
+Skills                                     
+┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ Name             ┃ Version ┃ Description      ┃ Slash Cmd ┃ Permissions      ┃
+┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ backup-status    │ 0.1.0   │ Check backup     │    yes    │ -                │
+│                  │         │ status across    │           │                  │
+│                  │         │ systems          │           │                  │
+│ cloudflared-fix… │ 1.0.0   │ Monitor and      │    yes    │ docker           │
+│                  │         │ auto-fix         │           │                  │
+│                  │         │ cloudflared      │           │                  │
+│                  │         │ tunnel container │           │                  │
+│                  │         │ — crash loop     │           │                  │
+│                  │         │ detection,       │           │                  │
+│                  │         │ diagnostics,     │           │                  │
+│                  │         │ recovery         │           │                  │
+│ container-watch… │ 0.1.0   │ Real-time        │    yes    │ -                │
+│                  │         │ container        │           │                  │
+│                  │         │ monitoring with  │           │                  │
+│                  │         │ Telegram alerts  │           │                  │
+│ deploy           │ 1.0.0   │ Deploy           │    yes    │ docker           │
+│                  │         │ claude-superpow… │           │                  │
+│                  │         │ — pull latest,   │           │                  │
+│                  │         │ rebuild          │           │                  │
+│                  │         │ containers, run  │           │                  │
+│                  │         │ health checks    │           │                  │
+│ docker-monitor   │ 0.1.0   │ Monitor Docker   │    yes    │ -                │
+│                  │         │ container health │           │                  │
+│                  │         │ and resources    │           │                  │
+│ github-admin     │ 1.0.0   │ GitHub           │    yes    │ network,         │
+│                  │         │ administration — │           │ subprocess       │
+│                  │         │ auth, branch     │           │                  │
+│                  │         │ protection, repo │           │                  │
+│                  │         │ audit            │           │                  │
+│ heartbeat        │ 0.1.0   │ Ping key network │    yes    │ ssh              │
+│                  │         │ services and     │           │                  │
+│                  │         │ report status    │           │                  │
+│ infra-fixer      │ 1.0.0   │ General-purpose  │    yes    │ docker           │
+│                  │         │ infrastructure   │           │                  │
+│                  │         │ health monitor — │           │                  │
+│                  │         │ checks all       │           │                  │
+│                  │         │ Docker services, │           │                  │
+│                  │         │ detects crash    │           │                  │
+│                  │         │ loops,           │           │                  │
+│                  │         │ auto-fixes       │           │                  │
+│                  │         │ common issues    │           │                  │
+│ network-scan     │ 1.0.0   │ Scan network     │    yes    │ -                │
+│                  │         │ hosts — ping     │           │                  │
+│                  │         │ sweep, port      │           │                  │
+│                  │         │ check, formatted │           │                  │
+│                  │         │ status report.   │           │                  │
+│                  │         │ No nmap          │           │                  │
+│                  │         │ required.        │           │                  │
+│ ops-report       │ 1.0     │ Hourly           │    yes    │ -                │
+│                  │         │ operations       │           │                  │
+│                  │         │ status report    │           │                  │
+│                  │         │ sent to Telegram │           │                  │
+│ qa-guardian      │ 1.0.0   │ Autonomous code  │    yes    │ file-read        │
+│                  │         │ quality guardian │           │                  │
+│                  │         │ — security,      │           │                  │
+│                  │         │ quality, test    │           │                  │
+│                  │         │ health, and      │           │                  │
+│                  │         │ efficiency       │           │                  │
+│                  │         │ checks           │           │                  │
+│ ssl-cert-check   │ 0.1.0   │ Check SSL        │    yes    │ -                │
+│                  │         │ certificate      │           │                  │
+│                  │         │ expiry for       │           │                  │
+│                  │         │ domains          │           │                  │
+│ tunnel-setup     │ 1.0.0   │ Cloudflare       │    yes    │ docker,          │
+│                  │         │ tunnel setup     │           │ file-write       │
+│                  │         │ helper —         │           │                  │
+│                  │         │ validates token, │           │                  │
+│                  │         │ manages          │           │                  │
+│                  │         │ container,       │           │                  │
+│                  │         │ checks           │           │                  │
+│                  │         │ connectivity     │           │                  │
+│ workspace-intak… │ 0.1.0   │ workspace intake │    yes    │ -                │
+│                  │         │ smoke            │           │                  │
+└──────────────────┴─────────┴──────────────────┴───────────┴──────────────────┘

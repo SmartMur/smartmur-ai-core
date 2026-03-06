@@ -1,0 +1,12 @@
+# Available workflows
+# Command: /home/ray/claude-superpowers/.venv/bin/claw workflow list
+#------------------------------------------------------------
+Workflows                                    
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Name          ┃ Description                                                  ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ backup        │ Snapshot VMs, verify snapshots                               │
+│ deploy        │ Pull latest code, test, deploy via Docker Compose, health    │
+│               │ check                                                        │
+│ morning-brief │ Check services, summarize alerts, send digest                │
+└───────────────┴──────────────────────────────────────────────────────────────┘
