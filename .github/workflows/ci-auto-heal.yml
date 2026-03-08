@@ -89,7 +89,7 @@ jobs:
 
       - name: Create auto-fix PR
         if: steps.detect.outputs.lint_failed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "ci: auto-fix lint after CI failure"
           title: "ci: auto-fix lint for failed run #${{ github.event.workflow_run.id }}"
