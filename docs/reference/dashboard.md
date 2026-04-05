@@ -176,7 +176,7 @@ The dashboard is protected by HTTP Basic authentication. All `/api/*` endpoints 
 
 4. Verify:
    ```bash
-   curl -u "admin:<your-new-password>" http://localhost:8200/api/status
+   curl -u ":" http://localhost:8200/api/status
    ```
 
 ## Troubleshooting

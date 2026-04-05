@@ -212,7 +212,7 @@ def client(tmp_path, orch_dir, monkeypatch):
     """TestClient with auth bypass and patched orchestrator output dir."""
     monkeypatch.setenv("DASHBOARD_USER", "admin")
     monkeypatch.setenv("DASHBOARD_PASS", "testpass123")
-    monkeypatch.setenv("DASHBOARD_SECRET", "test-secret-key-for-jwt-signing-1234")
+    monkeypatch.setenv("DASHBOARD_SECRET", "<EXAMPLE_SECRET>")
 
     deps._settings = None
 
