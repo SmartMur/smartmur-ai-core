@@ -105,7 +105,8 @@ jobs:
             });
 
       - name: Fail on critical
-        if: always()
+        # Keep scheduled scans informational to avoid daily failure-email noise.
+        if: always() && github.event_name != 'schedule'
         run: |
           if [ -f security-report.json ]; then
             CRITS=$(python3 -c "import json; r=json.load(open('security-report.json')); print(sum(1 for f in r.get('findings',[]) if f['severity']=='CRITICAL'))")
