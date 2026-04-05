@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_URL = "http://localhost:8200"
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "assets" / "screenshots"
 USERNAME = "admin"
-PASSWORD = "BCDCdRGMKdRMawM2omIc0NVkIVlQPJMI"
+PASSWORD = "<LOCAL_SECRET>"
 
 
 def build_opener() -> urllib.request.OpenerDirector:

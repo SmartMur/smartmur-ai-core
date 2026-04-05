@@ -98,7 +98,7 @@ class TestErrorPatterns:
 class TestTokenCheck:
     def test_valid_token(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN="eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9"\n')
+        env_file.write_text('TUNNEL_TOKEN="<EXAMPLE_TOKEN>"\n')
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert valid
@@ -143,7 +143,7 @@ class TestTokenCheck:
 
     def test_quoted_token(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text("TUNNEL_TOKEN='eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9'\n")
+        env_file.write_text("TUNNEL_TOKEN='<EXAMPLE_TOKEN>'\n")
         m = CloudflaredMonitor(compose_dir=tmp_path)
         valid, msg = m.check_env_token()
         assert valid
@@ -170,7 +170,7 @@ class TestDiagnose:
 
     def test_healthy_running(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN="eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9"\n')
+        env_file.write_text('TUNNEL_TOKEN="<EXAMPLE_TOKEN>"\n')
         m = CloudflaredMonitor(compose_dir=tmp_path)
         state = ContainerState(running=True, status="running", restart_count=0)
         diag = m.diagnose(state)
@@ -178,7 +178,7 @@ class TestDiagnose:
 
     def test_crash_loop(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN="eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9"\n')
+        env_file.write_text('TUNNEL_TOKEN="<EXAMPLE_TOKEN>"\n')
         m = CloudflaredMonitor(compose_dir=tmp_path)
         state = ContainerState(running=False, status="exited", restart_count=10, exit_code=255)
         diag = m.diagnose(state)
@@ -195,7 +195,7 @@ class TestDiagnose:
 
     def test_log_pattern_detection(self, tmp_path):
         env_file = tmp_path / ".env"
-        env_file.write_text('TUNNEL_TOKEN="eyJhIjoiYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiJ9"\n')
+        env_file.write_text('TUNNEL_TOKEN="<EXAMPLE_TOKEN>"\n')
         m = CloudflaredMonitor(compose_dir=tmp_path)
         state = ContainerState(
             running=True,

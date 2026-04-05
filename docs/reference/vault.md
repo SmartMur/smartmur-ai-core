@@ -56,7 +56,7 @@ Output:
 Vault initialized.
   Identity: /home/you/.claude-superpowers/age-identity.txt
   Vault:    /home/you/.claude-superpowers/vault.enc
-  Public key: age1ql3z7hjy54pw3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p
+  Public key: age1examplepublicrecipientxxxxxxxxxxxxxxxxxxxx
 ```
 
 If an identity file already exists, `init` skips key generation and reuses the existing key.

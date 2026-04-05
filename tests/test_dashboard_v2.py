@@ -292,7 +292,7 @@ def client(tmp_path, monkeypatch):
     """TestClient with session auth and all dependencies overridden."""
     monkeypatch.setenv("DASHBOARD_USER", "admin")
     monkeypatch.setenv("DASHBOARD_PASS", "testpass123")
-    monkeypatch.setenv("DASHBOARD_SECRET", "test-secret-key-for-jwt-signing-1234")
+    monkeypatch.setenv("DASHBOARD_SECRET", "<EXAMPLE_SECRET>")
 
     # Reset cached settings
     deps._settings = None
@@ -448,7 +448,7 @@ class TestSessionAuth:
 
         payload = {"sub": "admin", "iat": int(time.time()) - 90000, "exp": int(time.time()) - 3600}
         expired_token = pyjwt.encode(
-            payload, "test-secret-key-for-jwt-signing-1234", algorithm="HS256"
+            payload, "<EXAMPLE_SECRET>", algorithm="HS256"
         )
 
         result = verify_session_token(expired_token)

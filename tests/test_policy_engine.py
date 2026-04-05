@@ -228,7 +228,7 @@ class TestFileAccess:
 
 class TestOutputSecrets:
     def test_detects_api_key(self, engine: PolicyEngine) -> None:
-        output = "Config: api_key=sk_live_abc123def456ghi789jkl012mno"
+        output = "Config: api_key=stripe_example_live_key"
         has_secrets, redacted = engine.check_output(output)
         assert has_secrets is True
         assert "sk_live_abc123" not in redacted
@@ -258,7 +258,7 @@ class TestOutputSecrets:
         assert has_secrets is True
 
     def test_detects_slack_token(self, engine: PolicyEngine) -> None:
-        output = "SLACK_TOKEN=xoxb-123456789012-abcdefghij"
+        output = "SLACK_TOKEN=slack_example_token"
         has_secrets, redacted = engine.check_output(output)
         assert has_secrets is True
 
@@ -369,7 +369,7 @@ class TestCustomPolicies:
         tmp_config.write_text(yaml.safe_dump(config))
         engine = PolicyEngine(config_path=tmp_config)
 
-        has_secrets, redacted = engine.check_output("key=INTERNAL_SECRET_ABCD1234EFGH")
+        has_secrets, redacted = engine.check_output("key=INTERNAL_SECRET_PLACEHOLDER")
         assert has_secrets is True
         assert "[REDACTED]" in redacted
 
@@ -598,7 +598,7 @@ class TestCLI:
         from superpowers.cli_policy import policy_group
 
         result = runner.invoke(
-            policy_group, ["test-output", "api_key=sk_live_abcdefghijklmnopqrstuvwx"]
+            policy_group, ["test-output", "api_key=stripe_example_live_key_2"]
         )
         assert result.exit_code == 1
         assert "Secrets detected" in result.output

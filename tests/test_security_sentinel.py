@@ -60,7 +60,7 @@ class TestStaticAnalysis:
         assert any("exec" in f.title.lower() or "exec" in f.description.lower() for f in findings)
 
     def test_detects_hardcoded_secret(self, tmp_path):
-        findings = self._scan_file(tmp_path, 'API_KEY = "sk-1234567890abcdef"\n')
+        findings = self._scan_file(tmp_path, 'API_KEY = "<EXAMPLE_API_KEY>"\n')
         assert any(
             "secret" in f.title.lower() or "hardcoded" in f.title.lower()
             or "credential" in f.title.lower() or "secret" in f.description.lower()
