@@ -22,7 +22,7 @@ class TestValidateToken:
 
     def test_valid_token_long_base64(self):
         """A proper Cloudflare tunnel token (150+ chars base64) should pass."""
-        token = "example_tunnel_token"
+        token = "EXAMPLE_FAKE_TUNNEL_TOKEN_DO_NOT_USE_000000000000000000"
         valid, msg = tunnel_setup.validate_token(token)
         assert valid is True
         assert "valid" in msg.lower()
@@ -74,7 +74,7 @@ class TestValidateToken:
 
     def test_base64_with_special_chars(self):
         """Base64 tokens may contain +, /, =, -, _ and should be accepted."""
-        token = "short_example_token" + "A" * 20 + "-_+/="
+        token = "EXAMPLE_FAKE_TOKEN_" + "A" * 30 + "-_+/="
         valid, msg = tunnel_setup.validate_token(token)
         assert valid is True
 

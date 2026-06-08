@@ -467,9 +467,7 @@ class ProviderRegistry:
             self._chain = [normalise_provider_name(n) for n in chain if n.strip()]
         else:
             raw = os.environ.get("LLM_PROVIDERS", "claude")
-            self._chain = [
-                normalise_provider_name(n) for n in raw.split(",") if n.strip()
-            ]
+            self._chain = [normalise_provider_name(n) for n in raw.split(",") if n.strip()]
         self._providers: dict[str, LLMProvider] = {}
         self._default: str | None = None
         # Pre-instantiate known providers

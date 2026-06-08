@@ -8,8 +8,6 @@ import sys
 import textwrap
 from pathlib import Path
 
-import pytest
-
 SKILL_DIR = Path(__file__).resolve().parent.parent / "skills" / "security-sentinel"
 sys.path.insert(0, str(SKILL_DIR))
 import run as sentinel
@@ -18,16 +16,22 @@ import run as sentinel
 class TestFinding:
     def test_finding_creation(self):
         f = sentinel.Finding(
-            title="Test finding", description="A test",
-            severity="HIGH", category="test", file="foo.py", line=10,
+            title="Test finding",
+            description="A test",
+            severity="HIGH",
+            category="test",
+            file="foo.py",
+            line=10,
         )
         assert f.severity == "HIGH"
         assert f.line == 10
 
     def test_finding_to_dict(self):
         f = sentinel.Finding(
-            title="Critical test", description="Desc",
-            severity="CRITICAL", category="test",
+            title="Critical test",
+            description="Desc",
+            severity="CRITICAL",
+            category="test",
         )
         d = f.to_dict()
         assert d["severity"] == "CRITICAL"
@@ -45,10 +49,13 @@ class TestStaticAnalysis:
         return sentinel.scan_code_static(tmp_path)
 
     def test_detects_shell_true(self, tmp_path):
-        findings = self._scan_file(tmp_path, textwrap.dedent("""\
+        findings = self._scan_file(
+            tmp_path,
+            textwrap.dedent("""\
             import subprocess
             subprocess.call("ls -la", shell=True)
-        """))
+        """),
+        )
         assert any("shell" in f.title.lower() or "shell" in f.description.lower() for f in findings)
 
     def test_detects_eval(self, tmp_path):
@@ -62,35 +69,47 @@ class TestStaticAnalysis:
     def test_detects_hardcoded_secret(self, tmp_path):
         findings = self._scan_file(tmp_path, 'API_KEY = "<EXAMPLE_API_KEY>"\n')
         assert any(
-            "secret" in f.title.lower() or "hardcoded" in f.title.lower()
-            or "credential" in f.title.lower() or "secret" in f.description.lower()
+            "secret" in f.title.lower()
+            or "hardcoded" in f.title.lower()
+            or "credential" in f.title.lower()
+            or "secret" in f.description.lower()
             for f in findings
         )
 
     def test_detects_pickle_loads(self, tmp_path):
-        findings = self._scan_file(tmp_path, textwrap.dedent("""\
+        findings = self._scan_file(
+            tmp_path,
+            textwrap.dedent("""\
             import pickle
             data = pickle.loads(raw_bytes)
-        """))
+        """),
+        )
         assert any(
-            "pickle" in f.title.lower() or "deseriali" in f.title.lower()
+            "pickle" in f.title.lower()
+            or "deseriali" in f.title.lower()
             or "deseriali" in f.description.lower()
             for f in findings
         )
 
     def test_detects_yaml_unsafe_load(self, tmp_path):
-        findings = self._scan_file(tmp_path, textwrap.dedent("""\
+        findings = self._scan_file(
+            tmp_path,
+            textwrap.dedent("""\
             import yaml
             data = yaml.load(open("config.yml"), Loader=yaml.Loader)
-        """))
+        """),
+        )
         assert any("yaml" in f.title.lower() or "yaml" in f.description.lower() for f in findings)
 
     def test_clean_code_no_critical(self, tmp_path):
-        findings = self._scan_file(tmp_path, textwrap.dedent("""\
+        findings = self._scan_file(
+            tmp_path,
+            textwrap.dedent("""\
             import subprocess
             result = subprocess.run(["ls", "-la"], capture_output=True, text=True)
             print(result.stdout)
-        """))
+        """),
+        )
         critical = [f for f in findings if f.severity in ("CRITICAL", "HIGH")]
         assert len(critical) == 0
 
@@ -98,26 +117,35 @@ class TestStaticAnalysis:
 class TestDockerAnalysis:
     def test_detects_unpinned_image(self, tmp_path):
         dc = tmp_path / "docker-compose.yaml"
-        dc.write_text(textwrap.dedent("""\
+        dc.write_text(
+            textwrap.dedent("""\
             services:
               web:
                 image: nginx:latest
                 ports:
                   - "80:80"
-        """))
+        """)
+        )
         findings = sentinel.scan_docker(tmp_path)
-        assert any("latest" in f.description.lower() or "pin" in f.description.lower() for f in findings)
+        assert any(
+            "latest" in f.description.lower() or "pin" in f.description.lower() for f in findings
+        )
 
     def test_detects_privileged(self, tmp_path):
         dc = tmp_path / "docker-compose.yaml"
-        dc.write_text(textwrap.dedent("""\
+        dc.write_text(
+            textwrap.dedent("""\
             services:
               app:
                 image: myapp:1.2.3
                 privileged: true
-        """))
+        """)
+        )
         findings = sentinel.scan_docker(tmp_path)
-        assert any("privileged" in f.title.lower() or "privileged" in f.description.lower() for f in findings)
+        assert any(
+            "privileged" in f.title.lower() or "privileged" in f.description.lower()
+            for f in findings
+        )
 
 
 class TestCVEQuery:
@@ -136,8 +164,17 @@ class TestScanReport:
     def test_json_report(self):
         report = sentinel.ScanReport(project="test")
         report.findings = [
-            sentinel.Finding(title="Test Critical", description="A critical", severity="CRITICAL", category="test", file="test.py", line=1),
-            sentinel.Finding(title="Test Low", description="A low", severity="LOW", category="test"),
+            sentinel.Finding(
+                title="Test Critical",
+                description="A critical",
+                severity="CRITICAL",
+                category="test",
+                file="test.py",
+                line=1,
+            ),
+            sentinel.Finding(
+                title="Test Low", description="A low", severity="LOW", category="test"
+            ),
         ]
         report.compute_summary()
         data = json.loads(report.to_json())
@@ -148,7 +185,14 @@ class TestScanReport:
     def test_markdown_report(self):
         report = sentinel.ScanReport(project="test")
         report.findings = [
-            sentinel.Finding(title="Test High", description="A high", severity="HIGH", category="test", file="test.py", line=42),
+            sentinel.Finding(
+                title="Test High",
+                description="A high",
+                severity="HIGH",
+                category="test",
+                file="test.py",
+                line=42,
+            ),
         ]
         report.compute_summary()
         md = report.to_markdown()
@@ -174,7 +218,9 @@ class TestIntegration:
     def test_script_runs(self):
         result = subprocess.run(
             [sys.executable, str(SKILL_DIR / "run.py"), "--help"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True,
+            text=True,
+            timeout=10,
         )
         assert result.returncode == 0
         assert "sentinel" in result.stdout.lower() or "usage" in result.stdout.lower()

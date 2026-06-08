@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 import subprocess
-import sys
-import textwrap
 from pathlib import Path
 from unittest import mock
 
@@ -20,6 +17,7 @@ GENERATE_DEMO_OUTPUT = SCRIPTS_DIR / "generate-demo-output.py"
 
 
 # --- Helpers to import scripts as modules ---
+
 
 def _import_script(name: str, path: Path):
     """Import a Python script as a module by file path."""
@@ -61,6 +59,7 @@ class TestDemoRecordingShell:
 
     def test_is_executable(self):
         import os
+
         assert os.access(str(DEMO_RECORDING), os.X_OK), "demo-recording.sh must be executable"
 
     def test_has_shebang(self):
@@ -114,20 +113,28 @@ class TestGenerateScreenshots:
 
     def test_main_skips_when_dashboard_down(self, screenshots_mod, tmp_path, capsys):
         """main() should exit 1 with a skip message when dashboard is down."""
-        rc = screenshots_mod.main([
-            "--base-url", "http://127.0.0.1:19999",
-            "--output-dir", str(tmp_path),
-        ])
+        rc = screenshots_mod.main(
+            [
+                "--base-url",
+                "http://127.0.0.1:19999",
+                "--output-dir",
+                str(tmp_path),
+            ]
+        )
         assert rc == 1
         captured = capsys.readouterr()
         assert "SKIP" in captured.out or "not running" in captured.out.lower()
 
     def test_output_dir_created(self, screenshots_mod, tmp_path):
         out = tmp_path / "subdir" / "screenshots"
-        screenshots_mod.main([
-            "--base-url", "http://127.0.0.1:19999",
-            "--output-dir", str(out),
-        ])
+        screenshots_mod.main(
+            [
+                "--base-url",
+                "http://127.0.0.1:19999",
+                "--output-dir",
+                str(out),
+            ]
+        )
         assert out.exists(), "Output directory should be created even if dashboard is down"
 
     def test_routes_defined(self, screenshots_mod):
@@ -143,9 +150,7 @@ class TestGenerateScreenshots:
         mock_resp.__exit__ = mock.MagicMock(return_value=False)
 
         with mock.patch("urllib.request.urlopen", return_value=mock_resp):
-            screenshots_mod.capture_with_urllib(
-                "http://localhost:8200", tmp_path, None
-            )
+            screenshots_mod.capture_with_urllib("http://localhost:8200", tmp_path, None)
         # Should have created files for the public routes
         files = list(tmp_path.glob("*"))
         assert len(files) >= 1
@@ -158,6 +163,7 @@ class TestGenerateScreenshots:
 
     def test_is_executable(self):
         import os
+
         assert os.access(str(GENERATE_SCREENSHOTS), os.X_OK)
 
 
@@ -206,10 +212,14 @@ class TestGenerateDemoOutput:
 
     def test_main_missing_claw(self, demo_output_mod, tmp_path, capsys):
         """main() with nonexistent claw should return 1."""
-        rc = demo_output_mod.main([
-            "--claw", "/nonexistent/bin/claw",
-            "--output-dir", str(tmp_path),
-        ])
+        rc = demo_output_mod.main(
+            [
+                "--claw",
+                "/nonexistent/bin/claw",
+                "--output-dir",
+                str(tmp_path),
+            ]
+        )
         assert rc == 1
         captured = capsys.readouterr()
         assert "not found" in captured.out.lower()
@@ -226,10 +236,14 @@ class TestGenerateDemoOutput:
 
         with mock.patch("subprocess.run", return_value=mock_result):
             out_dir = tmp_path / "output"
-            rc = demo_output_mod.main([
-                "--claw", str(fake_claw),
-                "--output-dir", str(out_dir),
-            ])
+            rc = demo_output_mod.main(
+                [
+                    "--claw",
+                    str(fake_claw),
+                    "--output-dir",
+                    str(out_dir),
+                ]
+            )
         assert rc == 0
         txt_files = list(out_dir.glob("*.txt"))
         assert len(txt_files) >= 5, f"Expected at least 5 .txt files, got {len(txt_files)}"
@@ -255,11 +269,14 @@ class TestGenerateDemoOutput:
 
     def test_is_executable(self):
         import os
+
         assert os.access(str(GENERATE_DEMO_OUTPUT), os.X_OK)
 
     def test_timeout_handling(self, demo_output_mod):
         """run_claw should handle timeouts gracefully."""
-        with mock.patch("subprocess.run", side_effect=subprocess.TimeoutExpired(cmd="claw", timeout=5)):
+        with mock.patch(
+            "subprocess.run", side_effect=subprocess.TimeoutExpired(cmd="claw", timeout=5)
+        ):
             output, rc = demo_output_mod.run_claw("/fake/claw", ["status"], timeout=5)
         assert rc == 1
         assert "TIMEOUT" in output

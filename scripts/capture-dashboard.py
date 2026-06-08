@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_URL = "http://localhost:8200"
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "assets" / "screenshots"
 USERNAME = "admin"
-PASSWORD = "<LOCAL_SECRET>"
+PASSWORD = "<LOCAL_SECRET>"  # pragma: allowlist secret
 
 
 def build_opener() -> urllib.request.OpenerDirector:
@@ -48,9 +48,7 @@ def login(opener: urllib.request.OpenerDirector) -> bool:
         return False
 
 
-def fetch_page(
-    opener: urllib.request.OpenerDirector, path: str, filename: str, desc: str
-) -> None:
+def fetch_page(opener: urllib.request.OpenerDirector, path: str, filename: str, desc: str) -> None:
     """Fetch a page and save its content."""
     url = f"{BASE_URL}{path}"
     try:
@@ -65,9 +63,7 @@ def fetch_page(
         print(f"    [FAIL] {desc}: {exc}")
 
 
-def fetch_json(
-    opener: urllib.request.OpenerDirector, path: str, filename: str, desc: str
-) -> None:
+def fetch_json(opener: urllib.request.OpenerDirector, path: str, filename: str, desc: str) -> None:
     """Fetch a JSON API endpoint and save formatted output."""
     url = f"{BASE_URL}{path}"
     try:
@@ -96,12 +92,16 @@ def try_playwright(opener_cookie_value: str | None) -> bool:
 
             # Inject session cookie if we have one
             if opener_cookie_value:
-                context.add_cookies([{
-                    "name": "claw_session",
-                    "value": opener_cookie_value,
-                    "domain": "localhost",
-                    "path": "/",
-                }])
+                context.add_cookies(
+                    [
+                        {
+                            "name": "claw_session",
+                            "value": opener_cookie_value,
+                            "domain": "localhost",
+                            "path": "/",
+                        }
+                    ]
+                )
 
             page = context.new_page()
 
@@ -152,7 +152,7 @@ def try_playwright(opener_cookie_value: str | None) -> bool:
 
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"Dashboard screenshot capture")
+    print("Dashboard screenshot capture")
     print(f"  URL:    {BASE_URL}")
     print(f"  Output: {OUTPUT_DIR}")
     print()
