@@ -2,11 +2,7 @@
 
 import os
 import subprocess
-import sys
 from pathlib import Path
-from unittest.mock import patch
-
-import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent
 INSTALL_SH = PROJECT_ROOT / "install.sh"
@@ -16,6 +12,7 @@ INSTALL_DOCKER_SH = PROJECT_ROOT / "install-docker.sh"
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def run_bash(args, input_text=None, env=None, timeout=30):
     """Run a bash command and return the CompletedProcess."""
@@ -58,6 +55,7 @@ def run_docker_install_dry(extra_args=None):
 # install.sh — Syntax & Structure
 # ---------------------------------------------------------------------------
 
+
 class TestInstallShSyntax:
     """Validate install.sh is valid bash and has required structure."""
 
@@ -96,6 +94,7 @@ class TestInstallShSyntax:
 # install-docker.sh — Syntax & Structure
 # ---------------------------------------------------------------------------
 
+
 class TestInstallDockerShSyntax:
     """Validate install-docker.sh is valid bash and has required structure."""
 
@@ -123,6 +122,7 @@ class TestInstallDockerShSyntax:
 # ---------------------------------------------------------------------------
 # install.sh — --help flag
 # ---------------------------------------------------------------------------
+
 
 class TestInstallHelp:
     """Test --help flag output."""
@@ -161,6 +161,7 @@ class TestDockerInstallHelp:
 # install.sh — --dry-run flag
 # ---------------------------------------------------------------------------
 
+
 class TestDryRun:
     """Test --dry-run mode shows what would happen without side effects."""
 
@@ -179,16 +180,19 @@ class TestDryRun:
     def test_dry_run_does_not_create_venv(self):
         """Dry run should not create files in a temp dir."""
         import tempfile
+
         with tempfile.TemporaryDirectory() as tmpdir:
             test_dir = os.path.join(tmpdir, "test-install")
-            result = run_install_dry(env_override={"CLAW_INSTALL_DIR": test_dir})
-            assert not os.path.exists(os.path.join(test_dir, ".venv")), \
+            run_install_dry(env_override={"CLAW_INSTALL_DIR": test_dir})
+            assert not os.path.exists(os.path.join(test_dir, ".venv")), (
                 "Dry run should not create a virtualenv"
+            )
 
 
 # ---------------------------------------------------------------------------
 # install.sh — OS Detection
 # ---------------------------------------------------------------------------
+
 
 class TestOSDetection:
     """Test OS detection logic by reading the script content."""
@@ -217,6 +221,7 @@ class TestOSDetection:
 # install.sh — Prerequisite Checks
 # ---------------------------------------------------------------------------
 
+
 class TestPrerequisiteChecks:
     """Test that the script checks for required tools."""
 
@@ -242,6 +247,7 @@ class TestPrerequisiteChecks:
 # install.sh — Idempotency
 # ---------------------------------------------------------------------------
 
+
 class TestIdempotency:
     """Test that the script handles re-runs gracefully."""
 
@@ -265,6 +271,7 @@ class TestIdempotency:
 # install.sh — PATH Setup
 # ---------------------------------------------------------------------------
 
+
 class TestPathSetup:
     """Test PATH configuration logic."""
 
@@ -281,6 +288,7 @@ class TestPathSetup:
 # ---------------------------------------------------------------------------
 # install.sh — Error Messages
 # ---------------------------------------------------------------------------
+
 
 class TestErrorMessages:
     """Test helpful error messages for common failures."""
@@ -308,6 +316,7 @@ class TestErrorMessages:
 # install-docker.sh — Dry Run
 # ---------------------------------------------------------------------------
 
+
 class TestDockerDryRun:
     def test_dry_run_exits(self):
         result = run_docker_install_dry()
@@ -318,6 +327,7 @@ class TestDockerDryRun:
 # ---------------------------------------------------------------------------
 # Content validation — both scripts
 # ---------------------------------------------------------------------------
+
 
 class TestScriptContent:
     """Validate script contents meet requirements."""
@@ -332,8 +342,9 @@ class TestScriptContent:
             # get-pip.py download is OK (it saves to file first)
             if "get-pip" in stripped:
                 continue
-            assert "| bash" not in stripped and "| sh" not in stripped, \
+            assert "| bash" not in stripped and "| sh" not in stripped, (
                 f"Found curl|sh pattern: {stripped}"
+            )
 
     def test_docker_install_no_curl_pipe_sh(self):
         content = INSTALL_DOCKER_SH.read_text()
@@ -341,8 +352,9 @@ class TestScriptContent:
             stripped = line.strip()
             if stripped.startswith("#"):
                 continue
-            assert "| bash" not in stripped and "| sh" not in stripped, \
+            assert "| bash" not in stripped and "| sh" not in stripped, (
                 f"Found curl|sh pattern: {stripped}"
+            )
 
     def test_install_uses_editable_mode(self):
         content = INSTALL_SH.read_text()

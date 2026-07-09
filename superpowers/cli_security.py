@@ -16,16 +16,26 @@ def security_group() -> None:
 
 
 @security_group.command("scan")
-@click.option("--project-root", type=click.Path(exists=True, path_type=Path), default=None,
-              help="Project root to scan (default: cwd)")
-@click.option("--format", "output_format", type=click.Choice(["markdown", "json", "sarif"]),
-              default="markdown", help="Output format")
+@click.option(
+    "--project-root",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Project root to scan (default: cwd)",
+)
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["markdown", "json", "sarif"]),
+    default="markdown",
+    help="Output format",
+)
 @click.option("--offline", is_flag=True, help="Skip OSV API queries")
 @click.option("--skip-docker", is_flag=True, help="Skip Docker checks")
 @click.option("--skip-code", is_flag=True, help="Skip static analysis")
 @click.option("--skip-deps", is_flag=True, help="Skip dependency CVE scan")
-@click.option("--output", "-o", type=click.Path(path_type=Path), default=None,
-              help="Write report to file")
+@click.option(
+    "--output", "-o", type=click.Path(path_type=Path), default=None, help="Write report to file"
+)
 def scan_cmd(
     project_root: Path | None,
     output_format: str,
@@ -65,8 +75,13 @@ def scan_cmd(
 
 
 @security_group.command("report")
-@click.option("--format", "output_format", type=click.Choice(["markdown", "json"]),
-              default="markdown", help="Output format")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["markdown", "json"]),
+    default="markdown",
+    help="Output format",
+)
 def report_cmd(output_format: str) -> None:
     """Show the last security scan report."""
     from superpowers.security_sentinel import get_last_report
@@ -79,8 +94,12 @@ def report_cmd(output_format: str) -> None:
 
 
 @security_group.command("fix")
-@click.option("--project-root", type=click.Path(exists=True, path_type=Path), default=None,
-              help="Project root (default: cwd)")
+@click.option(
+    "--project-root",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Project root (default: cwd)",
+)
 @click.option("--apply", is_flag=True, help="Actually apply fixes (default is dry-run)")
 def fix_cmd(project_root: Path | None, apply: bool) -> None:
     """Auto-apply safe security fixes (dependency upgrades)."""

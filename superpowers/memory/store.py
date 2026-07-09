@@ -124,7 +124,7 @@ class MemoryStore:
             params.append(project)
         where = " AND ".join(clauses)
         with self._conn() as conn:
-            row = conn.execute(f"SELECT * FROM memories WHERE {where}", params).fetchone()
+            row = conn.execute(f"SELECT * FROM memories WHERE {where}", params).fetchone()  # nosec: {where} is hardcoded clauses, values bound via params
             if row is None:
                 return None
             conn.execute(
@@ -154,7 +154,7 @@ class MemoryStore:
         params.append(limit)
         with self._conn() as conn:
             rows = conn.execute(
-                f"SELECT * FROM memories WHERE {where} ORDER BY accessed_at DESC LIMIT ?",
+                f"SELECT * FROM memories WHERE {where} ORDER BY accessed_at DESC LIMIT ?",  # nosec: {where} is hardcoded clauses, values bound via params
                 params,
             ).fetchall()
             return [_row_to_entry(r) for r in rows]
@@ -167,7 +167,7 @@ class MemoryStore:
             params.append(category)
         where = " AND ".join(clauses)
         with self._conn() as conn:
-            cur = conn.execute(f"DELETE FROM memories WHERE {where}", params)
+            cur = conn.execute(f"DELETE FROM memories WHERE {where}", params)  # nosec: {where} is hardcoded clauses, values bound via params
             return cur.rowcount > 0
 
     def list_memories(
@@ -188,7 +188,7 @@ class MemoryStore:
         params.append(limit)
         with self._conn() as conn:
             rows = conn.execute(
-                f"SELECT * FROM memories {where} ORDER BY accessed_at DESC LIMIT ?",
+                f"SELECT * FROM memories {where} ORDER BY accessed_at DESC LIMIT ?",  # nosec: {where} is hardcoded clauses, values bound via params
                 params,
             ).fetchall()
             return [_row_to_entry(r) for r in rows]

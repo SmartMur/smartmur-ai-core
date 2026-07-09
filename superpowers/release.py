@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import re
 import subprocess
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -146,7 +146,7 @@ class ReleaseManager:
         if result.returncode != 0:
             raise ReleaseError(f"git log failed: {result.stderr.strip()}")
 
-        lines = [l for l in result.stdout.splitlines() if l.strip()]
+        lines = [ln for ln in result.stdout.splitlines() if ln.strip()]
         return self._format_changelog(lines)
 
     def create_tag(self, version: str, message: str = "") -> str:
@@ -317,9 +317,7 @@ class MigrationChecker:
     def __init__(self, project_root: Path | None = None):
         self.project_root = Path(project_root) if project_root else _PROJECT_ROOT
 
-    def check_breaking_changes(
-        self, from_ver: str, to_ver: str
-    ) -> dict[str, Any]:
+    def check_breaking_changes(self, from_ver: str, to_ver: str) -> dict[str, Any]:
         """Scan for breaking changes between two versions.
 
         Uses ``git diff`` to detect removed/renamed CLI commands, changed
@@ -395,10 +393,10 @@ class MigrationChecker:
 
         lines.append("## Rollback\n")
         lines.append(f"If you need to rollback to v{from_ver}:\n")
-        lines.append(f"```bash")
+        lines.append("```bash")
         lines.append(f"git checkout v{from_ver}")
-        lines.append(f"pip install -e .")
-        lines.append(f"```\n")
+        lines.append("pip install -e .")
+        lines.append("```\n")
 
         return "\n".join(lines)
 
@@ -447,7 +445,7 @@ class MigrationChecker:
                 if m:
                     changed.append(m.group(1))
                 # Match .env style KEY=VALUE
-                m = re.match(r'^-([A-Z_][A-Z0-9_]*)=', line)
+                m = re.match(r"^-([A-Z_][A-Z0-9_]*)=", line)
                 if m:
                     changed.append(m.group(1))
 
@@ -467,7 +465,7 @@ class MigrationChecker:
         for line in result.stdout.splitlines():
             if line.startswith("-") and not line.startswith("---"):
                 # Match removed class or function definitions (public only)
-                m = re.match(r'^-(?:class|def)\s+([A-Z]\w+|[a-z]\w+)\s*[:(]', line)
+                m = re.match(r"^-(?:class|def)\s+([A-Z]\w+|[a-z]\w+)\s*[:(]", line)
                 if m:
                     name = m.group(1)
                     if not name.startswith("_"):

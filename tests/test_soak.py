@@ -16,7 +16,6 @@ import threading
 import time
 import tracemalloc
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from unittest.mock import patch
 
 import pytest
 
@@ -30,16 +29,14 @@ from superpowers.policy_engine import (
 from superpowers.reporting import (
     Report,
     ReportFormatter,
-    ReportItem,
     ReportRegistry,
-    ReportSection,
     quick_report,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _noop():
     return "ok"
@@ -86,6 +83,7 @@ def _make_report(idx: int = 0) -> Report:
 # ---------------------------------------------------------------------------
 # 1. Repeated DAG execution — no crashes, consistent results
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestRepeatedDAGExecution:
@@ -137,6 +135,7 @@ class TestRepeatedDAGExecution:
 # ---------------------------------------------------------------------------
 # 2. Memory leak detection via tracemalloc
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestMemoryStability:
@@ -211,6 +210,7 @@ class TestMemoryStability:
 # ---------------------------------------------------------------------------
 # 3. Concurrent stress tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestConcurrentStress:
@@ -337,6 +337,7 @@ class TestConcurrentStress:
 # 4. Policy engine rapid-fire stress
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.slow
 class TestPolicyEngineStress:
     """Evaluate many policy checks rapidly."""
@@ -429,6 +430,7 @@ class TestPolicyEngineStress:
 # 5. Report generation under load
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.slow
 class TestReportLoad:
     """Generate many reports and verify correctness."""
@@ -489,6 +491,7 @@ class TestReportLoad:
 # ---------------------------------------------------------------------------
 # 6. Retry / idempotency tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestRetryIdempotency:
@@ -563,6 +566,7 @@ class TestRetryIdempotency:
 # ---------------------------------------------------------------------------
 # 7. Resource cleanup — thread leaks, file handle leaks
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestResourceCleanup:
@@ -659,6 +663,7 @@ class TestResourceCleanup:
 # 8. Edge cases under stress
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.slow
 class TestEdgeCasesStress:
     """DAG structural edge cases run repeatedly to flush out rare bugs."""
@@ -702,20 +707,20 @@ class TestEdgeCasesStress:
         depth = 50
         dag = DAGExecutor()
         for i in range(depth):
-            deps = [f"n{i-1}"] if i > 0 else None
+            deps = [f"n{i - 1}"] if i > 0 else None
             dag.add_node(f"n{i}", f"Node-{i}", action=_noop, depends_on=deps)
 
         dag.execute(max_workers=2)
         assert dag.status_summary()["done"] == depth
         # Last node must have completed
-        assert dag.get_node(f"n{depth-1}").status == NodeStatus.done
+        assert dag.get_node(f"n{depth - 1}").status == NodeStatus.done
 
     def test_deep_chain_repeated(self):
         """Run 50-level chain 20 times — must always succeed."""
         for _ in range(20):
             dag = DAGExecutor()
             for i in range(50):
-                deps = [f"n{i-1}"] if i > 0 else None
+                deps = [f"n{i - 1}"] if i > 0 else None
                 dag.add_node(f"n{i}", f"Node-{i}", action=_noop, depends_on=deps)
             dag.execute(max_workers=2)
             assert dag.status_summary()["done"] == 50
@@ -780,9 +785,7 @@ class TestEdgeCasesStress:
             concurrent["current"] = 0
             dag = DAGExecutor()
             for i in range(5):
-                dag.add_node(
-                    f"n{i}", f"N{i}", action=guarded_action, resources=["shared"]
-                )
+                dag.add_node(f"n{i}", f"N{i}", action=guarded_action, resources=["shared"])
             dag.execute(max_workers=4)
             assert concurrent["max"] == 1, (
                 f"Resource conflict: max concurrent = {concurrent['max']}"
@@ -793,6 +796,7 @@ class TestEdgeCasesStress:
 # ---------------------------------------------------------------------------
 # 9. Serialization / to_dict under stress
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestSerializationStress:
@@ -840,6 +844,7 @@ class TestSerializationStress:
 # ---------------------------------------------------------------------------
 # 10. Combined subsystem stress
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 class TestCombinedStress:

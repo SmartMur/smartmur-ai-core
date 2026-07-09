@@ -178,14 +178,18 @@ class ScanReport:
                     "LOW": "note",
                     "INFO": "note",
                 }
-                rules.append({
-                    "id": rule_id,
-                    "name": f.title,
-                    "shortDescription": {"text": f.title},
-                    "fullDescription": {"text": f.description},
-                    "defaultConfiguration": {"level": severity_map.get(f.severity, "warning")},
-                    "properties": {"security-severity": str(SEVERITY_RANK.get(f.severity, 0) * 2.5)},
-                })
+                rules.append(
+                    {
+                        "id": rule_id,
+                        "name": f.title,
+                        "shortDescription": {"text": f.title},
+                        "fullDescription": {"text": f.description},
+                        "defaultConfiguration": {"level": severity_map.get(f.severity, "warning")},
+                        "properties": {
+                            "security-severity": str(SEVERITY_RANK.get(f.severity, 0) * 2.5)
+                        },
+                    }
+                )
 
             result: dict[str, Any] = {
                 "ruleId": rule_id,
@@ -201,7 +205,10 @@ class ScanReport:
                     {
                         "physicalLocation": {
                             "artifactLocation": {"uri": f.file, "uriBaseId": "%SRCROOT%"},
-                            "region": {"startLine": max(f.line, 1), "startColumn": max(f.column, 1)},
+                            "region": {
+                                "startLine": max(f.line, 1),
+                                "startColumn": max(f.column, 1),
+                            },
                         }
                     }
                 ]
@@ -231,7 +238,9 @@ class ScanReport:
 # OSV cache (offline-first)
 # ---------------------------------------------------------------------------
 
-_OSV_CACHE_DIR = Path(os.environ.get("SENTINEL_CACHE_DIR", Path.home() / ".cache" / "security-sentinel"))
+_OSV_CACHE_DIR = Path(
+    os.environ.get("SENTINEL_CACHE_DIR", Path.home() / ".cache" / "security-sentinel")
+)
 
 
 def _cache_key(package: str, version: str, ecosystem: str = "PyPI") -> Path:
@@ -239,7 +248,9 @@ def _cache_key(package: str, version: str, ecosystem: str = "PyPI") -> Path:
     return _OSV_CACHE_DIR / f"{h}.json"
 
 
-def _cache_get(package: str, version: str, ecosystem: str = "PyPI", max_age: int = 86400) -> list[dict] | None:
+def _cache_get(
+    package: str, version: str, ecosystem: str = "PyPI", max_age: int = 86400
+) -> list[dict] | None:
     path = _cache_key(package, version, ecosystem)
     if not path.exists():
         return None
@@ -263,6 +274,7 @@ def _cache_put(package: str, version: str, vulns: list[dict], ecosystem: str = "
 # Dependency CVE scanner
 # ---------------------------------------------------------------------------
 
+
 def _parse_dependencies(project_root: Path) -> list[tuple[str, str]]:
     """Extract (package, version_spec) from pyproject.toml and requirements.txt."""
     deps: list[tuple[str, str]] = []
@@ -282,7 +294,9 @@ def _parse_dependencies(project_root: Path) -> list[tuple[str, str]]:
                 if stripped == "]":
                     in_deps = False
                     continue
-                match = re.match(r'"([a-zA-Z0-9_-]+)\s*([><=!~]+\s*[\d.]+(?:,\s*[><=!~]+\s*[\d.]+)*)?', stripped)
+                match = re.match(
+                    r'"([a-zA-Z0-9_-]+)\s*([><=!~]+\s*[\d.]+(?:,\s*[><=!~]+\s*[\d.]+)*)?', stripped
+                )
                 if match:
                     pkg = match.group(1)
                     ver = match.group(2) or ""
@@ -359,21 +373,35 @@ def scan_dependencies(project_root: Path, offline: bool = False) -> list[Finding
             aliases = vuln.get("aliases", [])
             cve_id = next((a for a in aliases if a.startswith("CVE-")), vuln_id)
 
-            # Determine severity from database_specific or severity field
+            # Determine severity. The advisory's reviewed rating
+            # (database_specific.severity from GHSA) is authoritative; trust it.
+            # Fall back to the CVSS base score only when no reviewed rating exists.
+            # Note: attack vector alone (AV:N) does NOT imply CRITICAL -- impact
+            # metrics decide that, so we never escalate on AV:N by itself.
             severity: Severity = "HIGH"
+            ghsa_map = {"CRITICAL": "CRITICAL", "HIGH": "HIGH", "MODERATE": "MEDIUM", "LOW": "LOW"}
+            rated = False
             if "database_specific" in vuln:
                 db_sev = vuln["database_specific"].get("severity", "").upper()
-                if db_sev in SEVERITY_RANK:
-                    severity = db_sev  # type: ignore[assignment]
-            if "severity" in vuln:
+                if db_sev in ghsa_map:
+                    severity = ghsa_map[db_sev]  # type: ignore[assignment]
+                    rated = True
+            if not rated and "severity" in vuln:
                 for sev_entry in vuln["severity"]:
                     score_str = sev_entry.get("score", "")
-                    # CVSS score parsing
-                    cvss_match = re.search(r"AV:[NALP]/.*", score_str)
-                    if cvss_match:
-                        # Rough severity from CVSS vector
-                        if "AV:N" in score_str:
-                            severity = "CRITICAL"
+                    # Extract the numeric CVSS base score if present (e.g. ".../9.8").
+                    score_num = re.search(r"/(\d{1,2}\.\d)(?:/|$)", score_str)
+                    if score_num:
+                        val = float(score_num.group(1))
+                        severity = (
+                            "CRITICAL"
+                            if val >= 9.0
+                            else "HIGH"
+                            if val >= 7.0
+                            else "MEDIUM"
+                            if val >= 4.0
+                            else "LOW"
+                        )
 
             # Find patched version
             fix_ver = ""
@@ -383,19 +411,25 @@ def scan_dependencies(project_root: Path, offline: bool = False) -> list[Finding
                         if "fixed" in evt:
                             fix_ver = evt["fixed"]
 
-            fix_msg = f"Upgrade {pkg} to >= {fix_ver}" if fix_ver else f"No patch available for {cve_id}. Consider pinning to an unaffected version or adding a WAF rule."
+            fix_msg = (
+                f"Upgrade {pkg} to >= {fix_ver}"
+                if fix_ver
+                else f"No patch available for {cve_id}. Consider pinning to an unaffected version or adding a WAF rule."
+            )
 
-            findings.append(Finding(
-                title=f"Vulnerable dependency: {pkg}",
-                description=f"{cve_id}: {summary}",
-                severity=severity,
-                category="dependency-cve",
-                file="pyproject.toml",
-                line=1,
-                cve=cve_id,
-                fix=fix_msg,
-                cwe="CWE-1395",
-            ))
+            findings.append(
+                Finding(
+                    title=f"Vulnerable dependency: {pkg}",
+                    description=f"{cve_id}: {summary}",
+                    severity=severity,
+                    category="dependency-cve",
+                    file="pyproject.toml",
+                    line=1,
+                    cve=cve_id,
+                    fix=fix_msg,
+                    cwe="CWE-1395",
+                )
+            )
 
     return findings
 
@@ -403,6 +437,16 @@ def scan_dependencies(project_root: Path, offline: bool = False) -> list[Finding
 # ---------------------------------------------------------------------------
 # Static code analyzer (AST-based)
 # ---------------------------------------------------------------------------
+
+# Standard inline suppression markers: a reviewer who has confirmed a finding
+# is safe (e.g. a parameterized query the regex can't prove safe) annotates the
+# line, and the scanner skips it -- the same convention bandit/detect-secrets use.
+_SUPPRESS_RE = re.compile(r"#\s*(nosec|pragma:\s*allowlist secret)\b", re.IGNORECASE)
+
+
+def _is_suppressed(line: str) -> bool:
+    return bool(_SUPPRESS_RE.search(line))
+
 
 class _DangerousPatternVisitor(ast.NodeVisitor):
     """AST visitor that detects dangerous code patterns."""
@@ -418,36 +462,47 @@ class _DangerousPatternVisitor(ast.NodeVisitor):
 
         # subprocess.call/Popen/run with shell=True
         if func_name in (
-            "subprocess.call", "subprocess.Popen", "subprocess.run",
-            "subprocess.check_call", "subprocess.check_output",
+            "subprocess.call",
+            "subprocess.Popen",
+            "subprocess.run",
+            "subprocess.check_call",
+            "subprocess.check_output",
         ):
             for kw in node.keywords:
-                if kw.arg == "shell" and isinstance(kw.value, ast.Constant) and kw.value.value is True:
-                    self.findings.append(Finding(
-                        title="subprocess with shell=True",
-                        description=f"{func_name}() called with shell=True enables shell injection",
-                        severity="CRITICAL",
-                        category="code-injection",
-                        file=self.filepath,
-                        line=node.lineno,
-                        column=node.col_offset,
-                        cwe="CWE-78",
-                        fix="Use a list of arguments instead of a shell string, and set shell=False",
-                    ))
+                if (
+                    kw.arg == "shell"
+                    and isinstance(kw.value, ast.Constant)
+                    and kw.value.value is True
+                ):
+                    self.findings.append(
+                        Finding(
+                            title="subprocess with shell=True",
+                            description=f"{func_name}() called with shell=True enables shell injection",
+                            severity="CRITICAL",
+                            category="code-injection",
+                            file=self.filepath,
+                            line=node.lineno,
+                            column=node.col_offset,
+                            cwe="CWE-78",
+                            fix="Use a list of arguments instead of a shell string, and set shell=False",
+                        )
+                    )
 
         # os.system()
         if func_name == "os.system":
-            self.findings.append(Finding(
-                title="os.system() usage",
-                description="os.system() is vulnerable to shell injection. Use subprocess with shell=False.",
-                severity="CRITICAL",
-                category="code-injection",
-                file=self.filepath,
-                line=node.lineno,
-                column=node.col_offset,
-                cwe="CWE-78",
-                fix="Replace os.system() with subprocess.run([...], shell=False)",
-            ))
+            self.findings.append(
+                Finding(
+                    title="os.system() usage",
+                    description="os.system() is vulnerable to shell injection. Use subprocess with shell=False.",
+                    severity="CRITICAL",
+                    category="code-injection",
+                    file=self.filepath,
+                    line=node.lineno,
+                    column=node.col_offset,
+                    cwe="CWE-78",
+                    fix="Replace os.system() with subprocess.run([...], shell=False)",
+                )
+            )
 
         # eval() / exec()
         if func_name in ("eval", "exec"):
@@ -458,31 +513,35 @@ class _DangerousPatternVisitor(ast.NodeVisitor):
                 and isinstance(node.args[0].value, str)
             )
             severity: Severity = "MEDIUM" if is_literal else "CRITICAL"
-            self.findings.append(Finding(
-                title=f"{func_name}() usage detected",
-                description=f"{func_name}() can execute arbitrary code. Verify input is trusted.",
-                severity=severity,
-                category="code-injection",
-                file=self.filepath,
-                line=node.lineno,
-                column=node.col_offset,
-                cwe="CWE-95",
-                fix=f"Avoid {func_name}(). Use ast.literal_eval() for data parsing or a proper parser.",
-            ))
+            self.findings.append(
+                Finding(
+                    title=f"{func_name}() usage detected",
+                    description=f"{func_name}() can execute arbitrary code. Verify input is trusted.",
+                    severity=severity,
+                    category="code-injection",
+                    file=self.filepath,
+                    line=node.lineno,
+                    column=node.col_offset,
+                    cwe="CWE-95",
+                    fix=f"Avoid {func_name}(). Use ast.literal_eval() for data parsing or a proper parser.",
+                )
+            )
 
         # pickle.loads / pickle.load
         if func_name in ("pickle.loads", "pickle.load", "cPickle.loads", "cPickle.load"):
-            self.findings.append(Finding(
-                title="Insecure deserialization (pickle)",
-                description=f"{func_name}() can execute arbitrary code during deserialization",
-                severity="CRITICAL",
-                category="insecure-deserialization",
-                file=self.filepath,
-                line=node.lineno,
-                column=node.col_offset,
-                cwe="CWE-502",
-                fix="Use json or a safe serialization format. Never unpickle untrusted data.",
-            ))
+            self.findings.append(
+                Finding(
+                    title="Insecure deserialization (pickle)",
+                    description=f"{func_name}() can execute arbitrary code during deserialization",
+                    severity="CRITICAL",
+                    category="insecure-deserialization",
+                    file=self.filepath,
+                    line=node.lineno,
+                    column=node.col_offset,
+                    cwe="CWE-502",
+                    fix="Use json or a safe serialization format. Never unpickle untrusted data.",
+                )
+            )
 
         # yaml.load without SafeLoader
         if func_name == "yaml.load":
@@ -497,72 +556,99 @@ class _DangerousPatternVisitor(ast.NodeVisitor):
                 if loader_name and "Safe" in loader_name:
                     has_safe_loader = True
             if not has_safe_loader:
-                self.findings.append(Finding(
-                    title="yaml.load() without SafeLoader",
-                    description="yaml.load() without SafeLoader can execute arbitrary Python objects",
-                    severity="CRITICAL",
+                self.findings.append(
+                    Finding(
+                        title="yaml.load() without SafeLoader",
+                        description="yaml.load() without SafeLoader can execute arbitrary Python objects",
+                        severity="CRITICAL",
+                        category="insecure-deserialization",
+                        file=self.filepath,
+                        line=node.lineno,
+                        column=node.col_offset,
+                        cwe="CWE-502",
+                        fix="Use yaml.safe_load() or yaml.load(data, Loader=yaml.SafeLoader)",
+                    )
+                )
+
+        # requests with verify=False
+        if func_name in (
+            "requests.get",
+            "requests.post",
+            "requests.put",
+            "requests.delete",
+            "requests.patch",
+            "requests.head",
+        ):
+            for kw in node.keywords:
+                if (
+                    kw.arg == "verify"
+                    and isinstance(kw.value, ast.Constant)
+                    and kw.value.value is False
+                ):
+                    self.findings.append(
+                        Finding(
+                            title="TLS verification disabled",
+                            description=f"{func_name}() with verify=False disables SSL certificate verification",
+                            severity="HIGH",
+                            category="insecure-transport",
+                            file=self.filepath,
+                            line=node.lineno,
+                            column=node.col_offset,
+                            cwe="CWE-295",
+                            fix="Remove verify=False to enable TLS certificate verification",
+                        )
+                    )
+
+        # marshal.loads
+        if func_name in ("marshal.loads", "marshal.load"):
+            self.findings.append(
+                Finding(
+                    title="Insecure deserialization (marshal)",
+                    description=f"{func_name}() can crash the interpreter with malformed data",
+                    severity="HIGH",
                     category="insecure-deserialization",
                     file=self.filepath,
                     line=node.lineno,
                     column=node.col_offset,
                     cwe="CWE-502",
-                    fix="Use yaml.safe_load() or yaml.load(data, Loader=yaml.SafeLoader)",
-                ))
-
-        # requests with verify=False
-        if func_name in ("requests.get", "requests.post", "requests.put",
-                         "requests.delete", "requests.patch", "requests.head"):
-            for kw in node.keywords:
-                if kw.arg == "verify" and isinstance(kw.value, ast.Constant) and kw.value.value is False:
-                    self.findings.append(Finding(
-                        title="TLS verification disabled",
-                        description=f"{func_name}() with verify=False disables SSL certificate verification",
-                        severity="HIGH",
-                        category="insecure-transport",
-                        file=self.filepath,
-                        line=node.lineno,
-                        column=node.col_offset,
-                        cwe="CWE-295",
-                        fix="Remove verify=False to enable TLS certificate verification",
-                    ))
-
-        # marshal.loads
-        if func_name in ("marshal.loads", "marshal.load"):
-            self.findings.append(Finding(
-                title="Insecure deserialization (marshal)",
-                description=f"{func_name}() can crash the interpreter with malformed data",
-                severity="HIGH",
-                category="insecure-deserialization",
-                file=self.filepath,
-                line=node.lineno,
-                column=node.col_offset,
-                cwe="CWE-502",
-                fix="Use json or another safe format for untrusted data",
-            ))
+                    fix="Use json or another safe format for untrusted data",
+                )
+            )
 
         self.generic_visit(node)
 
     def visit_JoinedStr(self, node: ast.JoinedStr) -> None:
-        """Detect f-strings in SQL-like contexts by checking surrounding assignment/call."""
-        # We check the source line for SQL keywords
+        """Detect f-strings used to build real SQL statements.
+
+        Matches multi-word SQL shapes (``SELECT ... FROM``, ``UPDATE x SET``,
+        ``INSERT INTO``, ``DELETE FROM`` ...) so that ordinary English in
+        non-SQL f-strings ("gh release delete {tag}", "Update skill: {name}")
+        is not mistaken for a query. Lines marked ``# nosec`` are skipped.
+        """
         if node.lineno <= len(self.source_lines):
             line = self.source_lines[node.lineno - 1]
+            if _is_suppressed(line):
+                self.generic_visit(node)
+                return
             sql_pattern = re.compile(
-                r"(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC)\s",
+                r"(SELECT\s+.+\s+FROM|INSERT\s+INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|"
+                r"DROP\s+(TABLE|DATABASE|INDEX)|CREATE\s+(TABLE|INDEX|DATABASE)|ALTER\s+TABLE)",
                 re.IGNORECASE,
             )
             if sql_pattern.search(line) and "{" in line:
-                self.findings.append(Finding(
-                    title="SQL injection via f-string",
-                    description="F-string used in SQL query construction enables SQL injection",
-                    severity="CRITICAL",
-                    category="sql-injection",
-                    file=self.filepath,
-                    line=node.lineno,
-                    column=node.col_offset,
-                    cwe="CWE-89",
-                    fix="Use parameterized queries (e.g., cursor.execute('SELECT ? ...', (param,)))",
-                ))
+                self.findings.append(
+                    Finding(
+                        title="SQL injection via f-string",
+                        description="F-string used in SQL query construction enables SQL injection",
+                        severity="CRITICAL",
+                        category="sql-injection",
+                        file=self.filepath,
+                        line=node.lineno,
+                        column=node.col_offset,
+                        cwe="CWE-89",
+                        fix="Use parameterized queries (e.g., cursor.execute('SELECT ? ...', (param,)))",
+                    )
+                )
         self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp) -> None:
@@ -570,17 +656,19 @@ class _DangerousPatternVisitor(ast.NodeVisitor):
         if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Constant):
             val = str(node.left.value)
             if re.search(r"(SELECT|INSERT|UPDATE|DELETE|DROP)\s", val, re.IGNORECASE):
-                self.findings.append(Finding(
-                    title="SQL injection via string formatting",
-                    description="% string formatting in SQL query enables SQL injection",
-                    severity="CRITICAL",
-                    category="sql-injection",
-                    file=self.filepath,
-                    line=node.lineno,
-                    column=node.col_offset,
-                    cwe="CWE-89",
-                    fix="Use parameterized queries instead of string formatting",
-                ))
+                self.findings.append(
+                    Finding(
+                        title="SQL injection via string formatting",
+                        description="% string formatting in SQL query enables SQL injection",
+                        severity="CRITICAL",
+                        category="sql-injection",
+                        file=self.filepath,
+                        line=node.lineno,
+                        column=node.col_offset,
+                        cwe="CWE-89",
+                        fix="Use parameterized queries instead of string formatting",
+                    )
+                )
         self.generic_visit(node)
 
     def _get_func_name(self, node: ast.Call) -> str:
@@ -645,10 +733,19 @@ def scan_code_static(project_root: Path) -> list[Finding]:
     py_files = list(project_root.rglob("*.py"))
     # Filter out venvs, caches, etc.
     py_files = [
-        f for f in py_files
+        f
+        for f in py_files
         if not any(
             part in f.parts
-            for part in (".venv", "venv", "__pycache__", "node_modules", ".git", "site-packages", "site")
+            for part in (
+                ".venv",
+                "venv",
+                "__pycache__",
+                "node_modules",
+                ".git",
+                "site-packages",
+                "site",
+            )
         )
     ]
 
@@ -671,24 +768,33 @@ def scan_code_static(project_root: Path) -> list[Finding]:
             # Can't parse -- skip AST checks, still do regex
             pass
 
+        # Test files legitimately contain fake credentials as fixtures; the
+        # repo-wide Gitleaks job covers them for real secret formats, so the
+        # naive keyword regex would only produce noise here.
+        is_test_file = rel_path.startswith("tests/") or "/tests/" in rel_path
+
         # Regex-based checks
         for title, pattern, severity, category, cwe, fix in _REGEX_CHECKS:
+            if category == "hardcoded-secret" and is_test_file:
+                continue
             for i, line in enumerate(source_lines, 1):
                 if pattern.search(line):
-                    # Skip if it's a comment or part of test/documentation
+                    # Skip comments and reviewer-suppressed lines.
                     stripped = line.lstrip()
-                    if stripped.startswith("#"):
+                    if stripped.startswith("#") or _is_suppressed(line):
                         continue
-                    findings.append(Finding(
-                        title=title,
-                        description=f"Pattern matched: {pattern.pattern[:60]}...",
-                        severity=severity,  # type: ignore[arg-type]
-                        category=category,
-                        file=rel_path,
-                        line=i,
-                        cwe=cwe,
-                        fix=fix,
-                    ))
+                    findings.append(
+                        Finding(
+                            title=title,
+                            description=f"Pattern matched: {pattern.pattern[:60]}...",
+                            severity=severity,  # type: ignore[arg-type]
+                            category=category,
+                            file=rel_path,
+                            line=i,
+                            cwe=cwe,
+                            fix=fix,
+                        )
+                    )
 
     return findings
 
@@ -697,10 +803,12 @@ def scan_code_static(project_root: Path) -> list[Finding]:
 # Docker security checker
 # ---------------------------------------------------------------------------
 
+
 def _parse_yaml_simple(content: str) -> dict[str, Any]:
     """Parse YAML without external dependencies. Falls back to PyYAML if available."""
     try:
         import yaml
+
         return yaml.safe_load(content) or {}
     except ImportError:
         pass
@@ -730,6 +838,7 @@ def scan_docker(project_root: Path) -> list[Finding]:
 
         try:
             import yaml
+
             data = yaml.safe_load(content) or {}
         except ImportError:
             data = {}
@@ -754,79 +863,91 @@ def scan_docker(project_root: Path) -> list[Finding]:
 
             # Privileged mode
             if svc_config.get("privileged") is True:
-                findings.append(Finding(
-                    title=f"Docker: privileged mode ({svc_name})",
-                    description=f"Service '{svc_name}' runs in privileged mode, giving full host access",
-                    severity="CRITICAL",
-                    category="docker-security",
-                    file=rel_path,
-                    line=_find_line("privileged", svc_line),
-                    cwe="CWE-250",
-                    fix="Remove 'privileged: true'. Use specific capabilities instead.",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: privileged mode ({svc_name})",
+                        description=f"Service '{svc_name}' runs in privileged mode, giving full host access",
+                        severity="CRITICAL",
+                        category="docker-security",
+                        file=rel_path,
+                        line=_find_line("privileged", svc_line),
+                        cwe="CWE-250",
+                        fix="Remove 'privileged: true'. Use specific capabilities instead.",
+                    )
+                )
 
             # Host network
             if svc_config.get("network_mode") == "host":
-                findings.append(Finding(
-                    title=f"Docker: host network ({svc_name})",
-                    description=f"Service '{svc_name}' uses host networking, bypassing Docker network isolation",
-                    severity="HIGH",
-                    category="docker-security",
-                    file=rel_path,
-                    line=_find_line("network_mode", svc_line),
-                    cwe="CWE-668",
-                    fix="Use a bridge network with explicit port mappings",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: host network ({svc_name})",
+                        description=f"Service '{svc_name}' uses host networking, bypassing Docker network isolation",
+                        severity="HIGH",
+                        category="docker-security",
+                        file=rel_path,
+                        line=_find_line("network_mode", svc_line),
+                        cwe="CWE-668",
+                        fix="Use a bridge network with explicit port mappings",
+                    )
+                )
 
             # Unpinned images
             image = svc_config.get("image", "")
             if image and ":" not in image:
-                findings.append(Finding(
-                    title=f"Docker: unpinned image ({svc_name})",
-                    description=f"Service '{svc_name}' uses unpinned image '{image}' (defaults to :latest)",
-                    severity="MEDIUM",
-                    category="docker-security",
-                    file=rel_path,
-                    line=_find_line(f"image:", svc_line),
-                    cwe="CWE-829",
-                    fix=f"Pin the image to a specific version: {image}:<version>",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: unpinned image ({svc_name})",
+                        description=f"Service '{svc_name}' uses unpinned image '{image}' (defaults to :latest)",
+                        severity="MEDIUM",
+                        category="docker-security",
+                        file=rel_path,
+                        line=_find_line("image:", svc_line),
+                        cwe="CWE-829",
+                        fix=f"Pin the image to a specific version: {image}:<version>",
+                    )
+                )
             elif image and image.endswith(":latest"):
-                findings.append(Finding(
-                    title=f"Docker: :latest tag ({svc_name})",
-                    description=f"Service '{svc_name}' uses :latest tag which is mutable and unpredictable",
-                    severity="MEDIUM",
-                    category="docker-security",
-                    file=rel_path,
-                    line=_find_line(f"image:", svc_line),
-                    cwe="CWE-829",
-                    fix=f"Pin to a specific version hash or semver tag",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: :latest tag ({svc_name})",
+                        description=f"Service '{svc_name}' uses :latest tag which is mutable and unpredictable",
+                        severity="MEDIUM",
+                        category="docker-security",
+                        file=rel_path,
+                        line=_find_line("image:", svc_line),
+                        cwe="CWE-829",
+                        fix="Pin to a specific version hash or semver tag",
+                    )
+                )
 
             # Missing healthcheck
             if "healthcheck" not in svc_config:
-                findings.append(Finding(
-                    title=f"Docker: no healthcheck ({svc_name})",
-                    description=f"Service '{svc_name}' has no healthcheck defined",
-                    severity="LOW",
-                    category="docker-security",
-                    file=rel_path,
-                    line=svc_line,
-                    fix="Add a healthcheck to detect and restart unhealthy containers",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: no healthcheck ({svc_name})",
+                        description=f"Service '{svc_name}' has no healthcheck defined",
+                        severity="LOW",
+                        category="docker-security",
+                        file=rel_path,
+                        line=svc_line,
+                        fix="Add a healthcheck to detect and restart unhealthy containers",
+                    )
+                )
 
             # Running as root (no user specified)
             if "user" not in svc_config:
-                findings.append(Finding(
-                    title=f"Docker: running as root ({svc_name})",
-                    description=f"Service '{svc_name}' has no 'user' directive, defaults to root",
-                    severity="MEDIUM",
-                    category="docker-security",
-                    file=rel_path,
-                    line=svc_line,
-                    cwe="CWE-250",
-                    fix="Add 'user: 1000:1000' or a non-root user",
-                ))
+                findings.append(
+                    Finding(
+                        title=f"Docker: running as root ({svc_name})",
+                        description=f"Service '{svc_name}' has no 'user' directive, defaults to root",
+                        severity="MEDIUM",
+                        category="docker-security",
+                        file=rel_path,
+                        line=svc_line,
+                        cwe="CWE-250",
+                        fix="Add 'user: 1000:1000' or a non-root user",
+                    )
+                )
 
             # Exposed ports
             ports = svc_config.get("ports", [])
@@ -834,43 +955,32 @@ def scan_docker(project_root: Path) -> list[Finding]:
                 port_str = str(port)
                 # Check if binding to all interfaces (no host IP specified)
                 if re.match(r"^\d+:\d+$", port_str):
-                    findings.append(Finding(
-                        title=f"Docker: port exposed on all interfaces ({svc_name})",
-                        description=f"Port mapping '{port_str}' exposes on 0.0.0.0. Bind to 127.0.0.1 if local only.",
-                        severity="MEDIUM",
-                        category="docker-security",
-                        file=rel_path,
-                        line=_find_line(str(port), svc_line),
-                        cwe="CWE-668",
-                        fix=f"Use '127.0.0.1:{port_str}' to restrict to localhost",
-                    ))
+                    findings.append(
+                        Finding(
+                            title=f"Docker: port exposed on all interfaces ({svc_name})",
+                            description=f"Port mapping '{port_str}' exposes on 0.0.0.0. Bind to 127.0.0.1 if local only.",
+                            severity="MEDIUM",
+                            category="docker-security",
+                            file=rel_path,
+                            line=_find_line(str(port), svc_line),
+                            cwe="CWE-668",
+                            fix=f"Use '127.0.0.1:{port_str}' to restrict to localhost",
+                        )
+                    )
 
             # Writable secrets via environment
             env = svc_config.get("environment", {})
             if isinstance(env, dict):
                 for key, val in env.items():
-                    if val and isinstance(val, str) and any(
-                        s in key.upper() for s in ("PASSWORD", "SECRET", "TOKEN", "API_KEY")
-                    ):
-                        findings.append(Finding(
-                            title=f"Docker: secret in environment ({svc_name})",
-                            description=f"Secret '{key}' is hardcoded in docker-compose environment",
-                            severity="HIGH",
-                            category="docker-security",
-                            file=rel_path,
-                            line=_find_line(key, svc_line),
-                            cwe="CWE-798",
-                            fix="Use Docker secrets or .env files excluded from version control",
-                        ))
-            elif isinstance(env, list):
-                for item in env:
-                    if isinstance(item, str) and "=" in item:
-                        key = item.split("=", 1)[0]
-                        val = item.split("=", 1)[1]
-                        if val and any(
+                    if (
+                        val
+                        and isinstance(val, str)
+                        and any(
                             s in key.upper() for s in ("PASSWORD", "SECRET", "TOKEN", "API_KEY")
-                        ):
-                            findings.append(Finding(
+                        )
+                    ):
+                        findings.append(
+                            Finding(
                                 title=f"Docker: secret in environment ({svc_name})",
                                 description=f"Secret '{key}' is hardcoded in docker-compose environment",
                                 severity="HIGH",
@@ -879,7 +989,28 @@ def scan_docker(project_root: Path) -> list[Finding]:
                                 line=_find_line(key, svc_line),
                                 cwe="CWE-798",
                                 fix="Use Docker secrets or .env files excluded from version control",
-                            ))
+                            )
+                        )
+            elif isinstance(env, list):
+                for item in env:
+                    if isinstance(item, str) and "=" in item:
+                        key = item.split("=", 1)[0]
+                        val = item.split("=", 1)[1]
+                        if val and any(
+                            s in key.upper() for s in ("PASSWORD", "SECRET", "TOKEN", "API_KEY")
+                        ):
+                            findings.append(
+                                Finding(
+                                    title=f"Docker: secret in environment ({svc_name})",
+                                    description=f"Secret '{key}' is hardcoded in docker-compose environment",
+                                    severity="HIGH",
+                                    category="docker-security",
+                                    file=rel_path,
+                                    line=_find_line(key, svc_line),
+                                    cwe="CWE-798",
+                                    fix="Use Docker secrets or .env files excluded from version control",
+                                )
+                            )
 
     return findings
 
@@ -887,6 +1018,7 @@ def scan_docker(project_root: Path) -> list[Finding]:
 # ---------------------------------------------------------------------------
 # Zero-day patch advisor
 # ---------------------------------------------------------------------------
+
 
 def generate_patch_diff(project_root: Path, findings: list[Finding]) -> str:
     """Generate a PR-ready diff for dependency upgrades."""
@@ -910,7 +1042,7 @@ def generate_patch_diff(project_root: Path, findings: list[Finding]) -> str:
             rf'("{pkg}\s*)(>=\s*[\d.]+)',
             re.IGNORECASE,
         )
-        patched = dep_pattern.sub(rf'\g<1>>={target_ver}', patched)
+        patched = dep_pattern.sub(rf"\g<1>>={target_ver}", patched)
 
     if patched == content:
         return ""
@@ -922,7 +1054,7 @@ def generate_patch_diff(project_root: Path, findings: list[Finding]) -> str:
     diff_lines = ["--- a/pyproject.toml\n", "+++ b/pyproject.toml\n"]
     for i, (old, new) in enumerate(zip(original_lines, patched_lines)):
         if old != new:
-            diff_lines.append(f"@@ -{i+1},1 +{i+1},1 @@\n")
+            diff_lines.append(f"@@ -{i + 1},1 +{i + 1},1 @@\n")
             diff_lines.append(f"-{old}")
             diff_lines.append(f"+{new}")
 
@@ -932,6 +1064,7 @@ def generate_patch_diff(project_root: Path, findings: list[Finding]) -> str:
 # ---------------------------------------------------------------------------
 # Main scanner orchestrator
 # ---------------------------------------------------------------------------
+
 
 def run_full_scan(
     project_root: Path,
@@ -969,13 +1102,15 @@ def run_full_scan(
         checks += 1
         patch = generate_patch_diff(project_root, report.findings)
         if patch:
-            report.findings.append(Finding(
-                title="Auto-generated patch available",
-                description="A pyproject.toml patch is available to fix vulnerable dependencies",
-                severity="INFO",
-                category="patch-available",
-                fix=patch,
-            ))
+            report.findings.append(
+                Finding(
+                    title="Auto-generated patch available",
+                    description="A pyproject.toml patch is available to fix vulnerable dependencies",
+                    severity="INFO",
+                    category="patch-available",
+                    fix=patch,
+                )
+            )
 
     report.checks_run = checks
     report.scan_duration_seconds = round(time.monotonic() - start, 3)
@@ -987,6 +1122,7 @@ def run_full_scan(
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -1006,7 +1142,8 @@ def main() -> None:
         help="Output format (default: markdown)",
     )
     parser.add_argument(
-        "--output", "-o",
+        "--output",
+        "-o",
         type=str,
         default="",
         help="Output file path (default: stdout)",

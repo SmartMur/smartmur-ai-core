@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
@@ -204,7 +203,7 @@ class TestBuildChangelog:
     def test_from_empty_tag(self, mock_git, tmp_path):
         mock_git.return_value = _completed("feat: initial\n")
         rm = ReleaseManager(project_root=tmp_path)
-        changelog = rm.build_changelog("", "HEAD")
+        rm.build_changelog("", "HEAD")
         # Verify git log was called with just HEAD (no range)
         call_args = mock_git.call_args[0][0]
         assert "..HEAD" not in " ".join(call_args)
@@ -354,8 +353,8 @@ class TestMigrationChecker:
     @patch("superpowers.release._run_git")
     def test_detect_removed_command(self, mock_git, tmp_path):
         diff_output = (
-            '--- a/superpowers/cli_foo.py\n'
-            '+++ b/superpowers/cli_foo.py\n'
+            "--- a/superpowers/cli_foo.py\n"
+            "+++ b/superpowers/cli_foo.py\n"
             '-@click.group("old-cmd")\n'
             '+@click.group("new-cmd")\n'
         )
@@ -374,8 +373,8 @@ class TestMigrationChecker:
     @patch("superpowers.release._run_git")
     def test_detect_changed_config(self, mock_git, tmp_path):
         diff_output = (
-            '--- a/superpowers/config.py\n'
-            '+++ b/superpowers/config.py\n'
+            "--- a/superpowers/config.py\n"
+            "+++ b/superpowers/config.py\n"
             '-    host = _env("OLD_HOST", "localhost")\n'
             '+    host = _env("NEW_HOST", "localhost")\n'
         )
@@ -393,10 +392,10 @@ class TestMigrationChecker:
     @patch("superpowers.release._run_git")
     def test_detect_removed_api(self, mock_git, tmp_path):
         diff_output = (
-            '--- a/superpowers/foo.py\n'
-            '+++ b/superpowers/foo.py\n'
-            '-class OldManager:\n'
-            '-def old_helper(x):\n'
+            "--- a/superpowers/foo.py\n"
+            "+++ b/superpowers/foo.py\n"
+            "-class OldManager:\n"
+            "-def old_helper(x):\n"
         )
 
         def side_effect(args, **kwargs):
@@ -412,7 +411,7 @@ class TestMigrationChecker:
 
     @patch("superpowers.release._run_git")
     def test_private_apis_ignored(self, mock_git, tmp_path):
-        diff_output = '-def _private_func():\n'
+        diff_output = "-def _private_func():\n"
 
         def side_effect(args, **kwargs):
             if "superpowers/*.py" in " ".join(args):
