@@ -1,0 +1,21 @@
+# Gitleaks configuration
+# Historical findings sanitized in commit 0504811 (PR #16)
+# All flagged values in these commits were replaced with placeholder strings.
+# Current HEAD is clean. These fingerprints allowlist the historical scan hits
+# so CI stays green without rewriting git history.
+
+[allowlist]
+  description = "Historical test fixtures and docs sanitized in PR #16"
+  commits = [
+    "897a6968beeb9b094ba38834988ca201ec9400b9",
+    "d069e896606fbc21b1d05914de0b146900a97b26",
+    "718fb35a8967ad36704796f1c1bb516b00a570aa",
+    "b537954a6ef03846b84d0b5d3cd99d20e56b0be1",
+    "802449dc8b1981c723ec67dd85fecc977d8c28b3",
+    "f771759cdfb1aaaa67561b98e51b6b5085e13eb2",
+    "b415becbc431f57270542668692a004836ef2389",
+    "d218129d80a89eeeee1bb310d25dd80224d2a764",
+    "7562b05668e01565b700a2fffa5413a9cd5dce0d",
+    "1b07ad52218071b89a4c7fc10cce96e5f5ce0477",
+    "049be5d936c157a16dccb8cb2153bd4bf49f75f5",
+  ]
