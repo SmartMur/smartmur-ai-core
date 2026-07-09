@@ -10,12 +10,12 @@ from __future__ import annotations
 import json
 import time
 import tracemalloc
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
-
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Result dataclasses
@@ -126,8 +126,12 @@ class BenchmarkReport:
         # Scenario results
         lines.append("## Scenario Results")
         lines.append("")
-        lines.append("| Scenario | Duration (ms) | Ops/sec | Peak Memory (MB) | Iterations | Status |")
-        lines.append("|----------|--------------|---------|-------------------|------------|--------|")
+        lines.append(
+            "| Scenario | Duration (ms) | Ops/sec | Peak Memory (MB) | Iterations | Status |"
+        )
+        lines.append(
+            "|----------|--------------|---------|-------------------|------------|--------|"
+        )
         for r in self.results:
             lines.append(
                 f"| {r.name} | {r.duration_ms:.1f} | {r.ops_per_sec:.1f} | "
@@ -306,10 +310,7 @@ def scenario_report_generation(iterations: int = 50) -> ScenarioResult:
     # Build a moderately complex report
     sections = []
     for i in range(5):
-        items = [
-            ReportItem(label=f"Check {j}", value=f"Value {j}", status="ok")
-            for j in range(10)
-        ]
+        items = [ReportItem(label=f"Check {j}", value=f"Value {j}", status="ok") for j in range(10)]
         sections.append(
             ReportSection(heading=f"Section {i}", content=f"Content for section {i}", items=items)
         )
@@ -428,8 +429,7 @@ class BenchmarkSuite:
         if parallel:
             with ThreadPoolExecutor(max_workers=len(self._scenarios)) as pool:
                 futures = {
-                    pool.submit(self.run_scenario, name): name
-                    for name in sorted(self._scenarios)
+                    pool.submit(self.run_scenario, name): name for name in sorted(self._scenarios)
                 }
                 for future in as_completed(futures):
                     results.append(future.result())
@@ -473,11 +473,19 @@ class BenchmarkSuite:
                 # For ops_per_sec, higher is better (actual must exceed threshold)
                 if metric == "ops_per_sec":
                     passed = actual >= threshold
-                    msg = f"{actual:.2f} >= {threshold:.2f}" if passed else f"{actual:.2f} < {threshold:.2f}"
+                    msg = (
+                        f"{actual:.2f} >= {threshold:.2f}"
+                        if passed
+                        else f"{actual:.2f} < {threshold:.2f}"
+                    )
                 else:
                     # For duration_ms, memory_peak_mb: lower is better
                     passed = actual <= threshold
-                    msg = f"{actual:.2f} <= {threshold:.2f}" if passed else f"{actual:.2f} > {threshold:.2f}"
+                    msg = (
+                        f"{actual:.2f} <= {threshold:.2f}"
+                        if passed
+                        else f"{actual:.2f} > {threshold:.2f}"
+                    )
 
                 checks.append(
                     ThresholdCheck(

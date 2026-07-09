@@ -597,9 +597,7 @@ class TestCLI:
     def test_policy_test_output_secret(self, runner: CliRunner) -> None:
         from superpowers.cli_policy import policy_group
 
-        result = runner.invoke(
-            policy_group, ["test-output", "api_key=stripe_example_live_key_2"]
-        )
+        result = runner.invoke(policy_group, ["test-output", "api_key=stripe_example_live_key_2"])
         assert result.exit_code == 1
         assert "Secrets detected" in result.output
 

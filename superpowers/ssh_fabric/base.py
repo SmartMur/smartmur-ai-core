@@ -8,7 +8,7 @@ from enum import StrEnum
 
 class AuthMethod(StrEnum):
     key = "key"
-    password = "password"
+    password = "password"  # pragma: allowlist secret  # StrEnum member, not a credential
     agent = "agent"
 
 

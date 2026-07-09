@@ -9,9 +9,9 @@ from superpowers.cli_cron import cron_group
 from superpowers.cli_dag import dag_group
 from superpowers.cli_dashboard import dashboard_cmd
 from superpowers.cli_intake import intake_group
-from superpowers.cli_llm import llm_group
 from superpowers.cli_jobs import jobs_group
 from superpowers.cli_launchd import daemon
+from superpowers.cli_llm import llm_group
 from superpowers.cli_memory import memory_group
 from superpowers.cli_msg import msg_group
 from superpowers.cli_orchestrate import orchestrate_group

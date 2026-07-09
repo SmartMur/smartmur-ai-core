@@ -13,8 +13,6 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
-from io import BytesIO
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -23,18 +21,14 @@ from click.testing import CliRunner
 from superpowers.llm_provider import (
     ClaudeProvider,
     FallbackProvider,
-    GenericProvider,
     LLMProvider,
     OllamaProvider,
     OpenAIProvider,
     ProviderRegistry,
-    get_default_provider,
     get_provider,
     get_provider_with_fallback,
     normalise_provider_name,
-    register_provider,
 )
-
 
 # ======================================================================
 # OllamaProvider
@@ -90,7 +84,9 @@ class TestOllamaProvider:
         mock_resp.__enter__ = MagicMock(return_value=mock_resp)
         mock_resp.__exit__ = MagicMock(return_value=False)
 
-        with patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        with patch(
+            "superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp
+        ) as mock_urlopen:
             p = OllamaProvider(base_url="http://localhost:11434", default_model="llama3")
             result = p.invoke("Say hello")
 
@@ -113,7 +109,9 @@ class TestOllamaProvider:
         mock_resp.__enter__ = MagicMock(return_value=mock_resp)
         mock_resp.__exit__ = MagicMock(return_value=False)
 
-        with patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        with patch(
+            "superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp
+        ) as mock_urlopen:
             p = OllamaProvider(default_model="llama3")
             p.invoke("test", model="mistral")
 
@@ -129,7 +127,9 @@ class TestOllamaProvider:
         mock_resp.__enter__ = MagicMock(return_value=mock_resp)
         mock_resp.__exit__ = MagicMock(return_value=False)
 
-        with patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        with patch(
+            "superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp
+        ) as mock_urlopen:
             p = OllamaProvider()
             p.invoke("test", system_prompt="Be helpful")
 
@@ -145,7 +145,9 @@ class TestOllamaProvider:
         mock_resp.__enter__ = MagicMock(return_value=mock_resp)
         mock_resp.__exit__ = MagicMock(return_value=False)
 
-        with patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp) as mock_urlopen:
+        with patch(
+            "superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp
+        ) as mock_urlopen:
             p = OllamaProvider()
             p.invoke("test")
 
@@ -260,8 +262,10 @@ class TestProviderRegistry:
     def test_list_providers(self):
         reg = ProviderRegistry(chain=["claude", "ollama"])
         # Mock availability
-        with patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(OllamaProvider, "available", return_value=False):
+        with (
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(OllamaProvider, "available", return_value=False),
+        ):
             result = reg.list_providers()
         assert result == [("claude", True), ("ollama", False)]
 
@@ -283,16 +287,20 @@ class TestProviderRegistry:
     def test_get_first_available(self):
         """get() with no name returns first available from chain."""
         reg = ProviderRegistry(chain=["claude", "ollama"])
-        with patch.object(ClaudeProvider, "available", return_value=False), \
-             patch.object(OllamaProvider, "available", return_value=True):
+        with (
+            patch.object(ClaudeProvider, "available", return_value=False),
+            patch.object(OllamaProvider, "available", return_value=True),
+        ):
             p = reg.get()
         assert isinstance(p, OllamaProvider)
 
     def test_get_all_unavailable_returns_first(self):
         """When all providers are unavailable, returns first in chain."""
         reg = ProviderRegistry(chain=["claude", "ollama"])
-        with patch.object(ClaudeProvider, "available", return_value=False), \
-             patch.object(OllamaProvider, "available", return_value=False):
+        with (
+            patch.object(ClaudeProvider, "available", return_value=False),
+            patch.object(OllamaProvider, "available", return_value=False),
+        ):
             p = reg.get()
         assert isinstance(p, ClaudeProvider)
 
@@ -403,8 +411,10 @@ class TestFallbackChain:
         mock_resp.__enter__ = MagicMock(return_value=mock_resp)
         mock_resp.__exit__ = MagicMock(return_value=False)
 
-        with patch("subprocess.run", side_effect=FileNotFoundError("claude not found")), \
-             patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp):
+        with (
+            patch("subprocess.run", side_effect=FileNotFoundError("claude not found")),
+            patch("superpowers.llm_provider.urllib.request.urlopen", return_value=mock_resp),
+        ):
             result = fb.invoke("test")
 
         assert result == "Ollama fallback"
@@ -420,15 +430,19 @@ class TestFallbackChain:
 
     def test_fallback_available_fallback_only(self):
         fb = FallbackProvider(ClaudeProvider(), OllamaProvider())
-        with patch.object(ClaudeProvider, "available", return_value=False), \
-             patch.object(OllamaProvider, "available", return_value=True):
+        with (
+            patch.object(ClaudeProvider, "available", return_value=False),
+            patch.object(OllamaProvider, "available", return_value=True),
+        ):
             assert fb.available() is True
 
     def test_registry_chain_fallback(self):
         """ProviderRegistry walks the chain to find first available."""
         reg = ProviderRegistry(chain=["claude", "ollama", "openai"])
-        with patch.object(ClaudeProvider, "available", return_value=False), \
-             patch.object(OllamaProvider, "available", return_value=True):
+        with (
+            patch.object(ClaudeProvider, "available", return_value=False),
+            patch.object(OllamaProvider, "available", return_value=True),
+        ):
             p = reg.get()
         assert isinstance(p, OllamaProvider)
 
@@ -459,6 +473,7 @@ class TestConfigLoading:
     def test_settings_loads_llm_fields(self):
         """Settings.load() picks up existing LLM config fields."""
         from pathlib import Path
+
         from superpowers.config import Settings
 
         with patch.dict(os.environ, {"CHAT_MODEL": "ollama", "JOB_MODEL": "claude"}, clear=True):
@@ -479,9 +494,11 @@ class TestCLILlmList:
         from superpowers.cli_llm import llm_group
 
         runner = CliRunner()
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude,ollama"}), \
-             patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(OllamaProvider, "available", return_value=False):
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude,ollama"}),
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(OllamaProvider, "available", return_value=False),
+        ):
             result = runner.invoke(llm_group, ["list"])
 
         assert result.exit_code == 0
@@ -493,8 +510,10 @@ class TestCLILlmList:
 
         runner = CliRunner()
         # Even with just one provider, it should show something
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}), \
-             patch.object(ClaudeProvider, "available", return_value=False):
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}),
+            patch.object(ClaudeProvider, "available", return_value=False),
+        ):
             result = runner.invoke(llm_group, ["list"])
         assert result.exit_code == 0
 
@@ -506,9 +525,11 @@ class TestCLILlmTest:
         from superpowers.cli_llm import llm_group
 
         runner = CliRunner()
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}), \
-             patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(ClaudeProvider, "invoke", return_value="Hello!"):
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}),
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(ClaudeProvider, "invoke", return_value="Hello!"),
+        ):
             result = runner.invoke(llm_group, ["test", "claude"])
 
         assert result.exit_code == 0
@@ -518,9 +539,11 @@ class TestCLILlmTest:
         from superpowers.cli_llm import llm_group
 
         runner = CliRunner()
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}), \
-             patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(ClaudeProvider, "invoke", side_effect=RuntimeError("CLI not found")):
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}),
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(ClaudeProvider, "invoke", side_effect=RuntimeError("CLI not found")),
+        ):
             result = runner.invoke(llm_group, ["test", "claude"])
 
         assert result.exit_code == 1
@@ -540,9 +563,11 @@ class TestCLILlmTest:
         from superpowers.cli_llm import llm_group
 
         runner = CliRunner()
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}), \
-             patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(ClaudeProvider, "invoke", return_value="Hi"):
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}),
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(ClaudeProvider, "invoke", return_value="Hi"),
+        ):
             result = runner.invoke(llm_group, ["test"])
 
         assert result.exit_code == 0
@@ -551,9 +576,11 @@ class TestCLILlmTest:
         from superpowers.cli_llm import llm_group
 
         runner = CliRunner()
-        with patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}), \
-             patch.object(ClaudeProvider, "available", return_value=True), \
-             patch.object(ClaudeProvider, "invoke", return_value="42") as mock_invoke:
+        with (
+            patch.dict(os.environ, {"LLM_PROVIDERS": "claude"}),
+            patch.object(ClaudeProvider, "available", return_value=True),
+            patch.object(ClaudeProvider, "invoke", return_value="42") as mock_invoke,
+        ):
             result = runner.invoke(llm_group, ["test", "claude", "-p", "What is 6*7?"])
 
         assert result.exit_code == 0

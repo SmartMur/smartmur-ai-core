@@ -381,7 +381,7 @@ class RsyncDB:
             vals.append(v)
         vals.append(jid)
         with self._conn() as conn:
-            cur = conn.execute(f"UPDATE rsync_jobs SET {', '.join(sets)} WHERE id = ?", vals)
+            cur = conn.execute(f"UPDATE rsync_jobs SET {', '.join(sets)} WHERE id = ?", vals)  # nosec: columns checked vs _ALLOWED_UPDATE_FIELDS, values bound via params
         return cur.rowcount > 0
 
     def update_progress(self, jid: str, progress_json: str) -> bool:

@@ -3,11 +3,8 @@
 from __future__ import annotations
 
 import json
-import time
-from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 from click.testing import CliRunner
 
 from superpowers.benchmark import (
@@ -24,7 +21,6 @@ from superpowers.benchmark import (
     scenario_policy_evaluation,
     scenario_report_generation,
 )
-
 
 # ---------------------------------------------------------------------------
 # ScenarioResult dataclass
@@ -179,8 +175,11 @@ class TestBenchmarkReport:
             results=[ScenarioResult(name="a", status="pass")],
             threshold_checks=[
                 ThresholdCheck(
-                    scenario="a", metric="duration_ms", actual=50.0,
-                    threshold=100.0, passed=True,
+                    scenario="a",
+                    metric="duration_ms",
+                    actual=50.0,
+                    threshold=100.0,
+                    passed=True,
                 ),
             ],
         )
@@ -210,9 +209,7 @@ class TestBenchmarkReport:
         assert data["title"] == "Save Test"
 
     def test_scenario_count(self):
-        report = BenchmarkReport(
-            results=[ScenarioResult(name=f"s{i}") for i in range(5)]
-        )
+        report = BenchmarkReport(results=[ScenarioResult(name=f"s{i}") for i in range(5)])
         assert report.scenario_count == 5
 
 
@@ -582,6 +579,7 @@ class TestCLI:
 class TestIntegration:
     def test_full_suite_run(self, tmp_path):
         """Run the actual default suite with small params and verify end-to-end."""
+
         # Use lightweight scenarios
         def _light_dag():
             return scenario_dag_throughput(fan_out=3, iterations=1)
@@ -622,6 +620,7 @@ class TestIntegration:
 
     def test_suite_parallel_vs_sequential(self, tmp_path):
         """Both modes should produce the same number of results."""
+
         def _quick():
             return ScenarioResult(name="q", duration_ms=0.1, status="pass")
 

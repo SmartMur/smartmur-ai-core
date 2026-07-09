@@ -73,9 +73,7 @@ def get_auth_token(base_url: str) -> str | None:
         return None
 
 
-def capture_with_playwright(
-    base_url: str, output_dir: Path, token: str | None
-) -> None:
+def capture_with_playwright(base_url: str, output_dir: Path, token: str | None) -> None:
     """Use Playwright to take real browser screenshots."""
     try:
         from playwright.sync_api import sync_playwright
@@ -114,9 +112,7 @@ def capture_with_playwright(
                         headers={"Authorization": f"Bearer {token}"},
                     )
                     data = resp.json()
-                    (output_dir / filename).write_text(
-                        json.dumps(data, indent=2) + "\n"
-                    )
+                    (output_dir / filename).write_text(json.dumps(data, indent=2) + "\n")
                     print(f"    -> Saved {filename}")
                 except Exception as exc:
                     print(f"    [FAIL] {desc}: {exc}")
@@ -150,18 +146,14 @@ def capture_with_urllib(base_url: str, output_dir: Path, token: str | None) -> N
                 req = urllib.request.Request(url, headers=headers, method="GET")
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     data = json.loads(resp.read())
-                    (output_dir / filename).write_text(
-                        json.dumps(data, indent=2) + "\n"
-                    )
+                    (output_dir / filename).write_text(json.dumps(data, indent=2) + "\n")
                     print(f"    -> Saved {filename}")
             except (urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
                 print(f"    [FAIL] {desc}: {exc}")
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Capture dashboard screenshots for docs"
-    )
+    parser = argparse.ArgumentParser(description="Capture dashboard screenshots for docs")
     parser.add_argument(
         "--base-url",
         default=DEFAULT_BASE_URL,
@@ -183,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
     output_dir: Path = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Screenshot generator")
+    print("Screenshot generator")
     print(f"  Dashboard URL: {args.base_url}")
     print(f"  Output dir:    {output_dir}")
     print()

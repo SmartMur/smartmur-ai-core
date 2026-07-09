@@ -101,7 +101,9 @@ def _print_report(report) -> None:
     """Display a benchmark report in the terminal."""
     overall = "[green]PASS[/green]" if report.all_passed else "[red]FAIL[/red]"
     console.print(f"\n[bold]{report.title}[/bold]  {overall}")
-    console.print(f"[dim]Duration: {report.total_duration_ms:.1f}ms | Scenarios: {report.scenario_count}[/dim]")
+    console.print(
+        f"[dim]Duration: {report.total_duration_ms:.1f}ms | Scenarios: {report.scenario_count}[/dim]"
+    )
 
     # Results table
     table = Table()

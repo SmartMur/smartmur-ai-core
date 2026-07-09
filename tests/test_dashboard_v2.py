@@ -447,9 +447,7 @@ class TestSessionAuth:
         from dashboard.deps import verify_session_token
 
         payload = {"sub": "admin", "iat": int(time.time()) - 90000, "exp": int(time.time()) - 3600}
-        expired_token = pyjwt.encode(
-            payload, "<EXAMPLE_SECRET>", algorithm="HS256"
-        )
+        expired_token = pyjwt.encode(payload, "<EXAMPLE_SECRET>", algorithm="HS256")
 
         result = verify_session_token(expired_token)
         assert result is None
