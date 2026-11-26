@@ -203,7 +203,7 @@ from superpowers.ssh_fabric.homeassistant import HomeAssistantClient
 
 ha = HomeAssistantClient(
     url="http://192.168.30.50:8123",
-    token="your-long-lived-access-token",
+    token="<api-token>",
 )
 
 # Get entity state
