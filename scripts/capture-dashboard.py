@@ -2,13 +2,15 @@
 """Capture dashboard screenshots/snapshots.
 
 Uses urllib to fetch and save HTML snapshots and API JSON when Playwright
-browsers are not available (missing system libs).
+browsers are not available (missing system libs). Set DASHBOARD_USERNAME
+and DASHBOARD_PASSWORD in the environment before running the script.
 """
 
 from __future__ import annotations
 
 import http.cookiejar
 import json
+import os
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -16,8 +18,6 @@ from pathlib import Path
 
 BASE_URL = "http://localhost:8200"
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "assets" / "screenshots"
-USERNAME = "admin"
-PASSWORD = "<LOCAL_SECRET>"  # pragma: allowlist secret
 
 
 def build_opener() -> urllib.request.OpenerDirector:
@@ -26,9 +26,9 @@ def build_opener() -> urllib.request.OpenerDirector:
     return urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 
 
-def login(opener: urllib.request.OpenerDirector) -> bool:
+def login(opener: urllib.request.OpenerDirector, username: str, password: str) -> bool:
     """Authenticate and store the session cookie."""
-    payload = json.dumps({"username": USERNAME, "password": PASSWORD}).encode()
+    payload = json.dumps({"username": username, "password": password}).encode()
     req = urllib.request.Request(
         f"{BASE_URL}/login",
         data=payload,
@@ -78,7 +78,7 @@ def fetch_json(opener: urllib.request.OpenerDirector, path: str, filename: str, 
         print(f"    [FAIL] {desc}: {exc}")
 
 
-def try_playwright(opener_cookie_value: str | None) -> bool:
+def try_playwright(opener_cookie_value: str | None, username: str, password: str) -> bool:
     """Attempt Playwright-based screenshots. Returns True if successful."""
     try:
         from playwright.sync_api import sync_playwright
@@ -111,8 +111,8 @@ def try_playwright(opener_cookie_value: str | None) -> bool:
             print("    -> Saved 01-login.png (Playwright)")
 
             # Login
-            page.fill("#username", USERNAME)
-            page.fill("#password", PASSWORD)
+            page.fill("#username", username)
+            page.fill("#password", password)
             page.click('button[type="submit"]')
             page.wait_for_url(f"{BASE_URL}/", timeout=10000)
             page.wait_for_load_state("networkidle", timeout=10000)
@@ -151,6 +151,11 @@ def try_playwright(opener_cookie_value: str | None) -> bool:
 
 
 def main() -> None:
+    username = os.environ.get("DASHBOARD_USERNAME")
+    password = os.environ.get("DASHBOARD_PASSWORD")
+    if not username or not password:
+        raise SystemExit("Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD before capturing the dashboard.")
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print("Dashboard screenshot capture")
     print(f"  URL:    {BASE_URL}")
@@ -172,7 +177,7 @@ def main() -> None:
 
     # Try Playwright first
     print("\n[1] Attempting Playwright screenshots...")
-    if try_playwright(None):
+    if try_playwright(None, username, password):
         print("\n  Playwright screenshots captured successfully.")
     else:
         print("\n  Falling back to HTML/JSON snapshots.")
@@ -196,7 +201,7 @@ def main() -> None:
 
     # Login for authenticated pages
     print("\n[3] Authenticating...")
-    if not login(opener):
+    if not login(opener, username, password):
         print("  Could not authenticate. Skipping protected pages.")
         print("\nDone.")
         return

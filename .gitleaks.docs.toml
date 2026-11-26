@@ -1,0 +1,12 @@
+title = "Scan built site for credentials"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "docs-long-credential-assignment"
+description = "High-entropy credential in generated documentation"
+# Match plain assignments, MkDocs syntax highlighting, and JSON-escaped quotes.
+regex = '''(?i)\b(?:password|secret|token|credential|key)[a-z0-9_-]*(?:\s|</?span\b[^>]*>)*[:=](?:\s|</?span\b[^>]*>)*(?:\\?["']|&(?:quot|#0*39|apos);)?([A-Za-z0-9_+/=-]{20,})'''
+secretGroup = 1
+entropy = 3.5
