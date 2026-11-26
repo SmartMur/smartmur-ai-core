@@ -154,7 +154,9 @@ def main() -> None:
     username = os.environ.get("DASHBOARD_USERNAME")
     password = os.environ.get("DASHBOARD_PASSWORD")
     if not username or not password:
-        raise SystemExit("Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD before capturing the dashboard.")
+        raise SystemExit(
+            "Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD before capturing the dashboard."
+        )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print("Dashboard screenshot capture")
